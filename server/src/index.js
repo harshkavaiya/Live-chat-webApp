@@ -1,12 +1,19 @@
-import expres from "express";
-const app = expres();
+import express from "express";
+import authRoute from "./routes/auth.route.js";
+import dotenv from "dotenv";
+import { connDB } from "./lib/db.js";
+const app = express();
+dotenv.config();
+const PORT = process.env.PORT || 4000;
 
-const PORT = 4000;
-
+app.use(express.json());
 app.get("/", (req, res) => {
   res.send("hello from server side");
 });
 
+app.use("/auth", authRoute);
+
 app.listen(PORT, () => {
   console.log(`server start on http://localhost:${PORT}`);
+  connDB();
 });
