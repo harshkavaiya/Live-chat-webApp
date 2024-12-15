@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import authRoute from "./routes/auth.route.js";
+import messageRoute from "./routes/message.route.js";
 import dotenv from "dotenv";
 import { connDB } from "./lib/db.js";
 const app = express();
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoute);
+app.use("/message", messageRoute);
 
 app.listen(PORT, () => {
   console.log(`server start on http://localhost:${PORT}`);

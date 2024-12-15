@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema(
   {
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     email: {
       type: String,
       required: true,
@@ -20,6 +25,7 @@ const usersSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    contacts: [{ type: mongoose.Schema.Types.ObjectId }],
   },
   {
     timestamps: true,
