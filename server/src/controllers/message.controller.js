@@ -1,5 +1,6 @@
 import Users from "../models/users.model.js";
 import Message from "../models/message.model.js";
+import Cloudinary from "../lib/cloudinary.js";
 
 export const sidebarUser = async (req, res) => {
   try {
@@ -85,6 +86,50 @@ export const addNewContact = async (req, res) => {
       .json({ message: "Contact added successfully", contact: contactUser });
   } catch {
     console.log("error in newAddContact controller: ", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getMessages = async (req, res) => {
+  const myId = req.user._id;
+  const { id: userToChatId } = req.params;
+  try {
+    const message = await Message.find({
+      $or: [
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
+      ],
+    });
+
+    res.status(200).json(message);
+  } catch (error) {
+    console.log("error in getMessage controller: ", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const sendMessage = async (req, res) => {
+  const { text, image } = req.body;
+  const myId = req.user._id;
+  const { id: receiverId } = req.params;
+  try {
+    let imageUrl;
+    if (image) {
+      const uploadCloudinary = await Cloudinary.uploader.upload(image);
+      imageUrl = uploadCloudinary.secure_url;
+    }
+
+    const newMessage = new Message({
+      senderId: myId,
+      receiverId,
+      text,
+      image: imageUrl,
+    });
+    await newMessage.save();
+    //socket.io
+    res.status(200).json(newMessage);
+  } catch (error) {
+    console.log("error in sendMessage controller: ", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
