@@ -126,10 +126,12 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
     await newMessage.save();
-    //socket.io
+
     res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controller: ", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+//socket.io
