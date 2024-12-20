@@ -5,9 +5,8 @@ import { useState } from "react";
 
 const ChatPage = () => {
   const [isSelectMessage, setIsSelectMessage] = useState(false);
-
   return (
-    <div data-theme="light" className="flex flex-col h-screen bg-base-100">
+    <div className="flex flex-col h-screen bg-base-100 ">
       {/* Header */}
       <ChatHeader setIsSelectMessage={setIsSelectMessage} />
 
