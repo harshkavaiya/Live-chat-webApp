@@ -36,98 +36,6 @@ const ChatPage = () => {
         "Sure, chitchat is best theme for chating project, you can it check here.",
       timestamp: "01:40 AM",
     },
-    {
-      read: false,
-      id: 4,
-      sender: "Josephin water",
-      content: "I think it's best for my project.",
-      timestamp: "01:42 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: true,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: true,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
-    {
-      read: false,
-      id: 5,
-      sender: "Alan josheph",
-      content: "If you have any other query then feel free to ask us.",
-      timestamp: "01:45 AM",
-    },
   ]);
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
@@ -138,7 +46,7 @@ const ChatPage = () => {
     setText((pre) => pre + data.emoji);
   };
   return (
-    <div data-theme="light" className="flex flex-col h-screen bg-base-100 ">
+    <div className="flex flex-col h-screen bg-base-100 ">
       {/* Header */}
       <div className="flex items-center justify-between p-3 shadow border-b border-base-300">
         <div className="flex items-center gap-2">
