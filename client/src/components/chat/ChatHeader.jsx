@@ -44,7 +44,7 @@ const ChatHeader = ({ setIsSelectMessage }) => {
             <p>Select Messages</p>
           </li>
           <li>
-            <p>Close Chat</p>
+            <Link to={"/"}>Close Chat</Link>
           </li>
           <li>
             <p>Clear Chat</p>

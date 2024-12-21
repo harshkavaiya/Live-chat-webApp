@@ -1,6 +1,6 @@
-import ChatInput from "../component/chat/ChatInput";
-import ChatHeader from "../component/chat/ChatHeader";
-import ChatMessage from "../component/chat/ChatMessage";
+import ChatInput from "../components/chat/ChatInput";
+import ChatHeader from "../components/chat/ChatHeader";
+import ChatMessage from "../components/chat/ChatMessage";
 import { useState } from "react";
 
 const ChatPage = () => {
@@ -9,7 +9,6 @@ const ChatPage = () => {
     <div className="flex flex-col h-screen bg-base-100 ">
       {/* Header */}
       <ChatHeader setIsSelectMessage={setIsSelectMessage} />
-
       {/* Chat Messages */}
       <ChatMessage isSelectMessage={isSelectMessage} />
       {/* Input Area */}
