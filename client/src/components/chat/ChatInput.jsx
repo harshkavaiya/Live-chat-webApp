@@ -11,12 +11,17 @@ import { useRef, useState } from "react";
 import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
+import Location from "../Location";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+
   const InputMenuRef = useRef();
+  const locationRef = useRef();
 
   const getContactData = async () => {
     // Pending
@@ -26,7 +31,20 @@ const ChatInput = () => {
     setText((pre) => pre + data.emoji);
   };
   const getLocation = async () => {
-    //Pending
+    if (latitude && longitude) {
+      locationRef.current.classList.remove("hidden");
+    } else {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          locationRef.current.classList.remove("hidden");
+        });
+      } else {
+        setLatitude(false);
+        setLongitude;
+      }
+    }
   };
 
   const handleCreatPoll = (data) => {
@@ -35,8 +53,8 @@ const ChatInput = () => {
   };
 
   return (
-    <div className="p-2 border-t bg-base-100">
-      <div className="flex items-center space-x-2">
+    <div className="border-t bg-base-100">
+      <div className="flex items-center space-x-2 px-3 py-2">
         <label className="input input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
           <FaRegSmile
             onClick={() => setIsEmojiSelect(!isEmojiSelect)}
@@ -56,7 +74,19 @@ const ChatInput = () => {
             size={28}
           />
           {text.length <= 0 && (
-            <LuCamera className="cursor-pointer" size={20} />
+            <label>
+              <span className="flex gap-x-2">
+                <LuCamera className="cursor-pointer" size={20} />
+              </span>
+              <input
+                type="file"
+                id="selectImage"
+                capture="user"
+                className="hidden"
+                onChangeCapture={(e) => console.log(e)}
+                accept="image/*"
+              />
+            </label>
           )}
         </label>
 
@@ -113,7 +143,11 @@ const ChatInput = () => {
               lable="Poll"
               button={() => setIsPollOpen(!isPollOpen)}
             />
-            <InputMenu icon={<GrMapLocation size={20} />} lable="Location" />
+            <InputMenu
+              icon={<GrMapLocation size={20} />}
+              lable="Location"
+              button={getLocation}
+            />
           </ul>
         </div>
       </div>
@@ -134,6 +168,18 @@ const ChatInput = () => {
           handleCreatPoll={handleCreatPoll}
         />
       )}
+
+      {/* Location Send */}
+      <div ref={locationRef} className="hidden">
+        {latitude && longitude && (
+          <Location
+            latitude={latitude}
+            longitude={longitude}
+            close={() => OpenCloseMenu(locationRef)}
+            shareLocation={() => console.log("Share")}
+          />
+        )}
+      </div>
     </div>
   );
 };

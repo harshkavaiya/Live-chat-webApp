@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import ChatPage from "./ChatPage";
 import Sidebar from "../components/Sidebar";
@@ -25,4 +24,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;
