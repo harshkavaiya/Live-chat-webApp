@@ -2,23 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scrollbar-small::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  .scrollbar-small::-webkit-scrollbar-track {
+    background: #671515;
+    border-radius: 10px;
+  }
+  .scrollbar-small::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  .scrollbar-small::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 * {
   box-sizing: border-box;
-}
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.scrollbar-hide {
-  cursor: grab;
-}
-
-.scrollbar-hide:active {
-  cursor: grabbing;
 }
