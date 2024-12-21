@@ -6,6 +6,7 @@ export default {
   theme: {
     extend: {},
   },
+  safelist: ["scrollbar-small"],
   plugins: [daisyui],
   daisyui: {
     themes: [
