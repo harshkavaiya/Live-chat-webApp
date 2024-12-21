@@ -24,7 +24,7 @@ const Sidebar = () => {
         <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pl-2 cursor-pointer">
           {users.map((i) => (
             <div key={i} className="indicator relative ">
-              <span className="indicator-item badge badge-success absolute w-3 h-3 p-0 top-2 right-2"></span>
+              <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
               <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
                 <img
                   src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
@@ -60,7 +60,7 @@ const Sidebar = () => {
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
           {users.map((i) => (
-            <div className="flex justify-between pl-4 pr-2 border-b border-primary/20 py-2 transition-all duration-200 group hover:bg-primary/10 items-center">
+            <div className="flex justify-between pl-4 pr-2 border-b border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center">
               <div className="flex items-center">
                 <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                   <img
@@ -89,7 +89,7 @@ const Sidebar = () => {
                   <p className="text-xs">10:20 PM</p>
 
                   <div
-                    className={`flex items-center gap-2 group-hover:translate-x-0 transition-all duration-200
+                    className={`flex items-center gap-2 group-hover:translate-x-0  transition-all duration-75
                     ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
                   >
                     {receiveMessage ? (

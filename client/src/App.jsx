@@ -1,6 +1,7 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
+import Sidebar from "./components/Sidebar";
 import ChatPage from "./pages/ChatPage";
 import Profile from "./pages/Profile";
 
