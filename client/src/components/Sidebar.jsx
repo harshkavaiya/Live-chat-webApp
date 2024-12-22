@@ -59,8 +59,11 @@ const Sidebar = () => {
         </p>
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
-          {users.map((i) => (
-            <div className="flex justify-between pl-4 pr-2 border-b border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center">
+          {users.map((i, idx) => (
+            <div
+              key={idx}
+              className="flex justify-between pl-4 pr-2 border-b border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center"
+            >
               <div className="flex items-center">
                 <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                   <img

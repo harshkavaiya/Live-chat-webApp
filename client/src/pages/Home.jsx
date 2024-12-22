@@ -9,10 +9,10 @@ import Setting from "./Setting";
 import Myprofile from "./Myprofile";
 
 const Home = () => {
-  const [userselected, setuserselect] = useState(false);
+  const userselected = false;
   const [activePage, setActivePage] = useState("chat");
   return (
-    <div className="h-screen w-screen flex gap-0 transition-all duration-200">
+    <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* user setting */}
       <div className="w-[5rem] hidden sm:block bg-primary-content">
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
