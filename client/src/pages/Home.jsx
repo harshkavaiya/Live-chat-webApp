@@ -19,7 +19,7 @@ const Home = () => {
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
       </div>
       {/* Contact List */}
-      <div className="w-full sm:w-[50%] relative overflow-hidden">
+      <div className="w-full sm:w-[50%] relative bg-primary/25 overflow-hidden">
         {activePage === "chat" && <Sidebar />}
         {activePage === "status" && <Status />}
         {activePage === "call" && <Call />}
@@ -33,6 +33,10 @@ const Home = () => {
       {/* Message Area */}
       <div className="hidden sm:block w-[60%]  bg-primary-content">
         {userselected ? <ChatPage /> : <NochatSelect />}
+      </div>
+
+      <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
+        <BottomBar activePage={activePage} setActivePage={setActivePage} />
       </div>
     </div>
   );

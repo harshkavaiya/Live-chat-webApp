@@ -35,9 +35,7 @@ const BottomBar = ({ activePage, setActivePage }) => {
           <span className=" w-12 h-12 grid place-items-center cursor-pointer">
             <icon.icon size={25} className="text-primary" />
           </span>
-          <p className="text-base text-neutral-content capitalize">
-            {icon.page}
-          </p>
+          <p className="text-base text-primary capitalize">{icon.page}</p>
         </div>
       ))}
     </div>

@@ -28,41 +28,50 @@ const SideSetting = ({ setActivePage, activePage }) => {
       {/* top */}
       <div className="flex flex-col items-center gap-5">
         {sideIcon.map((item, idx) => (
-          <span
-            key={idx}
-            className={`${
-              activePage === item.page && "bg-primary/10 rounded-full"
-            } w-12 h-12 grid place-items-center cursor-pointer`}
-            onClick={() => setActivePage(item.page)}
+          <div
+            className="tooltip tooltip-right"
+            data-tip={item.page.toUpperCase()}
           >
-            <item.icon size={25} className="text-primary" />
-          </span>
+            <span
+              key={idx}
+              className={`${
+                activePage === item.page && "bg-primary/10 rounded-full"
+              } w-12 h-12 grid place-items-center cursor-pointer`}
+              onClick={() => setActivePage(item.page)}
+            >
+              <item.icon size={25} className="text-primary" />
+            </span>
+          </div>
         ))}
       </div>
       {/* bottom */}
       <div className="flex flex-col items-center gap-7">
         {/* setting */}
-        <span
-          className={`${
-            activePage === "settings" && "bg-primary/10 rounded-full"
-          } w-12 h-12 grid place-items-center cursor-pointer`}
-          onClick={() => setActivePage("settings")}
-        >
-          <IoSettingsOutline
-            size={25}
-            className="cursor-pointer text-primary"
-          />
-        </span>
+        <div className="tooltip tooltip-right" data-tip="SETTINGS">
+          <span
+            className={`${
+              activePage === "settings" && "bg-primary/10 rounded-full"
+            } w-12 h-12 grid place-items-center cursor-pointer`}
+            onClick={() => setActivePage("settings")}
+          >
+            <IoSettingsOutline
+              size={25}
+              className="cursor-pointer text-primary"
+            />
+          </span>
+        </div>
         {/* User */}
-        <div
-          className="w-10 h-10 rounded-full cursor-pointer overflow-hidden"
-          onClick={() => setActivePage("myprofile")}
-        >
-          <img
-            src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
-            alt="user"
-            className="object-cover"
-          />
+        <div className="tooltip tooltip-right" data-tip="MY PROFILE">
+          <div
+            className="w-10 h-10 rounded-full cursor-pointer overflow-hidden"
+            onClick={() => setActivePage("myprofile")}
+          >
+            <img
+              src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+              alt="user"
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </div>

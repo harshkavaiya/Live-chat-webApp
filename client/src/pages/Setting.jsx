@@ -1,17 +1,28 @@
 import React, { useContext } from "react";
 import ThemeDialog from "../components/setting/ThemeDialog";
 import { MdLogout } from "react-icons/md";
+import { MdLockOutline } from "react-icons/md";
 
 const Setting = () => {
+  const icons = [
+    {
+      icon: MdLockOutline,
+      name: "privacy",
+    },
+    {
+      icon: MdLogout,
+      name: "Logout",
+    },
+  ];
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* setting logo */}
-      <div className="p-5">
+      <div className="p-4">
         <h2 className="text-2xl font-bold">Settings</h2>
       </div>
 
       {/* user profile */}
-      <div className="flex px-5 items-center gap-3">
+      <div className="flex px-5 py-2 items-center gap-3 hover:bg-primary/10">
         <div className="rounded-full cursor-pointer bg-primary-content overflow-hidden w-20 h-20">
           <img
             src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
@@ -36,16 +47,25 @@ const Setting = () => {
 
       {/* others options */}
       <div className="flex flex-col">
-        {[1, 2, 3].map((i) => (
+        {icons.map((i, idx) => (
           <div
-            key={i}
+            key={idx}
             className="grid grid-cols-10 cursor-pointer hover:bg-primary/10"
           >
             <span className="col-span-2 grid place-items-center">
-              <MdLogout size={20} />
+              <i.icon
+                size={22}
+                className={`${i.name == "Logout" && "text-red-500"}`}
+              />
             </span>
             <span className="col-span-8 border-b border-base-300 py-4">
-              <p className="">Logout</p>
+              <p
+                className={`text-[1.1rem] capitalize ${
+                  i.name == "Logout" && "text-red-500"
+                }`}
+              >
+                {i.name}
+              </p>
             </span>
           </div>
         ))}

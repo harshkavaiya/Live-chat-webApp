@@ -4,7 +4,7 @@ import { RxCross2 } from "react-icons/rx";
 import { ThemeContext } from "../../GlobalStates/ThemeContext";
 
 const ThemeDialog = () => {
-  const { toggleTheme } = useContext(ThemeContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
   return (
     <dialog id="theme" className="modal">
       <div className="modal-box">
@@ -24,7 +24,11 @@ const ThemeDialog = () => {
             <button
               key={t}
               className={`
-          group flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors bg-base-200`}
+          group flex flex-col items-center gap-1.5 p-2 rounded-lg transition-colors ${
+            theme === t
+              ? "bg-base-300 shadow-primary shadow-2xl"
+              : "bg-base-100"
+          }`}
               onClick={() => toggleTheme(t)}
             >
               <div

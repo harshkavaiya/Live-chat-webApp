@@ -2,6 +2,7 @@ import React from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaAngleDown, FaAngleRight } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
+import { GoPencil } from "react-icons/go";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -18,7 +19,7 @@ const Sidebar = () => {
             </div>
           </p>
           <p className="flex items-center text-sm gap-2 cursor-pointer">
-            More <FaAngleRight className="text-accent" />
+            More <FaAngleRight className="text-primary" />
           </p>
         </div>
         <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pl-2 cursor-pointer">
@@ -109,9 +110,42 @@ const Sidebar = () => {
               </div>
             </div>
           ))}
-          <div className="mb-24 md:mb-5">
-            <div className="divider">end-to-end encrypted</div>
+          <div className="mb-36 md:mb-5">
+            <div className="divider text-xs">end-to-end encrypted</div>
           </div>
+        </div>
+      </div>
+
+      {/* menus */}
+      <div className="fixed sm:absolute right-0 bottom-20 sm:bottom-1 mr-3">
+        <div className="dropdown dropdown-top dropdown-end">
+          <div
+            tabIndex={0}
+            q
+            role="button"
+            className="btn w-16 h-16 rounded-full m-1"
+          >
+            <GoPencil size={23} />
+          </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-base-100 rounded-box z-[1]  p-2 shadow"
+          >
+            <li>
+              <div
+                className="tooltip tooltip-left tooltip-primary"
+                data-tip="Create Groupt"
+              >
+                <a>Groupt</a>
+              </div>
+            </li>
+            <li>
+              <a>Message</a>
+            </li>
+            <li>
+              <a>Contact</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
