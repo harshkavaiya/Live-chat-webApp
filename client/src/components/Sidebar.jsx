@@ -7,7 +7,7 @@ const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const users = [...Array(20).keys()];
   return (
-    <div className="h-full w-full flex flex-col gap-2  relative transition-all duration-200 ">
+    <div className="h-full w-full flex flex-col gap-2 relative transition-all duration-200 ">
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
         <div className="flex justify-between items-center pr-2 pb-2">
@@ -62,7 +62,8 @@ const Sidebar = () => {
           {users.map((i, idx) => (
             <div
               key={idx}
-              className="flex justify-between pl-4 pr-2 border-b border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center"
+              className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
+                ${idx == users.length - 1 && "border-b"}`}
             >
               <div className="flex items-center">
                 <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
@@ -108,6 +109,9 @@ const Sidebar = () => {
               </div>
             </div>
           ))}
+          <div className="mb-24 md:mb-5">
+            <div className="divider">end-to-end encrypted</div>
+          </div>
         </div>
       </div>
     </div>

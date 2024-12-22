@@ -39,7 +39,7 @@ const Setting = () => {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="grid grid-cols-10 cursor-pointer hover:bg-primary-content"
+            className="grid grid-cols-10 cursor-pointer hover:bg-primary/10"
           >
             <span className="col-span-2 grid place-items-center">
               <MdLogout size={20} />

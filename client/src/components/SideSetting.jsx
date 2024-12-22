@@ -31,7 +31,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
           <span
             key={idx}
             className={`${
-              activePage === item.page && "bg-secondary-content rounded-full"
+              activePage === item.page && "bg-primary/10 rounded-full"
             } w-12 h-12 grid place-items-center cursor-pointer`}
             onClick={() => setActivePage(item.page)}
           >
@@ -44,7 +44,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
         {/* setting */}
         <span
           className={`${
-            activePage === "settings" && "bg-secondary-content rounded-full"
+            activePage === "settings" && "bg-primary/10 rounded-full"
           } w-12 h-12 grid place-items-center cursor-pointer`}
           onClick={() => setActivePage("settings")}
         >

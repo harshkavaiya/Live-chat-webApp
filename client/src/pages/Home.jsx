@@ -7,6 +7,7 @@ import Status from "./Status";
 import Call from "./Calls";
 import Setting from "./Setting";
 import Myprofile from "./Myprofile";
+import BottomBar from "../components/BottomBar";
 
 const Home = () => {
   const userselected = false;
@@ -18,12 +19,15 @@ const Home = () => {
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
       </div>
       {/* Contact List */}
-      <div className="w-full sm:w-[50%] overflow-hidden">
+      <div className="w-full sm:w-[50%] relative overflow-hidden">
         {activePage === "chat" && <Sidebar />}
         {activePage === "status" && <Status />}
         {activePage === "call" && <Call />}
         {activePage === "settings" && <Setting />}
         {activePage === "myprofile" && <Myprofile />}
+        <div className="absolute flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20">
+          <BottomBar activePage={activePage} setActivePage={setActivePage} />
+        </div>
       </div>
 
       {/* Message Area */}
