@@ -38,26 +38,28 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* search */}
-      <div className="relative px-4">
-        <span className="absolute inset-y-0 left-7 flex items-center text-gray-500">
-          <CiSearch size={20} />
-        </span>
-        <input
-          type="search"
-          className="input input-primary h-9 w-full pl-10"
-          placeholder="Search messages..."
-        />
-      </div>
-
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
-        <p className="text-lg font-bold pl-2 pb-3 cursor-default">
-          Messages
-          <div className="badge p-0 ml-1 w-6 h-6 badge-primary">
-            {users.length}
+        <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
+          <span className="flex">
+            Messages
+            <div className="badge p-0 ml-1 w-6 h-6 badge-primary">
+              {users.length}
+            </div>
+          </span>
+          {/* search */}
+          <div className="relative w-full px-4">
+            <span className="absolute inset-y-0 left-7 flex items-center text-gray-500">
+              <CiSearch size={20} />
+            </span>
+            <input
+              type="search"
+              className="input input-primary h-9 w-full pl-10"
+              placeholder="Search messages..."
+            />
           </div>
         </p>
+
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
           {users.map((i, idx) => (
@@ -117,7 +119,7 @@ const Sidebar = () => {
       </div>
 
       {/* menus */}
-      <div className="fixed sm:absolute right-0 bottom-20 sm:bottom-1 mr-3">
+      <div className="fixed sm:absolute right-2 bottom-20 sm:bottom-1">
         <div className="dropdown dropdown-top dropdown-end">
           <div
             tabIndex={0}
@@ -129,15 +131,10 @@ const Sidebar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content menu bg-base-100 rounded-box z-[1]  p-2 shadow"
+            className="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow-lg gap-1"
           >
             <li>
-              <div
-                className="tooltip tooltip-left tooltip-primary"
-                data-tip="Create Groupt"
-              >
-                <a>Groupt</a>
-              </div>
+              <a>Groupt</a>
             </li>
             <li>
               <a>Message</a>
