@@ -1,10 +1,14 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { OpenCloseMenu } from "../../function/function";
 
-const ChatHeader = ({ setIsSelectMessage }) => {
+const ChatHeader = ({ setIsSelectMessage, setIsProfileOpen }) => {
   const headerMenuRef = useRef();
+  const [key, setKey] = useState(0);
+  useEffect(() => {
+    headerMenuRef.current.classList.add("hidden");
+  }, [key]);
 
   return (
     <>
@@ -15,7 +19,9 @@ const ChatHeader = ({ setIsSelectMessage }) => {
               J
             </div>
             <Link
-              to={"/profile/12"}
+              onClick={() => {
+                setIsProfileOpen(true);
+              }}
               className="ml-4 font-semibold text-2xl w-full"
             >
               Hardik
@@ -25,7 +31,9 @@ const ChatHeader = ({ setIsSelectMessage }) => {
         <div className="flex items-center gap-4">
           <IoVideocam className="cursor-pointer" size={20} />
           <IoEllipsisVerticalSharp
-            onClick={() => OpenCloseMenu(headerMenuRef)}
+            onClick={() => {
+              OpenCloseMenu(headerMenuRef);
+            }}
             className="cursor-pointer"
             size={20}
           />
@@ -38,9 +46,20 @@ const ChatHeader = ({ setIsSelectMessage }) => {
       >
         <ul className="menu bg-base-100 rounded-md border border-base-300 w-56 p-0 [&_li>*]:rounded-none">
           <li>
-            <Link to={"/profile/12"}>Profile</Link>
+            <button
+              onClick={() => {
+                setIsProfileOpen(true);
+              }}
+            >
+              Profile
+            </button>
           </li>
-          <li onClick={() => setIsSelectMessage(true)}>
+          <li
+            onClick={() => {
+              setIsSelectMessage(true);
+              setKey(Math.random());
+            }}
+          >
             <p>Select Messages</p>
           </li>
           <li>

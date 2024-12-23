@@ -21,7 +21,7 @@ const Location = ({ latitude, longitude, close, shareLocation }) => {
         </header>
 
         {/* Map Container */}
-        <main className="flex relative h-[600px] z-10 overflow-hidden">
+        <main className="flex relative h-[600px] overflow-hidden">
           <MapContainer
             center={[latitude, longitude]}
             zoom={15}

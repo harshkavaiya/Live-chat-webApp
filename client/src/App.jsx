@@ -14,7 +14,6 @@ function App() {
       <Routes>
         <Route path="/" Component={Home} />
         <Route path="/chat/:id" Component={ChatPage} />
-        <Route path="/profile/:id" Component={Profile} />
       </Routes>
     </div>
   );

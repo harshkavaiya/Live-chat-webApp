@@ -10,21 +10,21 @@ import { IoClose, IoVolumeMuteSharp } from "react-icons/io5";
 import { useRef, useState } from "react";
 import { OpenCloseMenu } from "../function/function";
 
-const Profile = () => {
+const Profile = ({ setIsProfileOpen }) => {
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const documentRef = useRef();
   const mediaRef = useRef();
 
   return (
-    <div
-      data-theme="light"
-      className="max-w-md mx-auto bg-base-100 min-h-screen text-base-content/80 font-medium"
-    >
+    <div className="w-full mx-auto z-20  bg-base-100 min-h-screen text-base-content/80 font-medium absolute top-0">
       {/* Header */}
       <div className="relative p-2 border-b text-center border-base-300 ">
         <button className="absolute right-4 top-4">
-          <IoClose className="h-5 w-5 " />
+          <IoClose
+            onClick={() => setIsProfileOpen(false)}
+            className="h-5 w-5 "
+          />
         </button>
         <h2 className="text-2xl font-bold ">Profile</h2>
       </div>
@@ -43,7 +43,13 @@ const Profile = () => {
 
       {/* Shared Documents */}
       <div className="border-b border-base-300">
-        <button className="flex items-center justify-between w-full p-4">
+        <button
+          onClick={() => {
+            OpenCloseMenu(documentRef);
+            setIsdocumentRotate(!isdocumentRotate);
+          }}
+          className="flex items-center justify-between w-full p-4"
+        >
           <div className="flex items-center gap-2 ">
             <span className="font-medium">Shared Document</span>
             <span className=" text-xs px-1.5 py-0.5 rounded-full">3</span>
@@ -52,10 +58,6 @@ const Profile = () => {
             className={`h-5 w-5 transition-all duration-300 ${
               isdocumentRotate ? "rotate-180" : "rotate-0"
             }`}
-            onClick={() => {
-              OpenCloseMenu(documentRef);
-              setIsdocumentRotate(!isdocumentRotate);
-            }}
           />
         </button>
         <div ref={documentRef} className="px-4 pb-4 hidden">
@@ -115,7 +117,13 @@ const Profile = () => {
 
       {/* Shared Media */}
       <div className="border-b border-base-300  ">
-        <button className="flex items-center justify-between w-full p-4">
+        <button
+          onClick={() => {
+            OpenCloseMenu(mediaRef);
+            setIsmediaRotate(!ismediaRotate);
+          }}
+          className="flex items-center justify-between w-full p-4"
+        >
           <div className="flex items-center gap-2">
             <span className="font-medium">Shared Media</span>
             <span className="text-xs px-1.5 py-0.5 rounded-full">7</span>
@@ -124,10 +132,6 @@ const Profile = () => {
             className={`h-5 w-5 transition-all duration-300 ${
               ismediaRotate ? "rotate-180" : "rotate-0"
             }`}
-            onClick={() => {
-              OpenCloseMenu(mediaRef);
-              setIsmediaRotate(!ismediaRotate);
-            }}
           />
         </button>
         <div ref={mediaRef} className="p-2 hidden">
