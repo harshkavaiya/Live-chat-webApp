@@ -12,6 +12,7 @@ import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
 import Location from "../Location";
+import SendFilePreview from "../SendFilePreview";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
@@ -19,8 +20,9 @@ const ChatInput = () => {
   const [isPollOpen, setIsPollOpen] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
+  const [GalleryData, setGalleryData] = useState([]);
 
-  const InputMenuRef = useRef();
+  const inputMenuRef = useRef();
   const locationRef = useRef();
 
   const getContactData = async () => {
@@ -52,6 +54,11 @@ const ChatInput = () => {
     setIsPollOpen(false);
   };
 
+  const handelImageData = (e) => {
+    setGalleryData([...e.target.files]);
+    console.log(e.target.files);
+  };
+
   return (
     <div className="border-t bg-base-100">
       <div className="flex items-center space-x-2 px-3 py-2">
@@ -69,7 +76,7 @@ const ChatInput = () => {
             type="text"
           />
           <GoPlus
-            onClick={() => OpenCloseMenu(InputMenuRef)}
+            onClick={() => OpenCloseMenu(inputMenuRef)}
             className="cursor-pointer"
             size={28}
           />
@@ -100,14 +107,22 @@ const ChatInput = () => {
         {/* input menu */}
 
         <div
-          ref={InputMenuRef}
+          ref={inputMenuRef}
           className="absolute right-24 z-20 bottom-[50px] hidden"
         >
           <ul className="menu bg-base-100 rounded-md font-medium border border-base-300 w-40 p-0 [&_li>*]:rounded-none">
             <InputMenu
               icon={<GrGallery size={20} className="opacity-100 " />}
               lable="Gallery"
-              input={<input type="file" className="hidden" />}
+              input={
+                <input
+                  type="file"
+                  className="hidden"
+                  multiple
+                  onChange={handelImageData}
+                  accept=".jpg,.png,.jpeg,.mp4,.mkv"
+                />
+              }
             />
             <InputMenu
               icon={<LuCamera size={20} />}
@@ -180,6 +195,9 @@ const ChatInput = () => {
           />
         )}
       </div>
+
+      {/* Gallery Data preview*/}
+      {GalleryData.length > 0 && <SendFilePreview GalleryData={GalleryData} setGalleryData={setGalleryData} />}
     </div>
   );
 };
