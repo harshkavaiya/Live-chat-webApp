@@ -92,7 +92,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto p-1 space-y-2 bg-base-100">
+      <div className="flex-1 overflow-y-auto p-1 space-y-1 bg-base-100">
         {messages.map((message, i) => (
           <div key={i} className="flex w-full items-center">
             {isSelectMessage && (
@@ -131,7 +131,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
                         message.sender == "12"
                           ? "bg-base-100/25 text-primary-content "
                           : "bg-base-100 text-base-content"
-                      } p-2 rounded-lg  w-64`}
+                      } p-1 rounded-lg w-[55vw]  md:w-60`}
                     >
                       {/* File Icon */}
                       <div className=" p-2 rounded-lg">
@@ -155,7 +155,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
                 )}
                 {message.type == "poll" && <Poll data={message.data} />}
                 {message.type == "location" && (
-                  <div className="w-72 h-56 z-0 p-2">
+                  <div className="w-[66vw] md:w-72 h-56 z-0 p-2">
                     <MapContainer
                       center={[message.data.latitude, message.data.longitude]}
                       zoom={15}

@@ -1,0 +1,45 @@
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mySwiper2 {
+  height: 90%;
+  width: 100%;
+}
+
+.mySwiper2 .swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.mySwiper {
+  height: 10vh;
+  width: 30vh;
+  padding: 10px 0;
+}
+
+.mySwiper .swiper-slide {
+  width: 100%;
+  height: 80%;
+  opacity: 0.7;
+}
+
+.mySwiper .swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.mySwiper .swiper-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: 10px;
+}
+.mySwiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
