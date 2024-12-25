@@ -31,7 +31,7 @@ const Poll = ({ data }) => {
             key={i}
             className={`relative overflow-hidden rounded-lg transition-all border border-primary ${
               isVoted
-                ? " cursor-default bg-primary/10"
+                ? "cursor-default bg-primary/10"
                 : "hover:bg-primary/35 cursor-pointer"
             } ${
               selectedOption === i
@@ -40,7 +40,7 @@ const Poll = ({ data }) => {
             }`}
             onClick={() => !isVoted && setSelectedOption(i)}
           >
-            <div className="relative z-10 flex items-center justify-between p-2">
+            <div className="relative  flex items-center justify-between p-1">
               <span className="font-medium">{option.text}</span>
               {isVoted && (
                 <span className="text-sm font-semibold">
@@ -64,15 +64,15 @@ const Poll = ({ data }) => {
           <button
             onClick={handleVote}
             disabled={selectedOption === null}
-            className="w-full py-2 px-4 border border-transparent rounded-md  text-sm font-medium text-primary-content bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center w-full py-2 px-2 border border-transparent rounded-md  text-sm font-medium text-primary-content bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <MdOutlineCheckCircle className="inline-block mr-2 h-5 w-5" />
-            Submit Vote
+            <MdOutlineCheckCircle size={20} className="inline-block mr-2" />
+            <span>Submit Vote</span>
           </button>
         ) : (
           <div className="flex items-center justify-between text-sm ">
             <span>
-              <FiBarChart2 className="inline-block mr-2 h-5 w-5" />
+              <FiBarChart2 size={20} className="inline-block mr-2 " />
               Total votes: {votes}
             </span>
             <button

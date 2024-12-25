@@ -1,37 +1,40 @@
 import { FaTimes } from "react-icons/fa";
 import { MdOutlineCrop } from "react-icons/md";
 import { RiText } from "react-icons/ri";
-import { FaRegTrashAlt } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FaVideo } from "react-icons/fa";
 
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/thumbs";
+import "./SendFilePreview.css";
 
 import { FreeMode, Thumbs } from "swiper/modules";
 import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 
-const SendFilePreview = ({ GalleryData, setGalleryData }) => {
-  console.log(GalleryData);
+const SendFilePreview = ({ GalleryData, setGalleryData, handleSendData ,isSendLoading}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   const handleDeleteImage = (id) => {
     console.log(id);
   };
-
+  if (isSendLoading)
+    return (
+      <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
+        <span className="loading loading-infinity loading-lg">Loading</span>
+      </div>
+    );
   return (
     <div className="h-full w-full absolute top-0 mx-auto bg-base-100 text-base-content z-20">
       {/* Main Image */}
       <div className="relative h-full w-full">
         {/* Top toolbar */}
-        <div className="top-0 left-0 right-0 h-20 p-2 flex items-center justify-between">
-          <button className="btn btn-circle">
-            <FaTimes onClick={() => setGalleryData([])} size={20} />
+        <div className="top-0 left-0 right-0 h-14 p-2 flex items-center justify-between">
+          <button className="btn btn-circle" onClick={() => setGalleryData([])}>
+            <FaTimes size={20} />
           </button>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             <button className="btn btn-circle">
               <MdOutlineCrop size={20} />
             </button>
@@ -48,23 +51,21 @@ const SendFilePreview = ({ GalleryData, setGalleryData }) => {
             spaceBetween={10}
             thumbs={{ swiper: thumbsSwiper }}
             modules={[FreeMode, Thumbs]}
-            className="w-full mx-auto h-[92%]"
+            lazy={true}
+            className="mySwiper2 "
           >
             {GalleryData.map((item, i) => {
               return (
-                <SwiperSlide key={i} className="h-full w-full">
+                <SwiperSlide key={i} className="=">
                   {item.type == "video/mp4" ? (
                     <video
                       src={URL.createObjectURL(item)}
                       type={item.type}
                       controls
-                      className="h-full w-full"
+                      className=""
                     ></video>
                   ) : (
-                    <img
-                      src={URL.createObjectURL(item)}
-                      className="h-full w-full"
-                    />
+                    <img src={URL.createObjectURL(item)} className="" />
                   )}
                 </SwiperSlide>
               );
@@ -73,38 +74,40 @@ const SendFilePreview = ({ GalleryData, setGalleryData }) => {
           <Swiper
             onSwiper={setThumbsSwiper}
             spaceBetween={10}
-            slidesPerView={3}
+            slidesPerView={4}
             freeMode={true}
+            lazy={true}
             watchSlidesProgress={true}
             modules={[FreeMode, Thumbs]}
-            className="w-[50%] h-[10%] -mt-4"
+            className="mySwiper"
           >
             {GalleryData.map((item, i) => {
               return (
-                <SwiperSlide key={i} className="h-20 w-20">
-                  <div className="relative group">
-                    <div className="absolute flex items-center justify-center bg-base-200 w-full h-full bg-transparent/20 text-base-content opacity-0 group-hover:opacity-100 transition-all duration-200 ease-in-out  ">
+                <SwiperSlide key={i} className="">
+                  {/* <div className=" ">
                       <FaRegTrashAlt
-                        size={30}
+                        size={28}
                         className="cursor-pointer"
                         onClick={() => handleDeleteImage(item)}
                       />
-                    </div>
+                    </div> */}
 
-                    {item.type == "video/mp4" ? (
-                      <video width="360">
-                        <source
-                          src={`${URL.createObjectURL(item)}#t=0.1`}
-                          type="video/mp4"
-                        />
-                      </video>
-                    ) : (
-                      <img
-                        src={URL.createObjectURL(item)}
-                        className="hover:opacity-90 rounded-xl object-cover h-full w-full"
+                  {item.type == "video/mp4" ? (
+                    <video className="">
+                      <source
+                        src={`${URL.createObjectURL(item)}#t=2.1`}
+                        type="video/mp4"
+                        loading="lazy"
+                        className=""
                       />
-                    )}
-                  </div>
+                    </video>
+                  ) : (
+                    <img
+                      src={URL.createObjectURL(item)}
+                      loading="lazy"
+                      className=""
+                    />
+                  )}
                 </SwiperSlide>
               );
             })}
@@ -122,7 +125,10 @@ const SendFilePreview = ({ GalleryData, setGalleryData }) => {
                 className="w-full bg-transparent  outline-none"
               />
             </div>
-            <button className="btn btn-circle btn-primary">
+            <button
+              onClick={() => handleSendData(GalleryData)}
+              className="btn btn-circle btn-primary"
+            >
               <IoSend size={24} />
             </button>
           </div>

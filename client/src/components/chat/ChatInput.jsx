@@ -7,12 +7,14 @@ import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
 import { FaRegSmile } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import EmojiPicker from "emoji-picker-react";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
 import Location from "../Location";
-import SendFilePreview from "../SendFilePreview";
+import SendFilePreview from "../SendDataPreview/SendFilePreview";
+import axiosInstance from "../../lib/axiosInstance";
+import axios from "axios";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
@@ -21,6 +23,7 @@ const ChatInput = () => {
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [GalleryData, setGalleryData] = useState([]);
+  const [isSendLoading, setisSendLoading] = useState(false);
 
   const inputMenuRef = useRef();
   const locationRef = useRef();
@@ -56,20 +59,58 @@ const ChatInput = () => {
 
   const handelImageData = (e) => {
     setGalleryData([...e.target.files]);
-    console.log(e.target.files);
   };
 
+  const handleSendData = useCallback(async (data) => {
+    let imageUrl = [];
+    let videoUrl = [];
+    try {
+      for (let i = 0; i < data.length; i++) {
+        setisSendLoading(true);
+        if (data[i].type.split("/")[0] === "image") {
+          let form = new FormData();
+
+          form.append("file", data[i]);
+          form.append("upload_preset", "Real-time-chat-image");
+          let res = await axios.post(
+            "https://api.cloudinary.com/v1_1/dr9twts2b/image/upload",
+            form
+          );
+          imageUrl.push(res.data.secure_url);
+        } else {
+          let form = new FormData();
+
+          form.append("file", data[i]);
+          form.append("upload_preset", "Real-time-chat-Video");
+          let res = await axios.post(
+            "https://api.cloudinary.com/v1_1/dr9twts2b/video/upload",
+            form
+          );
+          videoUrl.push(res.data.secure_url);
+        }
+      }
+
+      let res = await axiosInstance.post("/file", { imageUrl, videoUrl });
+      console.log(res);
+      setisSendLoading(false);
+    } catch (err) {
+      console.log(err);
+      setisSendLoading(false);
+    }
+  }, []);
+
   return (
-    <div className="border-t bg-base-100">
-      <div className="flex items-center space-x-2 px-3 py-2">
-        <label className="input input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
+    <div className="border-t bg-base-100 w-screen">
+      {/* input section */}
+      <div className="flex items-center space-x-2 px-3 py-2 w-full">
+        <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
           <FaRegSmile
             onClick={() => setIsEmojiSelect(!isEmojiSelect)}
             className="cursor-pointer"
             size={20}
           />
           <input
-            className="grow"
+            className="w-[82%] md:w-full p-1 md:p-2"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write your message..."
@@ -77,7 +118,7 @@ const ChatInput = () => {
           />
           <GoPlus
             onClick={() => OpenCloseMenu(inputMenuRef)}
-            className="cursor-pointer"
+            className="cursor-pointer z-20"
             size={28}
           />
           {text.length <= 0 && (
@@ -104,8 +145,8 @@ const ChatInput = () => {
             <FaMicrophone className="cursor-pointer" size={20} />
           )}
         </button>
-        {/* input menu */}
 
+        {/* input menu */}
         <div
           ref={inputMenuRef}
           className="absolute right-24 z-20 bottom-[50px] hidden"
@@ -119,7 +160,7 @@ const ChatInput = () => {
                   type="file"
                   className="hidden"
                   multiple
-                  onChange={handelImageData}
+                  onChange={(e) => handelImageData(e)}
                   accept=".jpg,.png,.jpeg,.mp4,.mkv"
                 />
               }
@@ -131,6 +172,7 @@ const ChatInput = () => {
                 <input
                   type="file"
                   id="imageFile"
+                  onChangeCapture={(e) => console.log(e)}
                   capture="user"
                   className="hidden"
                   accept="image/*"
@@ -197,7 +239,14 @@ const ChatInput = () => {
       </div>
 
       {/* Gallery Data preview*/}
-      {GalleryData.length > 0 && <SendFilePreview GalleryData={GalleryData} setGalleryData={setGalleryData} />}
+      {GalleryData.length > 0 && (
+        <SendFilePreview
+          GalleryData={GalleryData}
+          setGalleryData={setGalleryData}
+          isSendLoading={isSendLoading}
+          handleSendData={handleSendData}
+        />
+      )}
     </div>
   );
 };

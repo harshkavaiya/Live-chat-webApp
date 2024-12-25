@@ -8,24 +8,25 @@ const ChatPage = () => {
   const [isSelectMessage, setIsSelectMessage] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   return (
-    <div className="flex flex-col h-screen bg-base-100 ">
-      {/* Header */}
-      <ChatHeader
-        setIsSelectMessage={setIsSelectMessage}
-        setIsProfileOpen={setIsProfileOpen}
-        isProfileOpen={isProfileOpen}
-      />
-      {/* Chat Messages */}
-      <ChatMessage
-        isSelectMessage={isSelectMessage}
-        setIsSelectMessage={setIsSelectMessage}
-      />
-      {/* Input Area */}
-      <ChatInput />
-
+    <>
+      <div className="flex flex-col max-h-screen bg-base-100">
+        {/* Header */}
+        <ChatHeader
+          setIsSelectMessage={setIsSelectMessage}
+          setIsProfileOpen={setIsProfileOpen}
+          isProfileOpen={isProfileOpen}
+        />
+        {/* Chat Messages */}
+        <ChatMessage
+          isSelectMessage={isSelectMessage}
+          setIsSelectMessage={setIsSelectMessage}
+        />
+        {/* Input Area */}
+        <ChatInput />
+      </div>
       {/* Profile */}
       {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}
-    </div>
+    </>
   );
 };
 
