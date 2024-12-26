@@ -3,7 +3,7 @@ import ThemeDialog from "../components/setting/ThemeDialog";
 import { MdLogout } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
 
-const Setting = () => {
+const Setting = ({ setActivePage, activePage }) => {
   const icons = [
     {
       icon: MdLockOutline,
@@ -22,7 +22,10 @@ const Setting = () => {
       </div>
 
       {/* user profile */}
-      <div className="flex px-5 py-2 items-center gap-3 hover:bg-primary/10">
+      <div
+        className="flex px-5 py-2 items-center cursor-pointer gap-3 hover:bg-primary/10"
+        onClick={() => setActivePage("myprofile")}
+      >
         <div className="rounded-full cursor-pointer bg-primary-content overflow-hidden w-20 h-20">
           <img
             src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"

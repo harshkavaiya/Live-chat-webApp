@@ -23,7 +23,9 @@ const Home = () => {
         {activePage === "chat" && <Sidebar />}
         {activePage === "status" && <Status />}
         {activePage === "call" && <Call />}
-        {activePage === "settings" && <Setting />}
+        {activePage === "settings" && (
+          <Setting setActivePage={setActivePage} activePage={activePage} />
+        )}
         {activePage === "myprofile" && <Myprofile />}
         <div className="absolute flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20">
           <BottomBar activePage={activePage} setActivePage={setActivePage} />
@@ -31,7 +33,7 @@ const Home = () => {
       </div>
 
       {/* Message Area */}
-      <div className="hidden sm:block w-[60%]  bg-primary-content">
+      <div className="hidden sm:block w-[65%]  bg-primary-content">
         {userselected ? <ChatPage /> : <NochatSelect />}
       </div>
 

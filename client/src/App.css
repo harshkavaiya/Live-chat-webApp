@@ -14,6 +14,12 @@ body {
   height: 100%;
 }
 
+.no-select {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE10+ */
+}
+
 @layer utilities {
   .scrollbar-small::-webkit-scrollbar {
     width: 2px;

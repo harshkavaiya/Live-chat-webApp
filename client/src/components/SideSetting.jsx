@@ -35,7 +35,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
             <span
               key={idx}
               className={`${
-                activePage === item.page && "bg-primary/10 rounded-full"
+                activePage === item.page && "bg-primary/10 "
               } w-12 h-12 grid place-items-center cursor-pointer`}
               onClick={() => setActivePage(item.page)}
             >
