@@ -1,73 +1,79 @@
 import { BsFileText, BsThreeDots } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
 import { BiDownload } from "react-icons/bi";
 import Poll from "../Poll/Poll";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import useMessageStore from "../../store/useMessageStore";
+import useAuthStore from "../../store/useAuthStore";
 
-const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
-  const [messages] = useState([
-    {
-      id: 1,
-      sender: "12",
-      receiver: "123",
-      type: "text",
-      data: "Hi I am Josephin, can you help me to find best chat app?",
-      read: false,
-      timestamp: "01:40 AM",
-    },
-    {
-      id: 2,
-      sender: "12",
-      receiver: "123",
-      type: "image",
-      data: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
-      read: false,
-      timestamp: "03:40 AM",
-    },
-    {
-      id: 3,
-      sender: "12",
-      receiver: "123",
-      type: "file",
-      data: {
-        link: "file://C:/Users/Hardik/Downloads/profile-page.tsx.txt",
-        size: 10000,
-        name: "Reactjs.txt",
-      },
-      read: false,
-      timestamp: "01:40 AM",
-    },
-    {
-      id: 4,
-      sender: "12",
-      receiver: "123",
-      type: "poll",
-      data: {
-        question: "What is Most Popular Laguanage?",
-        options: [
-          { text: "Python", vote: 2 },
-          { text: "Java", vote: 0 },
-          { text: "JavaScript", vote: 4 },
-          { text: "C++", vote: 0 },
-        ],
-        votes: 0,
-      },
-      read: false,
-      timestamp: "01:40 AM",
-    },
-    {
-      id: 5,
-      sender: "123",
-      receiver: "12",
-      type: "location",
-      data: { latitude: 23.0225, longitude: 72.5714 },
-      read: false,
-      timestamp: "01:40 AM",
-    },
-  ]);
+const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
+  const { messages, suscribeToMessage, unsuscribeFromMessage, getMessage } =
+    useMessageStore();
+
+  const { socket } = useAuthStore();
+  // const [messages] = useState([
+  //   {
+  //     id: 1,
+  //     sender: "12",
+  //     receiver: "123",
+  //     type: "text",
+  //     data: "Hi I am Josephin, can you help me to find best chat app?",
+  //     read: false,
+  //     timestamp: "01:40 AM",
+  //   },
+  //   {
+  //     id: 2,
+  //     sender: "12",
+  //     receiver: "123",
+  //     type: "image",
+  //     data: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
+  //     read: false,
+  //     timestamp: "03:40 AM",
+  //   },
+  //   {
+  //     id: 3,
+  //     sender: "12",
+  //     receiver: "123",
+  //     type: "file",
+  //     data: {
+  //       link: "file://C:/Users/Hardik/Downloads/profile-page.tsx.txt",
+  //       size: 10000,
+  //       name: "Reactjs.txt",
+  //     },
+  //     read: false,
+  //     timestamp: "01:40 AM",
+  //   },
+  //   {
+  //     id: 4,
+  //     sender: "12",
+  //     receiver: "123",
+  //     type: "poll",
+  //     data: {
+  //       question: "What is Most Popular Laguanage?",
+  //       options: [
+  //         { text: "Python", vote: 2 },
+  //         { text: "Java", vote: 0 },
+  //         { text: "JavaScript", vote: 4 },
+  //         { text: "C++", vote: 0 },
+  //       ],
+  //       votes: 0,
+  //     },
+  //     read: false,
+  //     timestamp: "01:40 AM",
+  //   },
+  //   {
+  //     id: 5,
+  //     sender: "123",
+  //     receiver: "12",
+  //     type: "location",
+  //     data: { latitude: 23.0225, longitude: 72.5714 },
+  //     read: false,
+  //     timestamp: "01:40 AM",
+  //   },
+  // ]);
   const [selectMessage, setSelectMessage] = useState([]);
 
   const handelSelectMessage = (data) => {
@@ -75,7 +81,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
       setSelectMessage([data]);
     } else {
       selectMessage.forEach((element) => {
-        console.log(element.id == data.id);
+   
         if (element.id == data.id) {
           setSelectMessage(selectMessage.filter((msg) => msg.id != data.id));
         } else {
@@ -89,10 +95,15 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
     setSelectMessage([]);
     setIsSelectMessage(false);
   };
+  useEffect(() => {
+    getMessage(receiver);
+    suscribeToMessage();
+    return () => unsuscribeFromMessage();
+  }, [getMessage, suscribeToMessage, socket, unsuscribeFromMessage]);
 
   return (
-    <>
-      <div className="flex-1 overflow-y-auto p-1 space-y-1 bg-base-100">
+    <div className="my-20 h-full overflow-y-scroll   bg-base-100">
+      <div className="flex-1  p-1 space-y-1 ">
         {messages.map((message, i) => (
           <div key={i} className="flex w-full items-center">
             {isSelectMessage && (
@@ -104,12 +115,12 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
             )}
             <div
               className={`chat w-full h ${
-                message.sender == "12" ? "chat-end" : "chat-start"
+                message.sender != receiver ? "chat-end" : "chat-start"
               }`}
             >
               <div
                 className={`chat-bubble rounded-xl  max-w-[80%] px-2 py-1 ${
-                  message.sender == "12"
+                  message.sender != receiver
                     ? "bg-primary text-primary-content"
                     : "bg-base-300 text-base-content"
                 }`}
@@ -128,7 +139,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
                   <>
                     <div
                       className={`flex items-start gap-2 ${
-                        message.sender == "12"
+                        message.sender != receiver
                           ? "bg-base-100/25 text-primary-content "
                           : "bg-base-100 text-base-content"
                       } p-1 rounded-lg w-[55vw]  md:w-60`}
@@ -177,13 +188,13 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
                 )}
                 <p
                   className={`mt-0.5 text-[10px] text-end flex items-end justify-end gap-1${
-                    message.sender == "12"
+                    message.sender != receiver
                       ? "text-primary-content/70"
                       : "text-base-content/70"
                   }`}
                 >
                   12:00 PM
-                  {message.sender == "12" && (
+                  {message.sender != receiver && (
                     <BsThreeDots
                       size={16}
                       className={`${
@@ -212,7 +223,7 @@ const ChatMessage = ({ isSelectMessage, setIsSelectMessage }) => {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

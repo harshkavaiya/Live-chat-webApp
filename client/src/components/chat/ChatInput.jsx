@@ -15,8 +15,9 @@ import Location from "../Location";
 import SendFilePreview from "../SendDataPreview/SendFilePreview";
 import axiosInstance from "../../lib/axiosInstance";
 import axios from "axios";
+import useMessageStore from "../../store/useMessageStore";
 
-const ChatInput = () => {
+const ChatInput = ({ receiver }) => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
@@ -27,6 +28,7 @@ const ChatInput = () => {
 
   const inputMenuRef = useRef();
   const locationRef = useRef();
+  const { sendMessage } = useMessageStore();
 
   const getContactData = async () => {
     // Pending
@@ -57,11 +59,7 @@ const ChatInput = () => {
     setIsPollOpen(false);
   };
 
-  const handelImageData = (e) => {
-    setGalleryData([...e.target.files]);
-  };
-
-  const handleSendData = useCallback(async (data) => {
+  const handelGalleryDataSend = useCallback(async (data) => {
     let imageUrl = [];
     let videoUrl = [];
     try {
@@ -93,14 +91,27 @@ const ChatInput = () => {
       let res = await axiosInstance.post("/file", { imageUrl, videoUrl });
       console.log(res);
       setisSendLoading(false);
+      setGalleryData([]);
     } catch (err) {
       console.log(err);
       setisSendLoading(false);
     }
   }, []);
 
+  const handelUploadDocument = useCallback(async (e) => {
+   
+    let form = new FormData();
+    form.append("upload_preset", "Real-time-chat-document");
+    form.append("file", e.target.files[0]);
+    let res = await axios.post(
+      "https://api.cloudinary.com/v1_1/dr9twts2b/image/upload",
+      form
+    );
+    console.log(res);
+  }, []);
+
   return (
-    <div className="border-t bg-base-100 w-screen">
+    <div className="border-t bg-base-100 w-screen fixed bottom-0">
       {/* input section */}
       <div className="flex items-center space-x-2 px-3 py-2 w-full">
         <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
@@ -140,7 +151,13 @@ const ChatInput = () => {
 
         <button className="btn btn-primary rounded-full w-12 p-1 outline-none">
           {text.length > 0 ? (
-            <IoSend className="cursor-pointer" size={20} />
+            <IoSend
+              onClick={() =>
+                sendMessage({ data: text, receiver, type: "text" })
+              }
+              className="cursor-pointer"
+              size={20}
+            />
           ) : (
             <FaMicrophone className="cursor-pointer" size={20} />
           )}
@@ -160,7 +177,7 @@ const ChatInput = () => {
                   type="file"
                   className="hidden"
                   multiple
-                  onChange={(e) => handelImageData(e)}
+                  onChange={(e) => setGalleryData([...e.target.files])}
                   accept=".jpg,.png,.jpeg,.mp4,.mkv"
                 />
               }
@@ -172,7 +189,7 @@ const ChatInput = () => {
                 <input
                   type="file"
                   id="imageFile"
-                  onChangeCapture={(e) => console.log(e)}
+                  onChangeCapture={(e) => setGalleryData([...e.target.files])}
                   capture="user"
                   className="hidden"
                   accept="image/*"
@@ -191,7 +208,8 @@ const ChatInput = () => {
                 <input
                   type="file"
                   className="hidden"
-                  accept=".doc,.docx,.docm,.dot,.txt,.rtf,.pdf,.xlsx,.7"
+                  onChange={handelUploadDocument}
+                  accept=".doc,.docx,.docm,.txt,.pdf"
                 />
               }
             />
@@ -244,7 +262,7 @@ const ChatInput = () => {
           GalleryData={GalleryData}
           setGalleryData={setGalleryData}
           isSendLoading={isSendLoading}
-          handleSendData={handleSendData}
+          handelGalleryDataSend={handelGalleryDataSend}
         />
       )}
     </div>

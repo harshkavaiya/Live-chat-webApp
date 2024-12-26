@@ -1,14 +1,14 @@
 import Users from "../models/users.model.js";
 import Message from "../models/message.model.js";
-import Cloudinary from "../lib/cloudinary.js";
+import { getUserSocketId, io } from "../lib/socket-io.js";
 
 export const sidebarUser = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
 
     const messages = await Message.find({
-      $or: [{ senderId: loggedUserId }, { receiverId: loggedUserId }],
-    }).distinct("receiverId");
+      $or: [{ sender: loggedUserId }, { receiver: loggedUserId }],
+    }).distinct("receiver");
 
     const connectedUsers = await Users.find({
       _id: { $in: messages },
@@ -96,8 +96,8 @@ export const getMessages = async (req, res) => {
   try {
     const message = await Message.find({
       $or: [
-        { senderId: myId, receiverId: userToChatId },
-        { senderId: userToChatId, receiverId: myId },
+        { sender: myId, receiver: userToChatId },
+        { sender: userToChatId, receiver: myId },
       ],
     });
 
@@ -109,24 +109,29 @@ export const getMessages = async (req, res) => {
 };
 
 export const sendMessage = async (req, res) => {
-  const { text, image } = req.body;
+  const { data, type } = req.body;
   const myId = req.user._id;
-  const { id: receiverId } = req.params;
+  const { id: receiver } = req.params;
+
   try {
-    let imageUrl;
-    if (image) {
-      const uploadCloudinary = await Cloudinary.uploader.upload(image);
-      imageUrl = uploadCloudinary.secure_url;
-    }
+    // let imageUrl;
+    // if (image) {
+    //   const uploadCloudinary = await Cloudinary.uploader.upload(image);
+    //   imageUrl = uploadCloudinary.secure_url;
+    // }
 
     const newMessage = new Message({
-      senderId: myId,
-      receiverId,
-      text,
-      image: imageUrl,
+      sender: myId,
+      receiver,
+      type,
+      data,
     });
     await newMessage.save();
-
+    let receiverSoket = getUserSocketId(receiver);
+   
+    if (receiverSoket) {
+      io.to(receiverSoket).emit("newMessage", newMessage);
+    }
     res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controller: ", error.message);

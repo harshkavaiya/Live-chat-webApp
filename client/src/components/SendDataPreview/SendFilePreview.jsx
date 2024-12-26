@@ -12,7 +12,12 @@ import { FreeMode, Thumbs } from "swiper/modules";
 import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 
-const SendFilePreview = ({ GalleryData, setGalleryData, handleSendData ,isSendLoading}) => {
+const SendFilePreview = ({
+  GalleryData,
+  setGalleryData,
+  handelGalleryDataSend,
+  isSendLoading,
+}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   const handleDeleteImage = (id) => {
@@ -126,7 +131,7 @@ const SendFilePreview = ({ GalleryData, setGalleryData, handleSendData ,isSendLo
               />
             </div>
             <button
-              onClick={() => handleSendData(GalleryData)}
+              onClick={() => handelGalleryDataSend(GalleryData)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

@@ -5,9 +5,11 @@ import bcrypt from "bcryptjs";
 
 export const signup = async (req, res) => {
   const { fullname, email, password, phone } = req.body;
-  if (!fullname || !email || !password || !phone) {
+
+  if (!fullname || !email || !password || !phone)
     return res.status(400).json({ message: "all fields required" });
-  } else if (password.length <= 5) {
+
+  if (password.length <= 5) {
     return res.status(400).send("Password must be at least 6 character");
   }
 
@@ -71,6 +73,7 @@ export const login = async (req, res) => {
       phone: user.phone,
       email: user.email,
       profilePic: user.profilePic,
+      success:1
     });
   } catch (error) {
     console.log("error in login controller: ", error.message);
