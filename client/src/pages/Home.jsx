@@ -33,7 +33,7 @@ const Home = () => {
       </div>
 
       {/* Message Area */}
-      <div className="hidden sm:block w-[60%]  bg-primary-content">
+      <div className="hidden sm:block w-[65%]  bg-primary-content">
         {userselected ? <ChatPage /> : <NochatSelect />}
       </div>
 
