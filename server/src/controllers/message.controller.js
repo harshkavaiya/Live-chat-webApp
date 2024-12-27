@@ -8,13 +8,46 @@ export const sidebarUser = async (req, res) => {
 
     const messages = await Message.find({
       $or: [{ sender: loggedUserId }, { receiver: loggedUserId }],
-    }).distinct("receiver");
+    });
 
-    const connectedUsers = await Users.find({
-      _id: { $in: messages },
-    }).select("-password");
+    const userIds = [
+      ...new Set(
+        messages.map((msg) =>
+          msg.sender.toString() === loggedUserId.toString()
+            ? msg.receiver.toString()
+            : msg.sender.toString()
+        )
+      ),
+    ];
 
-    res.status(200).json(connectedUsers);
+    const connectedUsers = await Users.find({ _id: { $in: userIds } }).select(
+      "fullname _id profilePic phone"
+    );
+
+    const usersWithLastMessage = await Promise.all(
+      connectedUsers.map(async (user) => {
+        const lastMessage = await Message.findOne({
+          $or: [
+            { sender: loggedUserId, receiver: user._id },
+            { sender: user._id, receiver: loggedUserId },
+          ],
+        })
+          .sort({ createdAt: -1 })
+          .select("data type createdAt");
+
+        return {
+          _id: user._id,
+          fullname: user.fullname,
+          profilePic: user.profilePic,
+          phone: user.phone,
+          lastMessage: lastMessage ? lastMessage.data : null,
+          lastMessageType: lastMessage ? lastMessage.type : null,
+          lastMessageTime: lastMessage ? lastMessage.createdAt : null,
+        };
+      })
+    );
+
+    res.status(200).json(usersWithLastMessage);
   } catch (error) {
     console.log("error in sidebarUser controller: ", error.message);
     res.status(500).json({ message: "Server error" });

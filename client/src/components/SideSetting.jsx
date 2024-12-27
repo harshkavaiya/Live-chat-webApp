@@ -24,9 +24,9 @@ const SideSetting = ({ setActivePage, activePage }) => {
   ];
 
   return (
-    <div className="h-screen flex flex-col justify-between items-center py-5">
+    <div className="h-screen w-full flex flex-col justify-between items-center py-5">
       {/* top */}
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center w-full gap-5">
         {sideIcon.map((item, idx) => (
           <div
             className="tooltip tooltip-right"
@@ -35,11 +35,15 @@ const SideSetting = ({ setActivePage, activePage }) => {
             <span
               key={idx}
               className={`${
-                activePage === item.page && "bg-primary/10 "
-              } w-12 h-12 grid place-items-center cursor-pointer`}
+                activePage === item.page &&
+                "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"
+              } w-16 h-12 grid place-items-center cursor-pointer`}
               onClick={() => setActivePage(item.page)}
             >
-              <item.icon size={25} className="text-primary" />
+              <item.icon
+                size={25}
+                className="text-primary absolute inset-x-5"
+              />
             </span>
           </div>
         ))}
@@ -50,13 +54,14 @@ const SideSetting = ({ setActivePage, activePage }) => {
         <div className="tooltip tooltip-right" data-tip="SETTINGS">
           <span
             className={`${
-              activePage === "settings" && "bg-primary/10 rounded-full"
-            } w-12 h-12 grid place-items-center cursor-pointer`}
+              activePage === "settings" &&
+              "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"
+            } w-16 h-12 grid place-items-center cursor-pointer`}
             onClick={() => setActivePage("settings")}
           >
             <IoSettingsOutline
               size={25}
-              className="cursor-pointer text-primary"
+              className="cursor-pointer absolute inset-x-5 text-primary"
             />
           </span>
         </div>

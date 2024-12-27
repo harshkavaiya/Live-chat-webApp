@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -8,10 +8,19 @@ import Call from "./Calls";
 import Setting from "./Setting";
 import Myprofile from "./Myprofile";
 import BottomBar from "../components/BottomBar";
+import useAuthStore from "../store/useAuthStore";
+import { Navigate } from "react-router-dom";
 
 const Home = () => {
   const userselected = false;
   const [activePage, setActivePage] = useState("chat");
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* user setting */}

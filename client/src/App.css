@@ -21,22 +21,6 @@ body {
 }
 
 @layer utilities {
-  .scrollbar-small::-webkit-scrollbar {
-    width: 2px;
-  }
-
-  .scrollbar-small::-webkit-scrollbar-track {
-    background: #671515;
-    border-radius: 10px;
-  }
-  .scrollbar-small::-webkit-scrollbar-thumb {
-    background: #059bd6;
-    border-radius: 10px;
-  }
-  .scrollbar-small::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-
   .scrollbar-hide,
   .modal-box {
     -ms-overflow-style: none;
