@@ -3,18 +3,28 @@ import { CiSearch } from "react-icons/ci";
 import { FaAngleDown, FaAngleRight } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import { GoPencil } from "react-icons/go";
+import { useEffect } from "react";
+import useMessageStore from "../store/useMessageStore";
+import { formatMessageTime } from "../function/TimeFormating";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
+
+  const { getMessagerUser, messagerUser } = useMessageStore();
   const users = [...Array(20).keys()];
+
+  useEffect(() => {
+    getMessagerUser();
+  }, []);
+
   return (
     <div className="h-full w-full flex flex-col gap-2 relative transition-all duration-200 ">
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
         <div className="flex justify-between items-center pr-2 pb-2">
-          <p className="text-lg font-bold cursor-default">
+          <p className="text-lg font-bold gap-px cursor-default">
             Online Now
-            <div className="badge p-0 ml-1 w-6 h-6 badge-primary">
+            <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
               {users.length}
             </div>
           </p>
@@ -41,10 +51,10 @@ const Sidebar = () => {
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
         <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
-          <span className="flex">
+          <span className="flex items-center gap-px">
             Messages
-            <div className="badge p-0 ml-1 w-6 h-6 badge-primary">
-              {users.length}
+            <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
+              {messagerUser.length}
             </div>
           </span>
           {/* search */}
@@ -62,7 +72,7 @@ const Sidebar = () => {
 
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
-          {users.map((i, idx) => (
+          {messagerUser.map((i, idx) => (
             <div
               key={idx}
               className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
@@ -77,10 +87,8 @@ const Sidebar = () => {
                   />
                 </div>
                 <div className="flex flex-col ml-3 gap-1">
-                  <p className="text-xl font-semibold">Username</p>
-                  <p className="text-xs text-gray-500">
-                    User message show here!
-                  </p>
+                  <p className="text-lg font-semibold">{i.fullname}</p>
+                  <p className="text-sm text-gray-500">{i.lastMessage}</p>
                 </div>
               </div>
               <div className="flex gap-1">
@@ -93,10 +101,12 @@ const Sidebar = () => {
                   ""
                 )}
                 <div className="flex flex-col gap-2 items-center">
-                  <p className="text-xs">10:20 PM</p>
+                  <p className="text-xs">
+                    {formatMessageTime(i.lastMessageTime)}
+                  </p>
 
                   <div
-                    className={`flex items-center gap-2 group-hover:translate-x-0  transition-all duration-75
+                    className={`flex items-center gap-3 group-hover:translate-x-0  transition-all duration-75
                     ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
                   >
                     {receiveMessage ? (

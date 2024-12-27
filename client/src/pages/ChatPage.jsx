@@ -1,23 +1,16 @@
 import ChatInput from "../components/chat/ChatInput";
 import ChatHeader from "../components/chat/ChatHeader";
 import ChatMessage from "../components/chat/ChatMessage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Profile from "./Profile";
-import { Navigate, useParams } from "react-router-dom";
-import useAuthStore from "../store/useAuthStore";
+import { useParams } from "react-router-dom";
 import useMessageStore from "../store/useMessageStore";
 
 const ChatPage = () => {
   const { id } = useParams();
   const [isSelectMessage, setIsSelectMessage] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <>
       <div className="flex flex-col max-h-screen bg-base-100">
