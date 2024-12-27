@@ -10,20 +10,16 @@ import "./SendFilePreview.css";
 
 import { FreeMode, Thumbs } from "swiper/modules";
 import { useState } from "react";
-import { IoSend } from "react-icons/io5";
+import useMessageStore from "../../store/useMessageStore";
 
-const SendFilePreview = ({
-  GalleryData,
-  setGalleryData,
-  handelGalleryDataSend,
-  isSendLoading,
-}) => {
+const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const { handelGalleryDataUpload, isGalleryDataUpload } = useMessageStore();
 
   const handleDeleteImage = (id) => {
     console.log(id);
   };
-  if (isSendLoading)
+  if (isGalleryDataUpload)
     return (
       <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
         <span className="loading loading-infinity loading-lg">Loading</span>
@@ -131,7 +127,7 @@ const SendFilePreview = ({
               />
             </div>
             <button
-              onClick={() => handelGalleryDataSend(GalleryData)}
+              onClick={() => handelGalleryDataUpload(GalleryData)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

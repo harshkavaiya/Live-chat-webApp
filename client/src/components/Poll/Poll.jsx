@@ -3,7 +3,7 @@ import { MdOutlineCheckCircle } from "react-icons/md";
 import { FiBarChart2 } from "react-icons/fi";
 
 const Poll = ({ data }) => {
-  const { options, question, votes } = data;
+  const { options, pollTitle, votes } = data;
   const [selectedOption, setSelectedOption] = useState(null);
   const [isVoted, setIsVoted] = useState(false);
 
@@ -21,9 +21,9 @@ const Poll = ({ data }) => {
   };
 
   return (
-    <div className="w-full bg-base-100 text-base-content rounded-lg outline-none border-none p-2">
+    <div className="w-52 md:w-80 bg-base-100 text-base-content rounded-lg outline-none border-none p-2">
       <div className="p-1 rounded-xl">
-        <h2 className="text-lg font-bold text-center">{question}</h2>
+        <h2 className="text-lg font-bold text-center">{pollTitle}</h2>
       </div>
       <div className="p-2 space-y-1">
         {options.map((option, i) => (

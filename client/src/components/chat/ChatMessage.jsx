@@ -1,5 +1,5 @@
 import { BsFileText, BsThreeDots } from "react-icons/bs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -8,12 +8,20 @@ import Poll from "../Poll/Poll";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
+import { formatMessageTime } from "../../lib/utils";
+import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 
 const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
-  const { messages, suscribeToMessage, unsuscribeFromMessage, getMessage } =
-    useMessageStore();
+  const {
+    messages,
+    suscribeToMessage,
+    unsuscribeFromMessage,
+    getMessage,
+    isMessageLoading,
+  } = useMessageStore();
 
   const { socket } = useAuthStore();
+  const messageEndRef = useRef();
   // const [messages] = useState([
   //   {
   //     id: 1,
@@ -81,7 +89,6 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
       setSelectMessage([data]);
     } else {
       selectMessage.forEach((element) => {
-   
         if (element.id == data.id) {
           setSelectMessage(selectMessage.filter((msg) => msg.id != data.id));
         } else {
@@ -101,11 +108,18 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
     return () => unsuscribeFromMessage();
   }, [getMessage, suscribeToMessage, socket, unsuscribeFromMessage]);
 
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  if (isMessageLoading) return <MessageLoadingSkeleton />;
   return (
-    <div className="my-20 h-full overflow-y-scroll   bg-base-100">
-      <div className="flex-1  p-1 space-y-1 ">
+    <>
+      <div className="flex-1 p-1 space-y-1 overflow-y-scroll h-full">
         {messages.map((message, i) => (
-          <div key={i} className="flex w-full items-center">
+          <div ref={messageEndRef} key={i} className="flex w-full items-center">
             {isSelectMessage && (
               <input
                 type="checkbox"
@@ -166,7 +180,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                 )}
                 {message.type == "poll" && <Poll data={message.data} />}
                 {message.type == "location" && (
-                  <div className="w-[66vw] md:w-72 h-56 z-0 p-2">
+                  <div className="w-56 sm:w-64 md:w-72 h-56 z-0 p-0.5">
                     <MapContainer
                       center={[message.data.latitude, message.data.longitude]}
                       zoom={15}
@@ -193,7 +207,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                       : "text-base-content/70"
                   }`}
                 >
-                  12:00 PM
+                  {formatMessageTime(message.createdAt)}
                   {message.sender != receiver && (
                     <BsThreeDots
                       size={16}
@@ -223,7 +237,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

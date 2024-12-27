@@ -1,12 +1,7 @@
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import {
-  IoArrowBack,
-  IoSearch,
-  IoRefresh,
-  IoLocationOutline,
-} from "react-icons/io5";
+import { IoLocationOutline } from "react-icons/io5";
 
 const Location = ({ latitude, longitude, close, shareLocation }) => {
   return (
@@ -14,7 +9,6 @@ const Location = ({ latitude, longitude, close, shareLocation }) => {
       <div className="h-screen bg-base-100 text-base-content absolute w-full z-30">
         {/* Header */}
         <header className="navbar bg-base-200 border-b  border-base-300 fixed top-0 left-0 right-0 z-50">
-          <IoArrowBack onClick={close} className="h-5 w-5" />
           <div className="w-full flex items-center justify-center">
             <p className="text-lg text-center font-semibold">Send location</p>
           </div>
@@ -41,13 +35,19 @@ const Location = ({ latitude, longitude, close, shareLocation }) => {
         </main>
 
         {/* Bottom Sheet */}
-        <div className="bg-base-200 px-4 py-3 rounded-t-box shadow-lg flex justify-center">
+        <div className="bg-base-200 px-4 py-3 rounded-t-box shadow-lg flex justify-center gap-x-2">
           <button
             onClick={shareLocation}
             className="btn btn-primary rounded-lg justify-start gap-2 hover:bg-primary/80 border-none"
           >
             <IoLocationOutline size={24} />
             Share Your Live Location
+          </button>
+          <button
+            onClick={close}
+            className="btn btn-secondary rounded-lg justify-start gap-2 hover:bg-secondary/80 border-none"
+          >
+            Close
           </button>
         </div>
       </div>

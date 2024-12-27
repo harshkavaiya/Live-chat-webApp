@@ -11,8 +11,8 @@ const ChatHeader = ({ setIsSelectMessage, setIsProfileOpen }) => {
   }, [key]);
 
   return (
-    <div className="fixed w-full top-0">
-      <div className="flex items-center justify-between p-3 shadow border-b border-base-300">
+    <>
+      <div className="flex items-center justify-between px-3 py-2 border-b border-base-300 bg-base-100 h-full">
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <div className="w-20 h-12 rounded-full bg-primary flex items-center justify-center text-primary-content font-medium">
@@ -73,7 +73,7 @@ const ChatHeader = ({ setIsSelectMessage, setIsProfileOpen }) => {
           </li>
         </ul>
       </div>
-    </div>
+    </>
   );
 };
 

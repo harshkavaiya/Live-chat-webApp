@@ -15,7 +15,6 @@ const io = new Server(server, {
 let onlineUser = {};
 
 export const getUserSocketId = (data) => {
-  console.log(onlineUser[data])
   return onlineUser[data];
 };
 
@@ -23,9 +22,9 @@ io.on("connection", (socket) => {
   console.log("new Connection", socket.id);
 
   const id = socket.handshake.query.userId;
- 
+
   onlineUser[id] = socket.id;
- 
+
   socket.on("disconnected", () => {
     console.log("User is Disconnected", socket.id);
     delete onlineUser[id];

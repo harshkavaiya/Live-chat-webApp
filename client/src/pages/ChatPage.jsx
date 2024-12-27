@@ -20,22 +20,28 @@ const ChatPage = () => {
   if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <>
-      <div className="flex flex-col max-h-screen bg-base-100">
+      <div className="bg-base-100 h-screen">
         {/* Header */}
-        <ChatHeader
-          receiver={id}
-          setIsSelectMessage={setIsSelectMessage}
-          setIsProfileOpen={setIsProfileOpen}
-          isProfileOpen={isProfileOpen}
-        />
+        <div className="w-full h-[10%]">
+          <ChatHeader
+            receiver={id}
+            setIsSelectMessage={setIsSelectMessage}
+            setIsProfileOpen={setIsProfileOpen}
+            isProfileOpen={isProfileOpen}
+          />
+        </div>
         {/* Chat Messages */}
-        <ChatMessage
-          receiver={id}
-          isSelectMessage={isSelectMessage}
-          setIsSelectMessage={setIsSelectMessage}
-        />
+        <div className="w-full h-[80%]">
+          <ChatMessage
+            receiver={id}
+            isSelectMessage={isSelectMessage}
+            setIsSelectMessage={setIsSelectMessage}
+          />
+        </div>
         {/* Input Area */}
-        <ChatInput receiver={id} />
+        <div className="w-full h-[10%]">
+          <ChatInput receiver={id} />
+        </div>
       </div>
       {/* Profile */}
       {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}

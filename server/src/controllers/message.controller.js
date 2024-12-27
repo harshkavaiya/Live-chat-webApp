@@ -128,7 +128,7 @@ export const sendMessage = async (req, res) => {
     });
     await newMessage.save();
     let receiverSoket = getUserSocketId(receiver);
-   
+
     if (receiverSoket) {
       io.to(receiverSoket).emit("newMessage", newMessage);
     }

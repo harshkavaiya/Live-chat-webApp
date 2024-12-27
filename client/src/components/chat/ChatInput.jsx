@@ -13,21 +13,24 @@ import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
 import Location from "../Location";
 import SendFilePreview from "../SendDataPreview/SendFilePreview";
-import axiosInstance from "../../lib/axiosInstance";
-import axios from "axios";
 import useMessageStore from "../../store/useMessageStore";
+import axiosInstance from "../../lib/axiosInstance";
+import useFucationStore from "../../store/useFuncationStore";
 
 const ChatInput = ({ receiver }) => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
   const [GalleryData, setGalleryData] = useState([]);
-  const [isSendLoading, setisSendLoading] = useState(false);
 
+  const {
+    getLocation,
+    isLocationLoading,
+    location,
+    locationClose,
+    locationShare,
+  } = useFucationStore();
   const inputMenuRef = useRef();
-  const locationRef = useRef();
   const { sendMessage } = useMessageStore();
 
   const getContactData = async () => {
@@ -37,83 +40,28 @@ const ChatInput = ({ receiver }) => {
   const onEmojiClick = (data) => {
     setText((pre) => pre + data.emoji);
   };
-  const getLocation = async () => {
-    if (latitude && longitude) {
-      locationRef.current.classList.remove("hidden");
-    } else {
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          locationRef.current.classList.remove("hidden");
-        });
-      } else {
-        setLatitude(false);
-        setLongitude;
-      }
-    }
-  };
 
   const handleCreatPoll = (data) => {
-    console.log(data);
-    setIsPollOpen(false);
+    sendMessage({
+      type: "poll",
+      data,
+      receiver,
+    });
+    // setIsPollOpen(false);
   };
 
-  const handelGalleryDataSend = useCallback(async (data) => {
-    let imageUrl = [];
-    let videoUrl = [];
-    try {
-      for (let i = 0; i < data.length; i++) {
-        setisSendLoading(true);
-        if (data[i].type.split("/")[0] === "image") {
-          let form = new FormData();
-
-          form.append("file", data[i]);
-          form.append("upload_preset", "Real-time-chat-image");
-          let res = await axios.post(
-            "https://api.cloudinary.com/v1_1/dr9twts2b/image/upload",
-            form
-          );
-          imageUrl.push(res.data.secure_url);
-        } else {
-          let form = new FormData();
-
-          form.append("file", data[i]);
-          form.append("upload_preset", "Real-time-chat-Video");
-          let res = await axios.post(
-            "https://api.cloudinary.com/v1_1/dr9twts2b/video/upload",
-            form
-          );
-          videoUrl.push(res.data.secure_url);
-        }
-      }
-
-      let res = await axiosInstance.post("/file", { imageUrl, videoUrl });
-      console.log(res);
-      setisSendLoading(false);
-      setGalleryData([]);
-    } catch (err) {
-      console.log(err);
-      setisSendLoading(false);
-    }
-  }, []);
-
   const handelUploadDocument = useCallback(async (e) => {
-   
     let form = new FormData();
-    form.append("upload_preset", "Real-time-chat-document");
+
     form.append("file", e.target.files[0]);
-    let res = await axios.post(
-      "https://api.cloudinary.com/v1_1/dr9twts2b/image/upload",
-      form
-    );
+    let res = await axiosInstance.post("/upload", form);
     console.log(res);
   }, []);
 
   return (
-    <div className="border-t bg-base-100 w-screen fixed bottom-0">
+    <div className="">
       {/* input section */}
-      <div className="flex items-center space-x-2 px-3 py-2 w-full">
+      <div className="flex items-center space-x-2 px-3 py-2 w-full border-t border-base-300 bg-base-100">
         <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
           <FaRegSmile
             onClick={() => setIsEmojiSelect(!isEmojiSelect)}
@@ -121,7 +69,7 @@ const ChatInput = ({ receiver }) => {
             size={20}
           />
           <input
-            className="w-[82%] md:w-full p-1 md:p-2"
+            className="w-[82%] sm:w-full p-1 md:p-2"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write your message..."
@@ -245,24 +193,21 @@ const ChatInput = ({ receiver }) => {
       )}
 
       {/* Location Send */}
-      <div ref={locationRef} className="hidden">
-        {latitude && longitude && (
-          <Location
-            latitude={latitude}
-            longitude={longitude}
-            close={() => OpenCloseMenu(locationRef)}
-            shareLocation={() => console.log("Share")}
-          />
-        )}
-      </div>
+
+      {!isLocationLoading && location.length > 0 && (
+        <Location
+          latitude={location[0]}
+          longitude={location[1]}
+          close={locationClose}
+          shareLocation={locationShare}
+        />
+      )}
 
       {/* Gallery Data preview*/}
       {GalleryData.length > 0 && (
         <SendFilePreview
           GalleryData={GalleryData}
           setGalleryData={setGalleryData}
-          isSendLoading={isSendLoading}
-          handelGalleryDataSend={handelGalleryDataSend}
         />
       )}
     </div>
