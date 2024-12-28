@@ -8,7 +8,7 @@ import Poll from "../Poll/Poll";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
-import { formatMessageTime } from "../../lib/utils";
+import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 
 const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
@@ -22,66 +22,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
 
   const { socket } = useAuthStore();
   const messageEndRef = useRef();
-  // const [messages] = useState([
-  //   {
-  //     id: 1,
-  //     sender: "12",
-  //     receiver: "123",
-  //     type: "text",
-  //     data: "Hi I am Josephin, can you help me to find best chat app?",
-  //     read: false,
-  //     timestamp: "01:40 AM",
-  //   },
-  //   {
-  //     id: 2,
-  //     sender: "12",
-  //     receiver: "123",
-  //     type: "image",
-  //     data: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
-  //     read: false,
-  //     timestamp: "03:40 AM",
-  //   },
-  //   {
-  //     id: 3,
-  //     sender: "12",
-  //     receiver: "123",
-  //     type: "file",
-  //     data: {
-  //       link: "file://C:/Users/Hardik/Downloads/profile-page.tsx.txt",
-  //       size: 10000,
-  //       name: "Reactjs.txt",
-  //     },
-  //     read: false,
-  //     timestamp: "01:40 AM",
-  //   },
-  //   {
-  //     id: 4,
-  //     sender: "12",
-  //     receiver: "123",
-  //     type: "poll",
-  //     data: {
-  //       question: "What is Most Popular Laguanage?",
-  //       options: [
-  //         { text: "Python", vote: 2 },
-  //         { text: "Java", vote: 0 },
-  //         { text: "JavaScript", vote: 4 },
-  //         { text: "C++", vote: 0 },
-  //       ],
-  //       votes: 0,
-  //     },
-  //     read: false,
-  //     timestamp: "01:40 AM",
-  //   },
-  //   {
-  //     id: 5,
-  //     sender: "123",
-  //     receiver: "12",
-  //     type: "location",
-  //     data: { latitude: 23.0225, longitude: 72.5714 },
-  //     read: false,
-  //     timestamp: "01:40 AM",
-  //   },
-  // ]);
+
   const [selectMessage, setSelectMessage] = useState([]);
 
   const handelSelectMessage = (data) => {
@@ -98,10 +39,6 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
     }
   };
 
-  const CloseSelectMessage = () => {
-    setSelectMessage([]);
-    setIsSelectMessage(false);
-  };
   useEffect(() => {
     getMessage(receiver);
     suscribeToMessage();
@@ -144,9 +81,16 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                 )}
                 {message.type == "image" && (
                   <img
-                    src={message.data}
+                    src={message.data[0].url}
                     alt="image"
-                    className="w-72 h-52 rounded-xl py-1"
+                    className="w-72 h-52 rounded-xl"
+                  />
+                )}
+                {message.type == "video" && (
+                  <video
+                    controls
+                    src={`${message.data[0].url}`}
+                    className="w-72 rounded-xl"
                   />
                 )}
                 {message.type == "file" && (
@@ -178,6 +122,45 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                     </div>
                   </>
                 )}
+                {message.type == "multiple-file" && (
+                  <div
+                    className={`grid ${
+                      message.data.length == 2 ? "grid-cols-1" : ""
+                    } grid-cols-2 grid-rows-2  w-72 h-52 gap-2 mt-1`}
+                  >
+                    {message.data.slice(0, 4).map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className={`relative ${
+                            message.data.length <= 3 && i == 2
+                              ? "col-span-2"
+                              : "col-span-1"
+                          }`}
+                        >
+                          {message.data.length > 4 && i == 3 && (
+                            <div className="absolute w-full text-white h-full text-4xl font-semibold flex items-center justify-center">
+                              +{message.data.length - 3}
+                            </div>
+                          )}
+                          {item.type == "image" ? (
+                            <img
+                              src={item.url}
+                              alt="image"
+                              className="h-full w-full rounded-xl object-cover"
+                            />
+                          ) : (
+                            <video
+                              src={item.url}
+                              controls
+                              className="h-full w-full rounded-xl object-fill"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 {message.type == "poll" && <Poll data={message.data} />}
                 {message.type == "location" && (
                   <div className="w-56 sm:w-64 md:w-72 h-56 z-0 p-0.5">
@@ -201,7 +184,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                   </div>
                 )}
                 <p
-                  className={`mt-0.5 text-[10px] text-end flex items-end justify-end gap-1${
+                  className={`text-[10px] text-end flex items-end justify-end ${
                     message.sender != receiver
                       ? "text-primary-content/70"
                       : "text-base-content/70"
@@ -225,7 +208,14 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
 
       {isSelectMessage && (
         <div className="absolute w-full h-[70px] bg-base-300 left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
-          <IoClose onClick={CloseSelectMessage} size={30} className="ml-4" />
+          <IoClose
+            onClick={() => {
+              setSelectMessage([]);
+              setIsSelectMessage(false);
+            }}
+            size={30}
+            className="ml-4"
+          />
           <p className="flex gap-x-2 items-center text-xl">
             <span className="">{selectMessage.length}</span> Selected
           </p>

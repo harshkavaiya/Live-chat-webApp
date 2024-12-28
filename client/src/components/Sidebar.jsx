@@ -33,8 +33,8 @@ const Sidebar = () => {
           </p>
         </div>
         <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pl-2 cursor-pointer">
-          {users.map((i) => (
-            <div key={i} className="indicator relative ">
+          {users.map((i, index) => (
+            <div key={index} className="indicator relative ">
               <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
               <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
                 <img
@@ -72,56 +72,60 @@ const Sidebar = () => {
 
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
-          {messagerUser.map((i, idx) => (
-            <div
-              key={idx}
-              className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
+          {messagerUser.map((i, idx) => {
+            const { lastMessageTime, lastMessageType, fullname, lastMessage } =
+              i;
+            return (
+              <div
+                key={idx}
+                className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
                 ${idx == users.length - 1 && "border-b"}`}
-            >
-              <div className="flex items-center">
-                <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
-                  <img
-                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
-                    alt="user"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex flex-col ml-3 gap-1">
-                  <p className="text-lg font-semibold">{i.fullname}</p>
-                  <p className="text-sm text-gray-500">{i.lastMessage}</p>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                {!receiveMessage ? (
-                  <div className="flex justify-start">
-                    <GoDotFill size={20} className="text-blue-500" />
-                    <GoDotFill size={20} className="text-blue-500" />
+              >
+                <div className="flex items-center">
+                  <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
+                    <img
+                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                      alt="user"
+                      className="object-cover"
+                    />
                   </div>
-                ) : (
-                  ""
-                )}
-                <div className="flex flex-col gap-2 items-center">
-                  <p className="text-xs">
-                    {formatMessageTime(i.lastMessageTime)}
-                  </p>
+                  <div className="flex flex-col ml-3 gap-1">
+                    <p className="text-lg font-semibold">{fullname}</p>
+                    <p className="text-sm text-gray-500">{lastMessage}</p>
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  {!receiveMessage ? (
+                    <div className="flex justify-start">
+                      <GoDotFill size={20} className="text-blue-500" />
+                      <GoDotFill size={20} className="text-blue-500" />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  <div className="flex flex-col gap-2 items-center">
+                    <p className="text-xs">
+                      {formatMessageTime(lastMessageTime)}
+                    </p>
 
-                  <div
-                    className={`flex items-center gap-3 group-hover:translate-x-0  transition-all duration-75
+                    <div
+                      className={`flex items-center gap-3 group-hover:translate-x-0  transition-all duration-75
                     ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
-                  >
-                    {receiveMessage ? (
-                      <>
-                        <div className="badge badge-primary w-6 h-6">4</div>
+                    >
+                      {receiveMessage ? (
+                        <>
+                          <div className="badge badge-primary w-6 h-6">4</div>
+                          <FaAngleDown className="cursor-pointer" size={20} />
+                        </>
+                      ) : (
                         <FaAngleDown className="cursor-pointer" size={20} />
-                      </>
-                    ) : (
-                      <FaAngleDown className="cursor-pointer" size={20} />
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div className="mb-36 md:mb-5">
             <div className="divider text-xs">end-to-end encrypted</div>
           </div>

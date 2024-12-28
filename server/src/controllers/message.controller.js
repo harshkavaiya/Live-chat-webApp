@@ -35,12 +35,20 @@ export const sidebarUser = async (req, res) => {
           .sort({ createdAt: -1 })
           .select("data type createdAt");
 
+        let lastMessageData;
+        // Some type data have return array and object so to change into text message
+        if (lastMessage?.type == "text") {
+          lastMessageData = lastMessage.data;
+        } else {
+          lastMessageData = lastMessage?.type;
+        }
+
         return {
           _id: user._id,
           fullname: user.fullname,
           profilePic: user.profilePic,
           phone: user.phone,
-          lastMessage: lastMessage ? lastMessage.data : null,
+          lastMessage: lastMessageData,
           lastMessageType: lastMessage ? lastMessage.type : null,
           lastMessageTime: lastMessage ? lastMessage.createdAt : null,
         };

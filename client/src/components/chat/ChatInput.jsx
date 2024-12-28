@@ -21,7 +21,6 @@ const ChatInput = ({ receiver }) => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
-  const [GalleryData, setGalleryData] = useState([]);
 
   const {
     getLocation,
@@ -29,6 +28,8 @@ const ChatInput = ({ receiver }) => {
     location,
     locationClose,
     locationShare,
+    galleryData,
+    handelGalleryData,
   } = useFucationStore();
   const inputMenuRef = useRef();
   const { sendMessage } = useMessageStore();
@@ -47,7 +48,7 @@ const ChatInput = ({ receiver }) => {
       data,
       receiver,
     });
-    // setIsPollOpen(false);
+    setIsPollOpen(false);
   };
 
   const handelUploadDocument = useCallback(async (e) => {
@@ -125,7 +126,7 @@ const ChatInput = ({ receiver }) => {
                   type="file"
                   className="hidden"
                   multiple
-                  onChange={(e) => setGalleryData([...e.target.files])}
+                  onChange={handelGalleryData}
                   accept=".jpg,.png,.jpeg,.mp4,.mkv"
                 />
               }
@@ -137,7 +138,7 @@ const ChatInput = ({ receiver }) => {
                 <input
                   type="file"
                   id="imageFile"
-                  onChangeCapture={(e) => setGalleryData([...e.target.files])}
+                  onChangeCapture={handelGalleryData}
                   capture="user"
                   className="hidden"
                   accept="image/*"
@@ -199,17 +200,12 @@ const ChatInput = ({ receiver }) => {
           latitude={location[0]}
           longitude={location[1]}
           close={locationClose}
-          shareLocation={locationShare}
+          shareLocation={() => locationShare(receiver)}
         />
       )}
 
       {/* Gallery Data preview*/}
-      {GalleryData.length > 0 && (
-        <SendFilePreview
-          GalleryData={GalleryData}
-          setGalleryData={setGalleryData}
-        />
-      )}
+      {galleryData.length > 0 && <SendFilePreview receiver={receiver}/>}
     </div>
   );
 };
