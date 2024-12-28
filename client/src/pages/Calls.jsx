@@ -1,21 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import VideoCall from "../components/call/VideoCall";
 import { CiSearch } from "react-icons/ci";
-import { GoDotFill } from "react-icons/go";
-import { FaAngleDown } from "react-icons/fa";
 import { FiPhoneIncoming } from "react-icons/fi";
 import { MdCall } from "react-icons/md";
 import { FaVideo } from "react-icons/fa6";
 import { FiPhoneOutgoing } from "react-icons/fi";
-
+import { formatMessageTime } from "../function/TimeFormating";
 const Calls = () => {
-  // onClick={() => document.getElementById("my_modal_1").showModal()}
   const users = [
     {
       name: "John Doe",
       profilePhoto: "https://example.com/profiles/john_doe.jpg",
       callType: "incoming",
-      time: "2024-12-26T14:30:00Z",
+      time: "2024-12-28T14:30:00Z",
       misscall: true,
       callNature: "voice",
     },
@@ -23,7 +20,7 @@ const Calls = () => {
       name: "Jane Smith",
       profilePhoto: "https://example.com/profiles/jane_smith.jpg",
       callType: "outgoing",
-      time: "2024-12-26T15:00:00Z",
+      time: "2024-12-28T10:00:00Z",
       callNature: "video",
     },
     {
@@ -87,13 +84,14 @@ const Calls = () => {
       callNature: "video",
     },
   ];
-
-  const receiveCall = false;
-  const videoCall = true;
+  const [callName, setcallerName] = useState("");
+  const callsHandler = (data) => {
+    setcallerName(data);
+    document.getElementById("my_modal_1").showModal();
+  };
   return (
     <div className="flex flex-col h-screen">
-      <VideoCall />
-
+      <VideoCall name={callName} />
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
         <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
@@ -151,15 +149,23 @@ const Calls = () => {
                     ) : (
                       <FiPhoneOutgoing size={14} className="text-green-600" />
                     )}
-                    <p>{i.time}</p>
+                    <p>{formatMessageTime(i.time)}</p>
                   </div>
                 </div>
               </div>
               <div>
                 {i.callNature === "video" ? (
-                  <FaVideo size={20} className="cursor-pointer" />
+                  <FaVideo
+                    size={20}
+                    className="cursor-pointer"
+                    onClick={() => callsHandler(i.name)}
+                  />
                 ) : (
-                  <MdCall size={20} className="cursor-pointer" />
+                  <MdCall
+                    size={20}
+                    className="cursor-pointer"
+                    onClick={() => callsHandler(i.name)}
+                  />
                 )}
               </div>
             </div>

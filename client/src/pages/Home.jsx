@@ -12,7 +12,7 @@ import useAuthStore from "../store/useAuthStore";
 import { Navigate } from "react-router-dom";
 
 const Home = () => {
-  const userselected = true;
+  const userselected = false;
   const [activePage, setActivePage] = useState("chat");
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -20,7 +20,7 @@ const Home = () => {
     checkAuth();
   }, []);
 
-  if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
+  // if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* user setting */}
@@ -36,9 +36,6 @@ const Home = () => {
           <Setting setActivePage={setActivePage} activePage={activePage} />
         )}
         {activePage === "myprofile" && <Myprofile />}
-        <div className="absolute flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20">
-          <BottomBar activePage={activePage} setActivePage={setActivePage} />
-        </div>
       </div>
 
       {/* Message Area */}
@@ -46,9 +43,9 @@ const Home = () => {
         {userselected ? <ChatPage /> : <NochatSelect />}
       </div>
 
-      {/* <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
+      <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
         <BottomBar activePage={activePage} setActivePage={setActivePage} />
-      </div> */}
+      </div>
     </div>
   );
 };

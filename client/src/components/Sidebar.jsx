@@ -16,7 +16,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
-  }, []);
+  }, [messagerUser]);
 
   if (loading) return <SidebarUser />;
   return (
