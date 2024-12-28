@@ -31,9 +31,9 @@ const SideSetting = ({ setActivePage, activePage }) => {
           <div
             className="tooltip tooltip-right"
             data-tip={item.page.toUpperCase()}
+            key={idx}
           >
             <span
-              key={idx}
               className={`${
                 activePage === item.page &&
                 "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"

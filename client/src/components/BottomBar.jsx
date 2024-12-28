@@ -30,6 +30,7 @@ const BottomBar = ({ activePage, setActivePage }) => {
           className={`flex flex-col cursor-pointer w-20 rounded-t-btn items-center ${
             activePage === icon.page && "bg-primary/10"
           }`}
+          key={idx}
           onClick={() => setActivePage(icon.page)}
         >
           <span className=" w-12 h-12 grid place-items-center cursor-pointer">
