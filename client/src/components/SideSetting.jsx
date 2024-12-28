@@ -34,7 +34,6 @@ const SideSetting = ({ setActivePage, activePage }) => {
             data-tip={item.page.toUpperCase()}
           >
             <span
-              key={idx}
               className={`${
                 activePage === item.page &&
                 "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"

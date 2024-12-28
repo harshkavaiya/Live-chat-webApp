@@ -46,9 +46,9 @@ const Home = () => {
         {userselected ? <ChatPage /> : <NochatSelect />}
       </div>
 
-      <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
+      {/* <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
         <BottomBar activePage={activePage} setActivePage={setActivePage} />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -13,7 +13,7 @@ import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 import useFucationStore from "../../store/useFuncationStore";
 
-const SendFilePreview = ({receiver}) => {
+const SendFilePreview = ({ receiver }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const { galleryData, sendGalleryData, isGalleryDataUpload } =
     useFucationStore();
@@ -128,7 +128,7 @@ const SendFilePreview = ({receiver}) => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData,receiver)}
+              onClick={() => sendGalleryData(galleryData, receiver)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

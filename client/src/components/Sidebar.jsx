@@ -6,10 +6,11 @@ import { GoPencil } from "react-icons/go";
 import { useEffect } from "react";
 import useMessageStore from "../store/useMessageStore";
 import { formatMessageTime } from "../function/TimeFormating";
+import SidebarUser from "./Skeleton/SidebarUser";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
-
+  const loading = false;
   const { getMessagerUser, messagerUser } = useMessageStore();
   const users = [...Array(20).keys()];
 
@@ -17,17 +18,18 @@ const Sidebar = () => {
     getMessagerUser();
   }, []);
 
+  if (loading) return <SidebarUser />;
   return (
     <div className="h-full w-full flex flex-col gap-2 relative transition-all duration-200 ">
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
         <div className="flex justify-between items-center pr-2 pb-2">
-          <p className="text-lg font-bold gap-px cursor-default">
+          <div className="text-lg flex items-center font-bold gap-px cursor-default">
             Online Now
             <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
               {users.length}
             </div>
-          </p>
+          </div>
           <p className="flex items-center text-sm gap-2 cursor-pointer">
             More <FaAngleRight className="text-primary" />
           </p>
@@ -50,8 +52,8 @@ const Sidebar = () => {
 
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
-        <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
-          <span className="flex items-center gap-px">
+        <div className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
+          <span className="text-lg flex items-center font-bold gap-px cursor-default">
             Messages
             <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
               {messagerUser.length}
@@ -68,7 +70,7 @@ const Sidebar = () => {
               placeholder="Search messages..."
             />
           </div>
-        </p>
+        </div>
 
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
@@ -137,9 +139,8 @@ const Sidebar = () => {
         <div className="dropdown dropdown-top dropdown-end">
           <div
             tabIndex={0}
-            q
             role="button"
-            className="btn w-16 h-16 rounded-full m-1"
+            className="btn w-16 h-16 shadow-lg rounded-full m-1"
           >
             <GoPencil size={23} />
           </div>
