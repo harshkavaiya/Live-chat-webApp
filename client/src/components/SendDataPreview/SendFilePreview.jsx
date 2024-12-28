@@ -10,12 +10,13 @@ import "./SendFilePreview.css";
 
 import { FreeMode, Thumbs } from "swiper/modules";
 import { useState } from "react";
-import useMessageStore from "../../store/useMessageStore";
+import { IoSend } from "react-icons/io5";
+import useFucationStore from "../../store/useFuncationStore";
 
-const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
+const SendFilePreview = ({receiver}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const { handelGalleryDataUpload, isGalleryDataUpload } = useMessageStore();
-
+  const { galleryData, sendGalleryData, isGalleryDataUpload } =
+    useFucationStore();
   const handleDeleteImage = (id) => {
     console.log(id);
   };
@@ -31,7 +32,7 @@ const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
       <div className="relative h-full w-full">
         {/* Top toolbar */}
         <div className="top-0 left-0 right-0 h-14 p-2 flex items-center justify-between">
-          <button className="btn btn-circle" onClick={() => setGalleryData([])}>
+          <button className="btn btn-circle">
             <FaTimes size={20} />
           </button>
 
@@ -55,7 +56,7 @@ const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
             lazy={true}
             className="mySwiper2 "
           >
-            {GalleryData.map((item, i) => {
+            {galleryData.map((item, i) => {
               return (
                 <SwiperSlide key={i} className="=">
                   {item.type == "video/mp4" ? (
@@ -82,7 +83,7 @@ const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
             modules={[FreeMode, Thumbs]}
             className="mySwiper"
           >
-            {GalleryData.map((item, i) => {
+            {galleryData.map((item, i) => {
               return (
                 <SwiperSlide key={i} className="">
                   {/* <div className=" ">
@@ -127,7 +128,7 @@ const SendFilePreview = ({ GalleryData, setGalleryData, isSendLoading }) => {
               />
             </div>
             <button
-              onClick={() => handelGalleryDataUpload(GalleryData)}
+              onClick={() => sendGalleryData(galleryData,receiver)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

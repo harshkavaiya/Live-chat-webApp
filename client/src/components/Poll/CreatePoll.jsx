@@ -6,12 +6,12 @@ import { IoClose } from "react-icons/io5";
 const CreatePoll = ({ close, handleCreatPoll }) => {
   const [pollTitle, setPollTitle] = useState("");
   const [options, setOptions] = useState([
-    { id: "1", text: "" },
-    { id: "2", text: "" },
+    { id: "1", text: "", vote: 0 },
+    { id: "2", text: "", vote: 0 },
   ]);
 
   const addOption = () => {
-    setOptions([...options, { id: Date.now().toString(), text: "" }]);
+    setOptions([...options, { id: Date.now().toString(), text: "", vote: 0 }]);
   };
 
   const removeOption = (id) => {

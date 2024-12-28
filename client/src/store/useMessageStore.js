@@ -2,12 +2,12 @@ import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
+import axios from "axios";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
   isMessageLoading: false,
-  isGalleryDataUpload: false,
   sendMessage: async (data) => {
     let res = await axiosInstance.post(`/message/send/${data.receiver}`, data);
     toast.success("Message Send");
@@ -43,29 +43,6 @@ const useMessageStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("newMessage");
-  },
-  handelGalleryDataUpload: async (data) => {
-    let dataUrl = [];
-    try {
-      set({ isGalleryDataUpload: true });
-      for (let i = 0; i < data.length; i++) {
-        let check = data[i].type.split("/")[0] === "image" ? "image" : "video";
-        let form = new FormData();
-
-        form.append("file", data[i]);
-        form.append("upload_preset", `Real-time-chat-${check}`);
-        let res = await axios.post(
-          `https://api.cloudinary.com/v1_1/dr9twts2b/${check}/upload`,
-          form
-        );
-
-        dataUrl.push(res.data.secure_url);
-        set({ isGalleryDataUpload: false });
-      }
-    } catch (err) {
-      set({ isGalleryDataUpload: true });
-      console.log(err);
-    }
   },
 }));
 

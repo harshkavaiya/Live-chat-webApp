@@ -29,6 +29,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
       <div className="flex flex-col items-center w-full gap-5">
         {sideIcon.map((item, idx) => (
           <div
+            key={idx}
             className="tooltip tooltip-right"
             data-tip={item.page.toUpperCase()}
             key={idx}
