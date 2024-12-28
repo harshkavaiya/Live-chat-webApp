@@ -32,7 +32,6 @@ const SideSetting = ({ setActivePage, activePage }) => {
             key={idx}
             className="tooltip tooltip-right"
             data-tip={item.page.toUpperCase()}
-            key={idx}
           >
             <span
               className={`${

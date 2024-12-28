@@ -26,12 +26,11 @@ const BottomBar = ({ activePage, setActivePage }) => {
   return (
     <div className="flex items-center w-full justify-around">
       {sideIcon.map((icon, idx) => (
-        <div 
-        key={idx}
+        <div
+          key={idx}
           className={`flex flex-col cursor-pointer w-20 rounded-t-btn items-center ${
             activePage === icon.page && "bg-primary/10"
           }`}
-          key={idx}
           onClick={() => setActivePage(icon.page)}
         >
           <span className=" w-12 h-12 grid place-items-center cursor-pointer">
