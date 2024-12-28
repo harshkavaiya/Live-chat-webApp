@@ -7,13 +7,13 @@ import { useParams } from "react-router-dom";
 import useMessageStore from "../store/useMessageStore";
 
 const ChatPage = () => {
-  const { id } = useParams();
+  const  id  = "676e285fa50bb46cb7b5effd"
   const [isSelectMessage, setIsSelectMessage] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
     <>
-      <div className="bg-base-100 h-screen">
+      <div className="bg-base-100 h-screen relative">
         {/* Header */}
         <div className="w-full h-[10%]">
           <ChatHeader

@@ -12,7 +12,7 @@ import useAuthStore from "../store/useAuthStore";
 import { Navigate } from "react-router-dom";
 
 const Home = () => {
-  const userselected = false;
+  const userselected = true;
   const [activePage, setActivePage] = useState("chat");
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -42,7 +42,7 @@ const Home = () => {
       </div>
 
       {/* Message Area */}
-      <div className="hidden sm:block w-[65%]  bg-primary-content">
+      <div className="hidden sm:block w-[65%]  bg-base-100 px-4">
         {userselected ? <ChatPage /> : <NochatSelect />}
       </div>
 

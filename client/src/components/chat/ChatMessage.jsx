@@ -125,8 +125,10 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                 {message.type == "multiple-file" && (
                   <div
                     className={`grid ${
-                      message.data.length == 2 ? "grid-cols-1" : ""
-                    } grid-cols-2 grid-rows-2  w-72 h-52 gap-2 mt-1`}
+                      message.data.length == 2
+                        ? "grid-cols-1 grid-rows-2"
+                        : "grid-cols-2 grid-rows-2"
+                    }    w-72 h-52 gap-2 mt-1`}
                   >
                     {message.data.slice(0, 4).map((item, i) => {
                       return (
@@ -139,7 +141,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
                           }`}
                         >
                           {message.data.length > 4 && i == 3 && (
-                            <div className="absolute w-full text-white h-full text-4xl font-semibold flex items-center justify-center">
+                            <div className="absolute w-full text-white   h-full text-4xl font-semibold flex items-center justify-center">
                               +{message.data.length - 3}
                             </div>
                           )}
