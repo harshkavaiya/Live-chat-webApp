@@ -17,11 +17,11 @@ import useMessageStore from "../../store/useMessageStore";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
 
-const ChatInput = ({ receiver }) => {
+const ChatInput = () => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
-
+  const { currentChatingUser } = useMessageStore();
   const {
     getLocation,
     isLocationLoading,
@@ -43,7 +43,6 @@ const ChatInput = ({ receiver }) => {
     sendMessage({
       type: "poll",
       data,
-      receiver,
     });
     setIsPollOpen(false);
   };
@@ -99,7 +98,7 @@ const ChatInput = ({ receiver }) => {
           {text.length > 0 ? (
             <IoSend
               onClick={() =>
-                sendMessage({ data: text, receiver, type: "text" })
+                sendMessage({ data: text, type: "text" })
               }
               className="cursor-pointer"
               size={20}
@@ -197,12 +196,12 @@ const ChatInput = ({ receiver }) => {
           latitude={location[0]}
           longitude={location[1]}
           close={locationClose}
-          shareLocation={() => locationShare(receiver)}
+          shareLocation={() => locationShare()}
         />
       )}
 
       {/* Gallery Data preview*/}
-      {galleryData.length > 0 && <SendFilePreview receiver={receiver} />}
+      {galleryData.length > 0 && <SendFilePreview />}
     </div>
   );
 };

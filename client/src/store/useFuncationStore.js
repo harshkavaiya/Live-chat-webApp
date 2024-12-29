@@ -26,11 +26,11 @@ const useFunctionStore = create((set, get) => ({
   locationClose: () => {
     set({ location: [] });
   },
-  locationShare: (data) => {
+  locationShare: () => {
     useMessageStore.getState().sendMessage({
       type: "location",
       data: { latitude: get().location[0], longitude: get().location[1] },
-      receiver: data,
+      receiver: useMessageStore().getState().currentChatingUser,
     });
     get().locationClose();
   },
@@ -38,7 +38,7 @@ const useFunctionStore = create((set, get) => ({
     console.log(get().galleryData);
     set({ galleryData: [...get().galleryData, ...e.target.files] });
   },
-  sendGalleryData: async (data, receiver) => {
+  sendGalleryData: async (data) => {
     let dataUrl = [];
     try {
       set({ isGalleryDataUpload: true });
@@ -58,7 +58,7 @@ const useFunctionStore = create((set, get) => ({
       useMessageStore.getState().sendMessage({
         type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
         data: dataUrl,
-        receiver: receiver,
+        receiver: get().currentChatingUser,
       });
 
       set({ isGalleryDataUpload: false, galleryData: [] });

@@ -2,23 +2,30 @@ import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
-import axios from "axios";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
   isMessageLoading: false,
+  currentChatingUser: false,
   sendMessage: async (data) => {
-    let res = await axiosInstance.post(`/message/send/${data.receiver}`, data);
+    let res = await axiosInstance.post(
+      `/message/send/${get().currentChatingUser}`,
+      data
+    );
     toast.success("Message Send");
     set({ messages: [...get().messages, res.data] });
   },
-  getMessage: async (data) => {
+  getMessage: async () => {
     set({ isMessageLoading: true });
-    let res = await axiosInstance.get(`/message/chat/${data}`);
+    let res = await axiosInstance.get(
+      `/message/chat/${get().currentChatingUser}`
+    );
     set({ messages: [...res.data], isMessageLoading: false });
   },
-
+  selectUsertoChat: (data) => {
+    set({ currentChatingUser: data });
+  },
   getMessagerUser: async () => {
     try {
       let res = await axiosInstance.get("/message/user");

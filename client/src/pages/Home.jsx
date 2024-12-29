@@ -10,11 +10,12 @@ import Myprofile from "./Myprofile";
 import BottomBar from "../components/BottomBar";
 import useAuthStore from "../store/useAuthStore";
 import { Navigate } from "react-router-dom";
+import useMessageStore from "../store/useMessageStore";
 
 const Home = () => {
-  const userselected = false;
   const [activePage, setActivePage] = useState("chat");
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { currentChatingUser } = useMessageStore();
 
   useEffect(() => {
     checkAuth();
@@ -40,7 +41,7 @@ const Home = () => {
 
       {/* Message Area */}
       <div className="hidden sm:block w-[85%]  bg-base-100">
-        {userselected ? <ChatPage /> : <NochatSelect />}
+        {currentChatingUser ? <ChatPage /> : <NochatSelect />}
       </div>
 
       <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">

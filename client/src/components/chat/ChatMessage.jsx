@@ -12,27 +12,23 @@ import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 import useFunctionStore from "../../store/useFuncationStore";
 
-const ChatMessage = ({ receiver }) => {
+const ChatMessage = () => {
   const {
     messages,
     suscribeToMessage,
     unsuscribeFromMessage,
     getMessage,
     isMessageLoading,
+    currentChatingUser,
   } = useMessageStore();
-  const {
-    onSelectMessage,
-    selectMessage,
-    isSelectMessage,
-    handleSelectMessage,
-    closeSelection,
-  } = useFunctionStore();
+  const { onSelectMessage, selectMessage, isSelectMessage, closeSelection } =
+    useFunctionStore();
 
   const { socket } = useAuthStore();
   const messageEndRef = useRef();
 
   useEffect(() => {
-    getMessage(receiver);
+    getMessage();
     suscribeToMessage();
     return () => unsuscribeFromMessage();
   }, [getMessage, suscribeToMessage, socket, unsuscribeFromMessage]);
@@ -58,12 +54,12 @@ const ChatMessage = ({ receiver }) => {
             )}
             <div
               className={`chat w-full h ${
-                message.sender != receiver ? "chat-end" : "chat-start"
+                message.sender != currentChatingUser ? "chat-end" : "chat-start"
               }`}
             >
               <div
                 className={`chat-bubble rounded-xl  max-w-[80%] px-2 py-1 ${
-                  message.sender != receiver
+                  message.sender != currentChatingUser
                     ? "bg-primary/70 text-primary-content"
                     : "bg-base-300 text-base-content"
                 }`}
@@ -89,7 +85,7 @@ const ChatMessage = ({ receiver }) => {
                   <>
                     <div
                       className={`flex items-start gap-2 ${
-                        message.sender != receiver
+                        message.sender != currentChatingUser
                           ? "bg-base-100/25 text-primary-content "
                           : "bg-base-100 text-base-content"
                       } p-1 rounded-lg w-[55vw]  md:w-60`}
@@ -179,13 +175,13 @@ const ChatMessage = ({ receiver }) => {
                 )}
                 <p
                   className={`text-[10px] text-end flex items-end justify-end ${
-                    message.sender != receiver
+                    message.sender != currentChatingUser
                       ? "text-primary-content/70"
                       : "text-base-content/70"
                   }`}
                 >
                   {formatMessageTime(message.createdAt)}
-                  {message.sender != receiver && (
+                  {message.sender != currentChatingUser && (
                     <BsThreeDots
                       size={16}
                       className={`${

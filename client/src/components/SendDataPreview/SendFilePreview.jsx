@@ -14,7 +14,7 @@ import { IoSend } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
 import useFunctionStore from "../../store/useFuncationStore";
 
-const SendFilePreview = ({ receiver }) => {
+const SendFilePreview = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const {
     galleryData,
@@ -144,7 +144,7 @@ const SendFilePreview = ({ receiver }) => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData, receiver)}
+              onClick={() => sendGalleryData(galleryData)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />
