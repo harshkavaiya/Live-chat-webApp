@@ -1,4 +1,4 @@
-import { FaTimes } from "react-icons/fa";
+import { FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { MdOutlineCrop } from "react-icons/md";
 import { RiText } from "react-icons/ri";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -11,15 +11,20 @@ import "./SendFilePreview.css";
 import { FreeMode, Thumbs } from "swiper/modules";
 import { useState } from "react";
 import { IoSend } from "react-icons/io5";
-import useFucationStore from "../../store/useFuncationStore";
+import { FaPlus } from "react-icons/fa6";
+import useFunctionStore from "../../store/useFuncationStore";
 
-const SendFilePreview = ({ receiver }) => {
+const SendFilePreview = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const { galleryData, sendGalleryData, isGalleryDataUpload } =
-    useFucationStore();
-  const handleDeleteImage = (id) => {
-    console.log(id);
-  };
+  const {
+    galleryData,
+    sendGalleryData,
+    isGalleryDataUpload,
+    closeGalleryData,
+    handelGalleryData,
+    handleDeleteGalleryImage,
+  } = useFunctionStore();
+
   if (isGalleryDataUpload)
     return (
       <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
@@ -32,7 +37,7 @@ const SendFilePreview = ({ receiver }) => {
       <div className="relative h-full w-full">
         {/* Top toolbar */}
         <div className="top-0 left-0 right-0 h-14 p-2 flex items-center justify-between">
-          <button className="btn btn-circle">
+          <button onClick={closeGalleryData} className="btn btn-circle">
             <FaTimes size={20} />
           </button>
 
@@ -85,34 +90,45 @@ const SendFilePreview = ({ receiver }) => {
           >
             {galleryData.map((item, i) => {
               return (
-                <SwiperSlide key={i} className="">
-                  {/* <div className=" ">
-                      <FaRegTrashAlt
-                        size={28}
-                        className="cursor-pointer"
-                        onClick={() => handleDeleteImage(item)}
-                      />
-                    </div> */}
+                <SwiperSlide key={i} className="relative group">
+                  <div className="absolute flex items-center justify-center w-full h-full group-hover:opacity-90 opacity-0 transition-all duration-200">
+                    <FaRegTrashAlt
+                      size={20}
+                      className="cursor-pointer "
+                      onClick={() => handleDeleteGalleryImage(i)}
+                    />
+                  </div>
 
                   {item.type == "video/mp4" ? (
-                    <video className="">
-                      <source
-                        src={`${URL.createObjectURL(item)}#t=2.1`}
-                        type="video/mp4"
-                        loading="lazy"
-                        className=""
-                      />
-                    </video>
+                    <video
+                      loading="lazy"
+                      className="border border-primary"
+                      src={`${URL.createObjectURL(item)}#t=2.1`}
+                    />
                   ) : (
                     <img
                       src={URL.createObjectURL(item)}
                       loading="lazy"
-                      className=""
+                      className="border border-primary"
                     />
                   )}
                 </SwiperSlide>
               );
             })}
+            <SwiperSlide className="border border-primary rounded-xl text-primary hover:bg-primary/20 cursor-pointer hover:text-primary-content">
+              <label className="h-full w-full flex items-center justify-center">
+                <span className="">
+                  <FaPlus size={20} className="" />
+                </span>
+                <input
+                  type="file"
+                  className="hidden"
+                  multiple
+                  onChange={handelGalleryData}
+                  accept=".jpg,.png,.jpeg,.mp4,.mkv"
+                />
+              </label>
+            </SwiperSlide>
           </Swiper>
         </div>
 
@@ -128,7 +144,7 @@ const SendFilePreview = ({ receiver }) => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData, receiver)}
+              onClick={() => sendGalleryData(galleryData)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

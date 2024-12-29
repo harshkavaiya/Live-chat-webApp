@@ -11,12 +11,12 @@ import SidebarUser from "./Skeleton/SidebarUser";
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const loading = false;
-  const { getMessagerUser, messagerUser } = useMessageStore();
+  const { getMessagerUser, messagerUser, selectUsertoChat } = useMessageStore();
   const users = [...Array(20).keys()];
 
   useEffect(() => {
     getMessagerUser();
-  }, [messagerUser]);
+  }, [getMessagerUser]);
 
   if (loading) return <SidebarUser />;
   return (
@@ -80,6 +80,7 @@ const Sidebar = () => {
             return (
               <div
                 key={idx}
+                onClick={() => selectUsertoChat(i._id)}
                 className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
                 ${idx == users.length - 1 && "border-b"}`}
               >

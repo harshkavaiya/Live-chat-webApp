@@ -17,7 +17,7 @@ const Profile = ({ setIsProfileOpen }) => {
   const mediaRef = useRef();
 
   return (
-    <div className="w-full mx-auto z-20  bg-base-100 text-base-content/80 font-medium absolute left-0 top-0">
+    <div className="w-full h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
       {/* Header */}
       <div className="relative p-2 border-b text-center border-base-300 ">
         <button className="absolute right-4 top-4">
