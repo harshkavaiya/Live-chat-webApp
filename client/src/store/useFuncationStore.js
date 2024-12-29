@@ -2,11 +2,15 @@ import { create } from "zustand";
 import useMessageStore from "./useMessageStore";
 import axios from "axios";
 
-const useFucationStore = create((set, get) => ({
+const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
   location: [],
   galleryData: [],
   isGalleryDataUpload: false,
+  selectMessage: {},
+  isSelectMessage: false,
+  isSelectContact: false,
+  selectContact: {},
   getLocation: async () => {
     set({ isLocationLoading: true });
     if ("geolocation" in navigator) {
@@ -63,6 +67,40 @@ const useFucationStore = create((set, get) => ({
       console.log(err);
     }
   },
+  closeGalleryData: () => {
+    set({ galleryData: [] });
+  },
+  handleDeleteGalleryImage: (data) => {
+    const { galleryData } = get();
+
+    galleryData.splice(data, 1);
+    set({ galleryData: galleryData });
+  },
+  onSelectMessage: (data) => {
+    const { selectMessage } = get();
+    if (selectMessage[data._id]) {
+      delete selectMessage[data._id];
+    } else {
+      selectMessage[data._id] = data;
+    }
+    console.log(selectMessage);
+    set({ selectMessage: selectMessage });
+  },
+  openSelection: () => {
+    set({ isSelectMessage: true });
+  },
+  handleSelectMessage: () => {},
+  closeSelection: () => {
+    set({ isSelectMessage: false, selectMessage: {} });
+  },
+  onSelectContact: async (data) => {
+    if ("contacts" in navigator) {
+      const supportedProperties = await navigator.contacts.getProperties();
+      console.log(supportedProperties);
+    } else {
+      console.log("Not Select");
+    }
+  },
 }));
 
-export default useFucationStore;
+export default useFunctionStore;

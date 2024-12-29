@@ -15,7 +15,7 @@ import Location from "../Location";
 import SendFilePreview from "../SendDataPreview/SendFilePreview";
 import useMessageStore from "../../store/useMessageStore";
 import axiosInstance from "../../lib/axiosInstance";
-import useFucationStore from "../../store/useFuncationStore";
+import useFunctionStore from "../../store/useFuncationStore";
 
 const ChatInput = ({ receiver }) => {
   const [text, setText] = useState("");
@@ -30,14 +30,11 @@ const ChatInput = ({ receiver }) => {
     locationShare,
     galleryData,
     handelGalleryData,
-  } = useFucationStore();
+    onSelectContact,
+  } = useFunctionStore();
   const inputMenuRef = useRef();
   const { sendMessage } = useMessageStore();
 
-  const getContactData = async () => {
-    // Pending
-    console.log("Contact");
-  };
   const onEmojiClick = (data) => {
     setText((pre) => pre + data.emoji);
   };
@@ -148,7 +145,7 @@ const ChatInput = ({ receiver }) => {
             <InputMenu
               icon={<MdOutlinePermContactCalendar size={20} />}
               lable="Contact"
-              button={getContactData}
+              button={onSelectContact}
             />
             <InputMenu
               icon={<TiDocumentAdd size={20} />}
@@ -205,7 +202,7 @@ const ChatInput = ({ receiver }) => {
       )}
 
       {/* Gallery Data preview*/}
-      {galleryData.length > 0 && <SendFilePreview receiver={receiver}/>}
+      {galleryData.length > 0 && <SendFilePreview receiver={receiver} />}
     </div>
   );
 };

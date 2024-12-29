@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { OpenCloseMenu } from "../../function/function";
+import useFunctionStore from "../../store/useFuncationStore";
 
-const ChatHeader = ({ setIsSelectMessage, setIsProfileOpen }) => {
+const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const [key, setKey] = useState(0);
+  const { openSelection } = useFunctionStore();
   useEffect(() => {
     headerMenuRef.current.classList.add("hidden");
   }, [key]);
@@ -56,7 +58,7 @@ const ChatHeader = ({ setIsSelectMessage, setIsProfileOpen }) => {
           </li>
           <li
             onClick={() => {
-              setIsSelectMessage(true);
+              openSelection();
               setKey(Math.random());
             }}
           >

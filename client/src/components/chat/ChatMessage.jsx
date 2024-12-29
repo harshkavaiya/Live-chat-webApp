@@ -10,8 +10,9 @@ import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
 import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
+import useFunctionStore from "../../store/useFuncationStore";
 
-const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
+const ChatMessage = ({ receiver }) => {
   const {
     messages,
     suscribeToMessage,
@@ -19,25 +20,16 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
     getMessage,
     isMessageLoading,
   } = useMessageStore();
+  const {
+    onSelectMessage,
+    selectMessage,
+    isSelectMessage,
+    handleSelectMessage,
+    closeSelection,
+  } = useFunctionStore();
 
   const { socket } = useAuthStore();
   const messageEndRef = useRef();
-
-  const [selectMessage, setSelectMessage] = useState([]);
-
-  const handelSelectMessage = (data) => {
-    if (selectMessage.length == 0) {
-      setSelectMessage([data]);
-    } else {
-      selectMessage.forEach((element) => {
-        if (element.id == data.id) {
-          setSelectMessage(selectMessage.filter((msg) => msg.id != data.id));
-        } else {
-          setSelectMessage([...selectMessage, data]);
-        }
-      });
-    }
-  };
 
   useEffect(() => {
     getMessage(receiver);
@@ -60,8 +52,8 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
             {isSelectMessage && (
               <input
                 type="checkbox"
-                onClick={() => handelSelectMessage(message)}
-                className="checkbox ml-2 "
+                onClick={() => onSelectMessage(message)}
+                className="checkbox ml-2 checkbox-primary text-primary-content"
               />
             )}
             <div
@@ -72,7 +64,7 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
               <div
                 className={`chat-bubble rounded-xl  max-w-[80%] px-2 py-1 ${
                   message.sender != receiver
-                    ? "bg-primary text-primary-content"
+                    ? "bg-primary/70 text-primary-content"
                     : "bg-base-300 text-base-content"
                 }`}
               >
@@ -209,20 +201,18 @@ const ChatMessage = ({ receiver, isSelectMessage, setIsSelectMessage }) => {
       </div>
 
       {isSelectMessage && (
-        <div className="absolute w-full h-[70px] bg-base-300 left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
+        <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
           <IoClose
-            onClick={() => {
-              setSelectMessage([]);
-              setIsSelectMessage(false);
-            }}
+            onClick={closeSelection}
             size={30}
-            className="ml-4"
+            className="ml-4 cursor-pointer"
           />
           <p className="flex gap-x-2 items-center text-xl">
-            <span className="">{selectMessage.length}</span> Selected
+            <span className="">{Object.keys(selectMessage).length}</span>{" "}
+            Selected
           </p>
-          {selectMessage.length > 0 && (
-            <div className="flex justify-end w-full mr-3 gap-x-2">
+          {Object.keys(selectMessage).length > 0 && (
+            <div className="flex justify-end w-full mr-3 gap-x-2 ">
               <IoIosShareAlt size={30} className="" />
               <LuTrash2 size={30} className="" />
             </div>
