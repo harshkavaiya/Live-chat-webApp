@@ -4,7 +4,7 @@ import { GoPlus } from "react-icons/go";
 import { FaMicrophone } from "react-icons/fa6";
 import { GrGallery } from "react-icons/gr";
 import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
-import { FaRegSmile } from "react-icons/fa";
+import { FaRegPauseCircle, FaRegSmile } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import EmojiPicker from "emoji-picker-react";
 import { useCallback, useRef, useState } from "react";
@@ -16,12 +16,14 @@ import SendFilePreview from "../SendDataPreview/SendFilePreview";
 import useMessageStore from "../../store/useMessageStore";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
+import AudioRecorder from "../Audio/AudioRecorder";
+import useAudioStore from "../../store/useAudioStore";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
   const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
-  const { currentChatingUser } = useMessageStore();
+  const mediaRecorderRef = useRef(null);
   const {
     getLocation,
     isLocationLoading,
@@ -32,6 +34,9 @@ const ChatInput = () => {
     handelGalleryData,
     onSelectContact,
   } = useFunctionStore();
+  const { startRecording, isRecording, stopRecording, audioUrl } =
+    useAudioStore();
+
   const inputMenuRef = useRef();
   const { sendMessage } = useMessageStore();
 
@@ -59,55 +64,69 @@ const ChatInput = () => {
     <div className="">
       {/* input section */}
       <div className="flex items-center space-x-2 px-3 py-2 w-full border-t border-base-300 bg-base-100">
-        <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
-          <FaRegSmile
-            onClick={() => setIsEmojiSelect(!isEmojiSelect)}
-            className="cursor-pointer"
-            size={20}
-          />
-          <input
-            className="w-[82%] sm:w-full p-1 md:p-2"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Write your message..."
-            type="text"
-          />
-          <GoPlus
-            onClick={() => OpenCloseMenu(inputMenuRef)}
-            className="cursor-pointer z-20"
-            size={28}
-          />
-          {text.length <= 0 && (
-            <label>
-              <span className="flex gap-x-2">
-                <LuCamera className="cursor-pointer" size={20} />
-              </span>
-              <input
-                type="file"
-                id="selectImage"
-                capture="user"
-                className="hidden"
-                onChangeCapture={(e) => console.log(e)}
-                accept="image/*"
-              />
-            </label>
-          )}
-        </label>
-
-        <button className="btn btn-primary rounded-full w-12 p-1 outline-none">
-          {text.length > 0 ? (
-            <IoSend
-              onClick={() =>
-                sendMessage({ data: text, type: "text" })
-              }
+        {!isRecording && !audioUrl && (
+          <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
+            <FaRegSmile
+              onClick={() => setIsEmojiSelect(!isEmojiSelect)}
               className="cursor-pointer"
               size={20}
             />
-          ) : (
-            <FaMicrophone className="cursor-pointer" size={20} />
-          )}
-        </button>
+            <input
+              className="w-[82%] sm:w-full p-1 md:p-2"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Write your message..."
+              type="text"
+            />
+            <GoPlus
+              onClick={() => OpenCloseMenu(inputMenuRef)}
+              className="cursor-pointer z-20"
+              size={28}
+            />
+            {text.length <= 0 && (
+              <label>
+                <span className="flex gap-x-2">
+                  <LuCamera className="cursor-pointer" size={20} />
+                </span>
+                <input
+                  type="file"
+                  id="selectImage"
+                  capture="user"
+                  className="hidden"
+                  onChangeCapture={(e) => console.log(e)}
+                  accept="image/*"
+                />
+              </label>
+            )}
+          </label>
+        )}
+        {(isRecording || audioUrl != null) && (
+          <AudioRecorder isRecording={isRecording} />
+        )}
 
+        {!audioUrl && (
+          <button className="btn btn-primary rounded-full w-12 p-1 outline-none">
+            {text.length > 0 ? (
+              <IoSend
+                onClick={() => sendMessage({ data: text, type: "text" })}
+                className="cursor-pointer"
+                size={20}
+              />
+            ) : !isRecording ? (
+              <FaMicrophone
+                onClick={() => startRecording(mediaRecorderRef)}
+                className="cursor-pointer"
+                size={20}
+              />
+            ) : (
+              <FaRegPauseCircle
+                onClick={stopRecording}
+                className="cursor-pointer"
+                size={28}
+              />
+            )}
+          </button>
+        )}
         {/* input menu */}
         <div
           ref={inputMenuRef}

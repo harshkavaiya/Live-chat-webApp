@@ -26,6 +26,9 @@ const useMessageStore = create((set, get) => ({
   selectUsertoChat: (data) => {
     set({ currentChatingUser: data });
   },
+  closeChat:()=>{
+    set({currentChatingUser:false})
+  },
   getMessagerUser: async () => {
     try {
       let res = await axiosInstance.get("/message/user");

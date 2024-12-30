@@ -11,6 +11,7 @@ const useFunctionStore = create((set, get) => ({
   isSelectMessage: false,
   isSelectContact: false,
   selectContact: {},
+
   getLocation: async () => {
     set({ isLocationLoading: true });
     if ("geolocation" in navigator) {
@@ -93,7 +94,7 @@ const useFunctionStore = create((set, get) => ({
   closeSelection: () => {
     set({ isSelectMessage: false, selectMessage: {} });
   },
-  onSelectContact: async (data) => {
+  onSelectContact: async () => {
     if ("contacts" in navigator) {
       const supportedProperties = await navigator.contacts.getProperties();
       console.log(supportedProperties);

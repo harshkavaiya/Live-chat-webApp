@@ -31,7 +31,7 @@ const useAuthStore = create((set, get) => ({
     let res = await axiosInstance.post("/auth/login", data);
     if (res.data.success) {
       toast.success("Login");
-    
+
       set({ authUser: res.data });
       get().connectSocket();
     } else {

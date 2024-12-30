@@ -135,10 +135,10 @@ const Profile = ({ setIsProfileOpen }) => {
           />
         </button>
         <div ref={mediaRef} className="p-2 hidden">
-          <div className="grid grid-cols-3 gap-3 h-[270px] overflow-y-scroll">
+          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 h-[270px] overflow-y-scroll">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((item) => (
               <div key={item} className="avatar">
-                <div className="w-30 h-30 rounded-md">
+                <div className="rounded-md">
                   <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
                 </div>
               </div>

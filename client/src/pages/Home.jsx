@@ -9,12 +9,11 @@ import Setting from "./Setting";
 import Myprofile from "./Myprofile";
 import BottomBar from "../components/BottomBar";
 import useAuthStore from "../store/useAuthStore";
-import { Navigate } from "react-router-dom";
 import useMessageStore from "../store/useMessageStore";
 
 const Home = () => {
   const [activePage, setActivePage] = useState("chat");
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
   const { currentChatingUser } = useMessageStore();
 
   useEffect(() => {
