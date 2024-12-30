@@ -6,6 +6,7 @@ import { MdCall } from "react-icons/md";
 import { FaVideo } from "react-icons/fa6";
 import { FiPhoneOutgoing } from "react-icons/fi";
 import { formatMessageTime } from "../function/TimeFormating";
+import AudioCall from "../components/call/AudioCall";
 const Calls = () => {
   const users = [
     {
@@ -84,14 +85,23 @@ const Calls = () => {
       callNature: "video",
     },
   ];
+
   const [callName, setcallerName] = useState("");
-  const callsHandler = (data) => {
+  const VcallsHandler = (data) => {
     setcallerName(data);
     document.getElementById("my_modal_1").showModal();
   };
+
+  const callsHandler = (data) => {
+    setcallerName(data);
+    document.getElementById("my_modal_2").showModal();
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <VideoCall name={callName} />
+      <AudioCall name={callName} />
+
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
         <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
@@ -158,7 +168,7 @@ const Calls = () => {
                   <FaVideo
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => callsHandler(i.name)}
+                    onClick={() => VcallsHandler(i.name)}
                   />
                 ) : (
                   <MdCall

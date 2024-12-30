@@ -21,7 +21,7 @@ const Home = () => {
     checkAuth();
   }, []);
 
-  if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
+  // if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* user setting */}
