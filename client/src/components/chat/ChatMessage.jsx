@@ -1,5 +1,5 @@
 import { BsFileText, BsThreeDots } from "react-icons/bs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -23,6 +23,7 @@ const ChatMessage = () => {
   } = useMessageStore();
   const { onSelectMessage, selectMessage, isSelectMessage, closeSelection } =
     useFunctionStore();
+ 
 
   const { socket } = useAuthStore();
   const messageEndRef = useRef();
@@ -71,7 +72,7 @@ const ChatMessage = () => {
                   <img
                     src={message.data[0].url}
                     alt="image"
-                    className="w-72 h-52 rounded-xl"
+                    className="w-72 h-52 rounded-xl object-cover"
                   />
                 )}
                 {message.type == "video" && (
@@ -195,7 +196,7 @@ const ChatMessage = () => {
           </div>
         ))}
       </div>
-
+    
       {isSelectMessage && (
         <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
           <IoClose

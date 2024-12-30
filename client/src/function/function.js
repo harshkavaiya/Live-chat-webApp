@@ -6,3 +6,4 @@ export const OpenCloseMenu = (ref) => {
     ref.current?.classList?.add("hidden");
   }
 };
+

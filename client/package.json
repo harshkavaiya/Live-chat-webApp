@@ -14,11 +14,13 @@
     "emoji-picker-react": "^4.12.0",
     "leaflet": "^1.9.4",
     "react": "^19.0.0-rc.1",
-    "react-dom": "^19.0.0-rc.1",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.4.0",
     "react-leaflet": "^5.0.0",
+    "react-media-recorder": "^1.7.1",
     "react-router-dom": "^7.0.2",
+    "react-sound-visualizer": "^1.1.1",
+    "react-use": "^17.6.0",
     "socket.io-client": "^4.8.1",
     "swiper": "^11.1.15",
     "zustand": "^5.0.2"
@@ -26,7 +28,6 @@
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.20",
     "daisyui": "^4.12.22",

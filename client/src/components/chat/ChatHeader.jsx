@@ -3,11 +3,14 @@ import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { OpenCloseMenu } from "../../function/function";
 import useFunctionStore from "../../store/useFuncationStore";
+import { IoChevronBackOutline } from "react-icons/io5";
+import useMessageStore from "../../store/useMessageStore";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const [key, setKey] = useState(0);
   const { openSelection } = useFunctionStore();
+  const { closeChat } = useMessageStore();
   useEffect(() => {
     headerMenuRef.current.classList.add("hidden");
   }, [key]);
@@ -16,9 +19,21 @@ const ChatHeader = ({ setIsProfileOpen }) => {
     <>
       <div className="flex items-center justify-between px-3 py-2 border-b border-base-300 bg-base-100 h-full">
         <div className="flex items-center gap-2">
+          <IoChevronBackOutline
+            onClick={closeChat}
+            size={24}
+            className="cursor-pointer"
+          />
           <div className="flex items-center">
-            <div className="w-20 h-12 rounded-full bg-primary flex items-center justify-center text-primary-content font-medium">
-              J
+            <div className="indicator relative ">
+              <span className="indicator-item rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
+              <div className="bg-base-300 grid w-12 h-12 place-items-center rounded-full overflow-hidden">
+                <img
+                  src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                  alt="user"
+                  className="object-cover"
+                />
+              </div>
             </div>
             <Link
               onClick={() => {
