@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react";
 import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <div data-theme={theme}>
+      <Toaster />
       <Routes>
         <Route path="/" Component={Home} />
         <Route path="/Login" Component={LoginPage} />

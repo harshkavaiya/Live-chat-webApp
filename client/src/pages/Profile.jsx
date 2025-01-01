@@ -9,22 +9,22 @@ import {
 import { IoClose, IoVolumeMuteSharp } from "react-icons/io5";
 import { useRef, useState } from "react";
 import { OpenCloseMenu } from "../function/function";
+import { FaVideo } from "react-icons/fa";
+import useMediaStore from "../store/useMediaStore";
 
 const Profile = ({ setIsProfileOpen }) => {
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const documentRef = useRef();
   const mediaRef = useRef();
+  const { chatUserMedia, onDynamicMedia } = useMediaStore();
 
   return (
-    <div className="w-full h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
+    <div className="w-[50%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
       {/* Header */}
       <div className="relative p-2 border-b text-center border-base-300 ">
-        <button className="absolute right-4 top-4">
-          <IoClose
-            onClick={() => setIsProfileOpen(false)}
-            className="h-5 w-5 "
-          />
+        <button className="absolute right-4 top-3">
+          <IoClose onClick={() => setIsProfileOpen(false)} size={26} />
         </button>
         <h2 className="text-2xl font-bold ">Profile</h2>
       </div>
@@ -84,27 +84,6 @@ const Profile = ({ setIsProfileOpen }) => {
             </div>
             <div className="flex items-center gap-3 text-sm">
               <span className="">📄</span>
-              Latest_Design_portfolio.pdf
-            </div>
-
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Simple_practice_project.zip
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Word_Map.jpg
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Latest_Design_portfolio.pdf
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Simple_practice_project.zip
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
               Word_Map.jpg
             </div>
             <div className="flex items-center gap-3 text-sm">
@@ -126,7 +105,9 @@ const Profile = ({ setIsProfileOpen }) => {
         >
           <div className="flex items-center gap-2">
             <span className="font-medium">Shared Media</span>
-            <span className="text-xs px-1.5 py-0.5 rounded-full">7</span>
+            <span className="text-xs px-1.5 py-0.5 rounded-full">
+              {chatUserMedia?.length}
+            </span>
           </div>
           <IoChevronDownOutline
             className={`h-5 w-5 transition-all duration-300 ${
@@ -135,11 +116,29 @@ const Profile = ({ setIsProfileOpen }) => {
           />
         </button>
         <div ref={mediaRef} className="p-2 hidden">
-          <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 h-[270px] overflow-y-scroll">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((item) => (
-              <div key={item} className="avatar">
+          <div className="grid grid-cols-4 gap-3 h-[270px] overflow-y-scroll">
+            {chatUserMedia?.map((item, i) => (
+              <div key={i} className="avatar">
                 <div className="rounded-md">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  {item.current.type == "image" ? (
+                    <img
+                      src={item.current.url}
+                      loading="lazy"
+                      onClick={() => onDynamicMedia(i)}
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full relative">
+                      <video
+                        src={`${item.current.url}#t=2.1`}
+                        onClick={() => onDynamicMedia(i)}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute z-20 text-primary bottom-1 right-1">
+                        <FaVideo className="" size={20} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
