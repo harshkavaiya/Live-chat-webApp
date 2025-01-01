@@ -13,8 +13,9 @@ import useMessageStore from "../store/useMessageStore";
 
 const Home = () => {
   const [activePage, setActivePage] = useState("chat");
-  const { checkAuth } = useAuthStore();
+
   const { currentChatingUser } = useMessageStore();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();

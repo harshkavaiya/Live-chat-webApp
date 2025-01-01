@@ -4,13 +4,17 @@ import { MdCallEnd, MdMic, MdMicOff } from "react-icons/md";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import { BiSolidPhoneCall } from "react-icons/bi";
 
-const CallControl = ({ model }) => {
+const CallControl = ({ model, setIsCallActive, isCallActive }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
   const micHanlder = () => {
     setmic(!miccontroll);
   };
   const endCall = () => {
+    if (isCallActive) {
+      setIsCallActive(false);
+    }
+
     document.getElementById(`my_modal_${model}`).close();
   };
 
@@ -19,7 +23,7 @@ const CallControl = ({ model }) => {
   };
 
   return (
-    <div className="flex w-full bottom-5 items-center justify-center absolute">
+    <div className="flex w-full bottom-5 items-center justify-center absolute z-10">
       <div className="bg-base-300 flex items-center gap-5 sm:gap-10 px-3 py-2 backdrop-blur-lg bg-opacity-70 rounded-box">
         <button
           className={`btn w-14 h-14 shadow-lg group rounded-full border-none bg-white hover:bg-white/90`}

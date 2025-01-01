@@ -1,22 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CallControl from "./CallControl";
+import { HiMiniSpeakerWave } from "react-icons/hi2";
 import AudioWave from "./audioWave";
 
-const AudioCall = ({ name }) => {
-  const caller = [1, 2, 3, 4, 6, 7];
-  const [audioStream, setAudioStream] = useState(null);
-  // useEffect(() => {
-  //   const startVoiceCall = async () => {
-  //     try {
-  //       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //       setAudioStream(stream);
-  //     } catch (error) {
-  //       console.error("Error accessing microphone", error);
-  //     }
-  //   };
+const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
+  const caller = [1, 2, 5, 5, 5, 4];
+  const [isAudioActive, setIsAudioActive] = useState(false);
 
-  //   startVoiceCall();
-  // }, []);
+  const handleAudioActivity = (isActive) => {
+    setIsAudioActive(isActive);
+  };
+
   return (
     <dialog id="my_modal_2" className="modal">
       <div
@@ -31,10 +25,10 @@ const AudioCall = ({ name }) => {
         {caller.map((i, index) => (
           <div
             key={index}
-            className="bg-base-100 flex flex-col items-center  rounded-box p-3"
+            className="bg-base-100 flex flex-col pb-10 items-center justify-center relative rounded-box p-3"
           >
-            <div className="w-full flex items-center justify-center gap-2 sm:gap-0 sm:justify-evenly">
-              <div className="w-14 h-14 sm:w-24 sm:h-24 bg-black rounded-full overflow-hidden">
+            <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-0 sm:justify-evenly">
+              <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black rounded-full overflow-hidden">
                 <img
                   src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?t=st=1735533673~exp=1735537273~hmac=84847f1fa605ea9435463f9b4ef4bb57da7a30b64601b1076f57fef7e0e73d85&w=360"
                   alt=""
@@ -42,13 +36,28 @@ const AudioCall = ({ name }) => {
                 />
               </div>
               <h3 className="sm:text-lg sm:font-semibold capitalize">{name}</h3>
+              <div className="w-20 h-8 p-[2px] pl-3 rounded-full flex items-center justify-between bg-base-300 absolute top-2 right-2 sm:top-5 sm:right-5">
+                <p className="text-xs">10:12</p>
+                <div className="w-7 h-7 rounded-full bg-base-100 grid place-items-center">
+                  <HiMiniSpeakerWave
+                    size={20}
+                    className={isAudioActive ? "text-primary" : "text-gray-500"}
+                  />
+                </div>
+              </div>
             </div>
-            <p className="text-xs mt-3">10:12</p>
-            <div className="">{/* <AudioWave audioStream={true} /> */}</div>
+            <AudioWave
+              startCall={isCallActive}
+              onAudioActivity={handleAudioActivity}
+            />
           </div>
         ))}
       </div>
-      <CallControl model={2} />
+      <CallControl
+        model={2}
+        setIsCallActive={setIsCallActive}
+        isCallActive={isCallActive}
+      />
     </dialog>
   );
 };

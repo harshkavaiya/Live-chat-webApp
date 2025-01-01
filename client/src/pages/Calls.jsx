@@ -85,7 +85,7 @@ const Calls = () => {
       callNature: "video",
     },
   ];
-
+  const [isCallActive, setIsCallActive] = useState(false);
   const [callName, setcallerName] = useState("");
   const VcallsHandler = (data) => {
     setcallerName(data);
@@ -94,13 +94,18 @@ const Calls = () => {
 
   const callsHandler = (data) => {
     setcallerName(data);
+    setIsCallActive(true);
     document.getElementById("my_modal_2").showModal();
   };
 
   return (
     <div className="flex flex-col h-screen">
       <VideoCall name={callName} />
-      <AudioCall name={callName} />
+      <AudioCall
+        name={callName}
+        isCallActive={isCallActive}
+        setIsCallActive={setIsCallActive}
+      />
 
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
