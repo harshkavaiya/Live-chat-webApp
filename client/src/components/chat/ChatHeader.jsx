@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { OpenCloseMenu } from "../../function/function";
@@ -94,4 +94,4 @@ const ChatHeader = ({ setIsProfileOpen }) => {
   );
 };
 
-export default ChatHeader;
+export default memo(ChatHeader);

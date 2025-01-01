@@ -6,17 +6,17 @@ import { GrGallery } from "react-icons/gr";
 import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
 import { FaRegPauseCircle, FaRegSmile } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
-import EmojiPicker from "emoji-picker-react";
-import { useCallback, useRef, useState } from "react";
+import { lazy, memo, useCallback, useRef, useState } from "react";
 import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
-import CreatePoll from "../Poll/CreatePoll";
-import Location from "../Location";
-import SendFilePreview from "../SendDataPreview/SendFilePreview";
-import useMessageStore from "../../store/useMessageStore";
+const CreatePoll = lazy("../Poll/CreatePoll");
+const Location = lazy("../Location");
+const SendFilePreview = lazy("../SendDataPreview/SendFilePreview");
+const AudioRecorder = lazy("../Audio/AudioRecorder");
+import EmojiPicker from "emoji-picker-react";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
-import AudioRecorder from "../Audio/AudioRecorder";
+import useMessageStore from "../../store/useMessageStore";
 import useAudioStore from "../../store/useAudioStore";
 
 const ChatInput = () => {
@@ -57,7 +57,6 @@ const ChatInput = () => {
 
     form.append("file", e.target.files[0]);
     let res = await axiosInstance.post("/upload", form);
-    console.log(res);
   }, []);
 
   return (
@@ -90,10 +89,10 @@ const ChatInput = () => {
                 </span>
                 <input
                   type="file"
-                  id="selectImage"
+                  id="imageFile"
+                  onChangeCapture={handelGalleryData}
                   capture="user"
                   className="hidden"
-                  onChangeCapture={(e) => console.log(e)}
                   accept="image/*"
                 />
               </label>
@@ -239,4 +238,4 @@ const InputMenu = ({ icon, lable, button = null, input = null }) => {
   );
 };
 
-export default ChatInput;
+export default memo(ChatInput);

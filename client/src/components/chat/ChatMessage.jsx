@@ -1,5 +1,5 @@
 import { BsFileText, BsThreeDots } from "react-icons/bs";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -11,6 +11,7 @@ import useAuthStore from "../../store/useAuthStore";
 import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 import useFunctionStore from "../../store/useFuncationStore";
+import useMediaStore from "../../store/useMediaStore";
 
 const ChatMessage = () => {
   const {
@@ -23,8 +24,8 @@ const ChatMessage = () => {
   } = useMessageStore();
   const { onSelectMessage, selectMessage, isSelectMessage, closeSelection } =
     useFunctionStore();
- 
 
+  const { handleMediaPreview } = useMediaStore();
   const { socket } = useAuthStore();
   const messageEndRef = useRef();
 
@@ -72,14 +73,17 @@ const ChatMessage = () => {
                   <img
                     src={message.data[0].url}
                     alt="image"
-                    className="w-72 h-52 rounded-xl object-cover"
+                    onClick={() =>
+                      handleMediaPreview(true, message.data[0].url)
+                    }
+                    className="w-72 h-52 rounded-xl object-cover cursor-pointer"
                   />
                 )}
                 {message.type == "video" && (
                   <video
-                    controls
+                    onClick={() => handleMediaPreview(true, item)}
                     src={`${message.data[0].url}`}
-                    className="w-72 rounded-xl"
+                    className="w-72 rounded-xl cursor-pointer"
                   />
                 )}
                 {message.type == "file" && (
@@ -137,14 +141,15 @@ const ChatMessage = () => {
                           {item.type == "image" ? (
                             <img
                               src={item.url}
+                              onClick={() => handleMediaPreview(true, item.url)}
                               alt="image"
-                              className="h-full w-full rounded-xl object-cover"
+                              className="h-full w-full rounded-xl cursor-pointer object-cover"
                             />
                           ) : (
                             <video
                               src={item.url}
-                              controls
-                              className="h-full w-full rounded-xl object-fill"
+                              onClick={() => handleMediaPreview(true, item.url)}
+                              className="h-full w-full rounded-xl cursor-pointer object-fill"
                             />
                           )}
                         </div>
@@ -158,7 +163,7 @@ const ChatMessage = () => {
                     <MapContainer
                       center={[message.data.latitude, message.data.longitude]}
                       zoom={15}
-                      className="w-full h-full -z-0 rounded-md"
+                      className="-z-0 rounded-md"
                     >
                       <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -196,7 +201,7 @@ const ChatMessage = () => {
           </div>
         ))}
       </div>
-    
+
       {isSelectMessage && (
         <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
           <IoClose
@@ -220,4 +225,4 @@ const ChatMessage = () => {
   );
 };
 
-export default ChatMessage;
+export default memo(ChatMessage);

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
+import useMediaStore from "./useMediaStore";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
@@ -22,12 +23,13 @@ const useMessageStore = create((set, get) => ({
       `/message/chat/${get().currentChatingUser}`
     );
     set({ messages: [...res.data], isMessageLoading: false });
+    useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   selectUsertoChat: (data) => {
     set({ currentChatingUser: data });
   },
-  closeChat:()=>{
-    set({currentChatingUser:false})
+  closeChat: () => {
+    set({ currentChatingUser: false });
   },
   getMessagerUser: async () => {
     try {

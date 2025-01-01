@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import useMessageStore from "./useMessageStore";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
@@ -36,7 +37,7 @@ const useFunctionStore = create((set, get) => ({
     get().locationClose();
   },
   handelGalleryData: (e) => {
-    console.log(get().galleryData);
+  
     set({ galleryData: [...get().galleryData, ...e.target.files] });
   },
   sendGalleryData: async (data) => {
@@ -84,7 +85,7 @@ const useFunctionStore = create((set, get) => ({
     } else {
       selectMessage[data._id] = data;
     }
-    console.log(selectMessage);
+
     set({ selectMessage: selectMessage });
   },
   openSelection: () => {
@@ -100,6 +101,7 @@ const useFunctionStore = create((set, get) => ({
       console.log(supportedProperties);
     } else {
       console.log("Not Select");
+      toast.error("Not Select Contact in this Devices");
     }
   },
 }));

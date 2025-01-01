@@ -51,7 +51,7 @@ const useAudioStore = create((set, get) => ({
     set({ recordingDuration: 0 });
   },
   sendRecording: () => {
-    console.log("Sending audio:", get().audioBlob);
+
     get().deleteRecording();
   },
   formatDuration: (duration) => {
