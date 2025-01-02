@@ -14,11 +14,7 @@ import useMessageStore from "../store/useMessageStore";
 const Home = () => {
   const [activePage, setActivePage] = useState("chat");
   const { currentChatingUser } = useMessageStore();
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const { authUser, isCheckingAuth } = useAuthStore();
 
   if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (

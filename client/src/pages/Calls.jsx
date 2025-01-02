@@ -109,7 +109,7 @@ const Calls = () => {
 
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
-        <p className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
+        <div className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
           <span className="flex items-center gap-px">
             Calls
             <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
@@ -127,7 +127,7 @@ const Calls = () => {
               placeholder="Search messages..."
             />
           </div>
-        </p>
+        </div>
 
         {/* messeages list */}
         <div className="overflow-y-auto overflow-x-hidden">
