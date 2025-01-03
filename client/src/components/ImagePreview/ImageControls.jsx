@@ -8,6 +8,7 @@ import {
 } from "react-icons/md";
 import useMediaStore from "../../store/useMediaStore";
 import { memo } from "react";
+import { Link } from "react-router-dom";
 
 const ImageControls = () => {
   const { handleMediaPreview, currentMedia } = useMediaStore();
@@ -20,21 +21,16 @@ const ImageControls = () => {
       </div>
       <div className="flex items-center gap-2">
         <button className="btn btn-circle btn-ghost">
-          <MdReply size={24} />
-        </button>
-        <button className="btn btn-circle btn-ghost">
           <MdStar size={24} />
         </button>
-        <a
+        <Link
           src={currentMedia.current.url}
-          download
+          download={true}
           className="btn btn-circle btn-ghost cursor-pointer"
         >
           <MdDownload size={24} />
-        </a>
-        <button className="btn btn-circle btn-ghost">
-          <MdDelete size={24} />
-        </button>
+        </Link>
+
         <button className="btn btn-circle btn-ghost">
           <MdMoreVert size={24} />
         </button>
