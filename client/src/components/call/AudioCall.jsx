@@ -1,11 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import AudioWave from "./audioWave";
+import Peer from "peerjs";
+import io from "socket.io-client";
 
 const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
-  const caller = [1, 2, 5, 5, 5, 4];
+  const caller = [1, 2, 3, 4, 5, 6];
   const [isAudioActive, setIsAudioActive] = useState(false);
+
+  // const [peerId, setPeerId] = useState(null);
+  // const [remoteStream, setRemoteStream] = useState(null);
+
+  // const localAudioRef = useRef(null);
+  // const remoteAudioRef = useRef(null);
+
+  // const peerInstance = useRef(null);
+  // const callInstance = useRef(null);
+  let socket;
+
+  // socket = io("http://localhost:4000");
+  // useEffect(() => {
+  //   if (isCallActive) {
+  //     socket.emit("join-room", "room1", 12);
+  //   }
+
+  //   socket.on("user-connected", (data) => {
+  //     console.log(data);
+  //   });
+  // }, [isCallActive]);
 
   const handleAudioActivity = (isActive) => {
     setIsAudioActive(isActive);
@@ -36,8 +59,14 @@ const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
                 />
               </div>
               <h3 className="sm:text-lg sm:font-semibold capitalize">{name}</h3>
-              <div className="w-20 h-8 p-[2px] pl-3 rounded-full flex items-center justify-between bg-base-300 absolute top-2 right-2 sm:top-5 sm:right-5">
-                <p className="text-xs">10:12</p>
+              <div
+                className={`${
+                  index == 0
+                    ? "w-20 justify-between pl-3 p-[2px]"
+                    : "w-8 justify-center"
+                } h-8 rounded-full flex items-center bg-base-300 absolute top-2 right-2 sm:top-5 sm:right-5`}
+              >
+                <p className={`text-xs ${!index == 0 && "hidden"}`}>10:12</p>
                 <div className="w-7 h-7 rounded-full bg-base-100 grid place-items-center">
                   <HiMiniSpeakerWave
                     size={20}
@@ -46,10 +75,10 @@ const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
                 </div>
               </div>
             </div>
-            <AudioWave
+            {/* <AudioWave
               startCall={isCallActive}
               onAudioActivity={handleAudioActivity}
-            />
+            /> */}
           </div>
         ))}
       </div>
