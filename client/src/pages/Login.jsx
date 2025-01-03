@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineMail } from "react-icons/md";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
 const LoginPage = () => {
@@ -10,12 +10,13 @@ const LoginPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState();
   const { login, authUser } = useAuthStore();
-
+  const navigate = useNavigate();
   const Signin = () => {
     login({ phone, password });
   };
-
-  if (authUser) return <Navigate to={"/"} />;
+  useEffect(() => {
+    if (!authUser) return navigate("/");
+  }, [authUser]);
   return (
     <div className="flex justify-center items-center text-black font-[sans-serif] p-4">
       <div className="max-w-md w-full mx-auto">
@@ -24,7 +25,7 @@ const LoginPage = () => {
             <h3 className="text-gray-800 text-3xl font-extrabold">Sign in</h3>
           </div>
 
-          <div> 
+          <div>
             <div className="relative flex items-center">
               <input
                 name="phone"

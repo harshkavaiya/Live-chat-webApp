@@ -8,15 +8,12 @@ import Call from "./Calls";
 import Setting from "./Setting";
 import Myprofile from "./Myprofile";
 import BottomBar from "../components/BottomBar";
-import useAuthStore from "../store/useAuthStore";
 import useMessageStore from "../store/useMessageStore";
 
 const Home = () => {
   const [activePage, setActivePage] = useState("chat");
   const { currentChatingUser } = useMessageStore();
-  const { authUser, isCheckingAuth } = useAuthStore();
 
-  if (!isCheckingAuth && !authUser) return <Navigate to={"/Login"} />;
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* user setting */}
