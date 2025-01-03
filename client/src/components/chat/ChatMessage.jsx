@@ -18,7 +18,7 @@ const ChatMessage = () => {
     messages,
     suscribeToMessage,
     unsuscribeFromMessage,
-    getMessage,
+   
     isMessageLoading,
     currentChatingUser,
   } = useMessageStore();
@@ -30,10 +30,9 @@ const ChatMessage = () => {
   const messageEndRef = useRef();
 
   useEffect(() => {
-    getMessage();
     suscribeToMessage();
     return () => unsuscribeFromMessage();
-  }, [getMessage, suscribeToMessage, socket, unsuscribeFromMessage]);
+  }, [ suscribeToMessage, socket, unsuscribeFromMessage]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {

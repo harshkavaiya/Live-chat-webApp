@@ -3,12 +3,17 @@ import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
+import { useQuery } from "@tanstack/react-query";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
   isMessageLoading: false,
   currentChatingUser: false,
+  setMessages: (messages) => {
+    set({ messages });
+    useMediaStore.getState().fetchChatUserMedia(get().messages);
+  },
   sendMessage: async (data) => {
     let res = await axiosInstance.post(
       `/message/send/${get().currentChatingUser}`,
@@ -16,14 +21,6 @@ const useMessageStore = create((set, get) => ({
     );
     toast.success("Message Send");
     set({ messages: [...get().messages, res.data] });
-  },
-  getMessage: async () => {
-    set({ isMessageLoading: true });
-    let res = await axiosInstance.get(
-      `/message/chat/${get().currentChatingUser}`
-    );
-    set({ messages: [...res.data], isMessageLoading: false });
-    useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   selectUsertoChat: (data) => {
     set({ currentChatingUser: data });
