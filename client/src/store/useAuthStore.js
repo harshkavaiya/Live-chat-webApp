@@ -17,25 +17,27 @@ const useAuthStore = create((set, get) => ({
 
       const res = await axiosInstance.get("/auth/check");
       if (!res.data.success) {
-        return set({ authUser: null });
+        set({ authUser: null, isLogin: false });
+        return;
       }
-      set({ authUser: res.data });
 
+      set({ authUser: res.data.user, isLogin: true });
       get().connectSocket();
     } catch (error) {
-      console.log("Error in checkAuth:", error);
-      set({ authUser: null });
+      console.error("Error in checkAuth:", error);
+      set({ authUser: null, isLogin: false });
+      get().diconnectSocket();
     } finally {
       set({ isCheckingAuth: false });
     }
   },
+
   login: async (data) => {
     if (get().authUser) return;
     let res = await axiosInstance.post("/auth/login", data);
     if (res.data.success) {
-      toast.success("Login");
-
-      set({ authUser: res.data });
+      toast.success("Login Success");
+      set({ authUser: res.data, isLogin: true });
       get().connectSocket();
     } else {
       toast.error(res.data.message);
@@ -43,7 +45,8 @@ const useAuthStore = create((set, get) => ({
   },
   logout: async () => {
     try {
-      await axiosInstance.get("/auth/logout");
+      const res = await axiosInstance.get("/auth/logout");
+      console.log(res);
       get().diconnectSocket();
       toast.success("Logout");
     } catch (error) {

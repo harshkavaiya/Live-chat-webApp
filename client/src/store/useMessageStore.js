@@ -32,10 +32,11 @@ const useMessageStore = create((set, get) => ({
     try {
       let res = await axiosInstance.get("/message/user");
 
-      if (!res.data) {
+      if (!res.data.success) {
         return set({ messagerUser: [] });
       }
-      const sortedUsers = res.data.sort(
+
+      const sortedUsers = res.data.usersWithLastMessage.sort(
         (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
       );
       set({ messagerUser: [...sortedUsers] });
