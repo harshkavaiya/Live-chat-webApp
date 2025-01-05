@@ -9,14 +9,14 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState();
-  const { login, authUser } = useAuthStore();
+  const { login, authUser, isLogin } = useAuthStore();
   const navigate = useNavigate();
   const Signin = () => {
     login({ phone, password });
   };
   useEffect(() => {
-    if (!authUser) return navigate("/");
-  }, [authUser]);
+    if (isLogin) return navigate("/");
+  }, [isLogin]);
   return (
     <div className="flex justify-center items-center text-black font-[sans-serif] p-4">
       <div className="max-w-md w-full mx-auto">

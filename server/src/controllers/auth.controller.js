@@ -7,7 +7,9 @@ export const signup = async (req, res) => {
   const { fullname, email, password, phone } = req.body;
 
   if (!fullname || !email || !password || !phone)
-    return res.status(400).json({ message: "all fields required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "all fields required" });
 
   if (password.length <= 5) {
     return res.status(400).send("Password must be at least 6 character");
@@ -16,12 +18,16 @@ export const signup = async (req, res) => {
   try {
     const user = await Users.findOne({ phone });
     if (user) {
-      return res.status(400).json({ message: "phone number uncorrect" });
+      return res
+        .status(400)
+        .json({ success: false, message: "phone number uncorrect" });
     }
 
     const usermail = await Users.findOne({ email });
     if (usermail) {
-      return res.status(400).json({ message: "email already exist" });
+      return res
+        .status(400)
+        .json({ success: false, message: "email already exist" });
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -40,30 +46,37 @@ export const signup = async (req, res) => {
         phone: newUser.phone,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        success: true,
       });
     } else {
-      res.status(400).json({ message: "Invalid user data" });
+      res.status(400).json({ success: false, message: "Invalid user data" });
     }
   } catch (error) {
     console.log("error in signup controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 export const login = async (req, res) => {
   const { phone, password } = req.body;
   if (!phone || !password) {
-    return res.status(400).json({ message: "All field required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "All field required" });
   }
   try {
     const user = await Users.findOne({ phone });
     if (!user) {
-      return res.status(400).json({ message: "phone or Password uncorrect" });
+      return res
+        .status(400)
+        .json({ success: false, message: "phone or Password uncorrect" });
     }
 
     const pass = await bcrypt.compare(password, user.password);
     if (!pass) {
-      return res.status(400).json({ message: "phone or Password uncorrect" });
+      return res
+        .status(400)
+        .json({ success: false, message: "phone or Password uncorrect" });
     }
 
     generateToken(user._id, res);
@@ -73,21 +86,21 @@ export const login = async (req, res) => {
       phone: user.phone,
       email: user.email,
       profilePic: user.profilePic,
-      success:1
+      success: true,
     });
   } catch (error) {
     console.log("error in login controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 export const logout = (req, res) => {
   try {
     res.cookie("token", "", { maxAge: 0 });
-    res.status(200).json({ message: "logged out successfully" });
+    res.status(200).json({ success: true, message: "logged out successfully" });
   } catch (error) {
     console.log("error in logout controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -96,7 +109,9 @@ export const updateProfile = async (req, res) => {
     const { profilePic } = req.body;
     const userId = req.user._id;
     if (!profilePic) {
-      return res.status(400).json({ message: "profile picture are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "profile picture are required" });
     }
     const cloudPic = await cloudinary.uploader.upload(profilePic);
     const updatedUser = await Users.findByIdAndUpdate(
@@ -106,18 +121,18 @@ export const updateProfile = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedUser);
+    res.status(200).json({ success: true, updatedUser });
   } catch (error) {
     console.log("error in update-profile controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 export const checkAuth = (req, res) => {
   try {
-    res.status(200).json(req.user);
+    res.status(200).json({ success: true, user: req.user });
   } catch (error) {
     console.log("error in checkAuth controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

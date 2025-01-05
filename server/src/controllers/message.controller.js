@@ -55,7 +55,7 @@ export const sidebarUser = async (req, res) => {
       })
     );
 
-    res.status(200).json(usersWithLastMessage);
+    res.status(200).json({ success: true, usersWithLastMessage });
   } catch (error) {
     console.log("error in sidebarUser controller: ", error.message);
     res.status(500).json({ message: "Server error" });

@@ -1,8 +1,8 @@
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import ChatPage from "./pages/ChatPage";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
@@ -10,13 +10,19 @@ import { Toaster } from "react-hot-toast";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser, checkAuth, isLogin } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
-    if (!isCheckingAuth || !authUser) navigate("/Login");
-  }, [checkAuth]);
+    const authenticate = async () => {
+      await checkAuth();
+      if (!isLogin && !authUser) {
+        navigate("/Login");
+      }
+    };
+
+    authenticate();
+  }, [checkAuth, isLogin, authUser]);
 
   return (
     <div data-theme={theme}>
