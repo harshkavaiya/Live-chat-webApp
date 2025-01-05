@@ -133,6 +133,9 @@ export const addNewContact = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   const myId = req.user._id;
+
+  if (!myId)
+    return res.status(400).json({ message: "Server error", success: 0 });
   const { id: userToChatId } = req.params;
   try {
     const message = await Message.find({

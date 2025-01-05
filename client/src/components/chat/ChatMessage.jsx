@@ -12,13 +12,16 @@ import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMediaStore from "../../store/useMediaStore";
+import Image from "./msg_type/image";
+import Video from "./msg_type/video";
+import File from "./msg_type/file";
+import Multiplefile from "./msg_type/multiplefile";
 
 const ChatMessage = () => {
   const {
     messages,
     suscribeToMessage,
     unsuscribeFromMessage,
-   
     isMessageLoading,
     currentChatingUser,
   } = useMessageStore();
@@ -32,7 +35,7 @@ const ChatMessage = () => {
   useEffect(() => {
     suscribeToMessage();
     return () => unsuscribeFromMessage();
-  }, [ suscribeToMessage, socket, unsuscribeFromMessage]);
+  }, [suscribeToMessage, socket, unsuscribeFromMessage]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -45,7 +48,11 @@ const ChatMessage = () => {
     <>
       <div className="flex-1 p-1 space-y-1 overflow-y-scroll h-full">
         {messages.map((message, i) => (
-          <div ref={messageEndRef} key={i} className="flex w-full items-center">
+          <div
+            ref={messageEndRef}
+            key={i}
+            className="flex w-full items-center scroll-smooth"
+          >
             {isSelectMessage && (
               <input
                 type="checkbox"
@@ -69,115 +76,26 @@ const ChatMessage = () => {
                   <p className="text-sm">{message.data}</p>
                 )}
                 {message.type == "image" && (
-                  <img
+                  <Image
                     src={message.data[0].url}
-                    alt="image"
-                    onClick={() =>
-                      handleMediaPreview(true, message.data[0].url)
-                    }
-                    className="w-72 h-52 rounded-xl object-cover cursor-pointer"
+                    handleMediaPreview={handleMediaPreview}
                   />
                 )}
                 {message.type == "video" && (
-                  <video
-                    onClick={() => handleMediaPreview(true, item)}
-                    src={`${message.data[0].url}`}
-                    className="w-72 rounded-xl cursor-pointer"
+                  <Video
+                    src={message.data[0].url}
+                    handleMediaPreview={handleMediaPreview}
                   />
                 )}
-                {message.type == "file" && (
-                  <>
-                    <div
-                      className={`flex items-start gap-2 ${
-                        message.sender != currentChatingUser
-                          ? "bg-base-100/25 text-primary-content "
-                          : "bg-base-100 text-base-content"
-                      } p-1 rounded-lg w-[55vw]  md:w-60`}
-                    >
-                      {/* File Icon */}
-                      <div className=" p-2 rounded-lg">
-                        <BsFileText className="text-2xl " />
-                      </div>
-
-                      {/* File Info */}
-                      <div className="flex-1">
-                        <div className="font-medium text-sm truncate">
-                          {message.data.name}
-                        </div>
-                        <div className="text-xs ">{message.data.size}</div>
-                      </div>
-
-                      {/* Download Icon */}
-                      <button className="btn btn-ghost btn-circle btn-sm">
-                        <BiDownload className="text-xl " />
-                      </button>
-                    </div>
-                  </>
-                )}
+                {message.type == "file" && <File message={message} />}
                 {message.type == "multiple-file" && (
-                  <div
-                    className={`grid ${
-                      message.data.length == 2
-                        ? "grid-cols-1 grid-rows-2"
-                        : "grid-cols-2 grid-rows-2"
-                    }    w-72 h-52 gap-2 mt-1`}
-                  >
-                    {message.data.slice(0, 4).map((item, i) => {
-                      return (
-                        <div
-                          key={i}
-                          className={`relative ${
-                            message.data.length <= 3 && i == 2
-                              ? "col-span-2"
-                              : "col-span-1"
-                          }`}
-                        >
-                          {message.data.length > 4 && i == 3 && (
-                            <div className="absolute w-full text-white   h-full text-4xl font-semibold flex items-center justify-center">
-                              +{message.data.length - 3}
-                            </div>
-                          )}
-                          {item.type == "image" ? (
-                            <img
-                              src={item.url}
-                              onClick={() => handleMediaPreview(true, item.url)}
-                              alt="image"
-                              className="h-full w-full rounded-xl cursor-pointer object-cover"
-                            />
-                          ) : (
-                            <video
-                              src={item.url}
-                              onClick={() => handleMediaPreview(true, item.url)}
-                              className="h-full w-full rounded-xl cursor-pointer object-fill"
-                            />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <Multiplefile
+                    message={message}
+                    handleMediaPreview={handleMediaPreview}
+                  />
                 )}
                 {message.type == "poll" && <Poll data={message.data} />}
-                {message.type == "location" && (
-                  <div className="w-56 sm:w-64 md:w-72 h-56 z-0 p-0.5">
-                    <MapContainer
-                      center={[message.data.latitude, message.data.longitude]}
-                      zoom={15}
-                      className="-z-0 rounded-md"
-                    >
-                      <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-
-                      <Marker
-                        position={[
-                          message.data.latitude,
-                          message.data.longitude,
-                        ]}
-                      />
-                    </MapContainer>
-                  </div>
-                )}
+                {message.type == "location" && <Location message={message} />}
                 <p
                   className={`text-[10px] text-end flex items-end justify-end ${
                     message.sender != currentChatingUser
