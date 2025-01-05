@@ -7,12 +7,20 @@ import { useEffect } from "react";
 import useMessageStore from "../store/useMessageStore";
 import { formatMessageTime } from "../function/TimeFormating";
 import SidebarUser from "./Skeleton/SidebarUser";
+import ContactDialog from "./PopUpDialog/ContactDialog";
+import useContactList from "../store/useContactList";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const loading = false;
   const { getMessagerUser, messagerUser, selectUsertoChat } = useMessageStore();
   const users = [...Array(20).keys()];
+  const { setDialogOpen } = useContactList();
+
+  const Opendialog = (dialog) => {
+    setDialogOpen(true);
+    document.getElementById(`my_modal_${dialog}`).showModal();
+  };
 
   useEffect(() => {
     getMessagerUser();
@@ -20,7 +28,8 @@ const Sidebar = () => {
 
   if (loading) return <SidebarUser />;
   return (
-    <div className="h-full w-full flex flex-col gap-2 relative transition-all duration-200 ">
+    <div className="h-full w-full flex flex-col gap-2">
+      <ContactDialog />
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
         <div className="flex justify-between items-center pr-2 pb-2">
@@ -98,13 +107,11 @@ const Sidebar = () => {
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  {!receiveMessage ? (
+                  {!receiveMessage && (
                     <div className="flex justify-start">
                       <GoDotFill size={20} className="text-blue-500" />
                       <GoDotFill size={20} className="text-blue-500" />
                     </div>
-                  ) : (
-                    ""
                   )}
                   <div className="flex flex-col gap-2 items-center">
                     <p className="text-xs">
@@ -112,7 +119,7 @@ const Sidebar = () => {
                     </p>
 
                     <div
-                      className={`flex items-center gap-3 group-hover:translate-x-0  transition-all duration-75
+                      className={`flex items-center gap-3 group-hover:translate-x-0  transition-transform duration-75
                     ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
                     >
                       {receiveMessage ? (
@@ -150,13 +157,12 @@ const Sidebar = () => {
             className="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow-lg gap-1"
           >
             <li>
-              <a>Groupt</a>
+              <button className="btn btn-ghost" onClick={() => Opendialog(4)}>
+                Contacts
+              </button>
             </li>
             <li>
-              <a>Message</a>
-            </li>
-            <li>
-              <a>Contact</a>
+              <button className="btn btn-ghost">Groups</button>
             </li>
           </ul>
         </div>

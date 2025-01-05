@@ -16,7 +16,7 @@ const LoginPage = () => {
   };
   useEffect(() => {
     if (isLogin) return navigate("/");
-  }, [isLogin]);
+  }, [isLogin, authUser]);
   return (
     <div className="flex justify-center items-center text-black font-[sans-serif] p-4">
       <div className="max-w-md w-full mx-auto">
