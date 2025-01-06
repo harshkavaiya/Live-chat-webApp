@@ -1,4 +1,3 @@
-import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { IoLocationOutline } from "react-icons/io5";

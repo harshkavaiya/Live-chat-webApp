@@ -1,12 +1,14 @@
-import React from "react";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 const Location = ({ message }) => {
+  console.log(message);
   return (
-    <div className="w-56 sm:w-64 md:w-72 h-56 z-0 p-0.5">
+    <div className="w-56 sm:w-64 md:w-72 h-56 p-0.5">
       <MapContainer
         center={[message.data.latitude, message.data.longitude]}
         zoom={15}
-        className="-z-0 rounded-md"
+        className="z-0 rounded-md w-full h-full"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

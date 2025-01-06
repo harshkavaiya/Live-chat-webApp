@@ -1,21 +1,20 @@
-import { BsFileText, BsThreeDots } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import { memo, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
-import { BiDownload } from "react-icons/bi";
 import Poll from "../Poll/Poll";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
 import { formatMessageTime } from "../../function/TimeFormating";
 import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMediaStore from "../../store/useMediaStore";
-import Image from "./msg_type/image";
+import Image from "./msg_type/Image";
 import Video from "./msg_type/video";
 import File from "./msg_type/file";
 import Multiplefile from "./msg_type/multiplefile";
+import LocationPreview from "./msg_type/LocationPreview";
 
 const ChatMessage = () => {
   const {
@@ -25,8 +24,13 @@ const ChatMessage = () => {
     isMessageLoading,
     currentChatingUser,
   } = useMessageStore();
-  const { onSelectMessage, selectMessage, isSelectMessage, closeSelection } =
-    useFunctionStore();
+  const {
+    onSelectionMessage,
+    handleSelectMessage,
+    selectMessage,
+    isSelectMessage,
+    handleSelection,
+  } = useFunctionStore();
 
   const { handleMediaPreview } = useMediaStore();
   const { socket } = useAuthStore();
@@ -56,7 +60,7 @@ const ChatMessage = () => {
             {isSelectMessage && (
               <input
                 type="checkbox"
-                onClick={() => onSelectMessage(message)}
+                onClick={() => onSelectionMessage(message)}
                 className="checkbox ml-2 checkbox-primary text-primary-content"
               />
             )}
@@ -78,6 +82,7 @@ const ChatMessage = () => {
                 {message.type == "image" && (
                   <Image
                     src={message.data[0].url}
+                    message={message}
                     handleMediaPreview={handleMediaPreview}
                   />
                 )}
@@ -95,7 +100,9 @@ const ChatMessage = () => {
                   />
                 )}
                 {message.type == "poll" && <Poll data={message.data} />}
-                {message.type == "location" && <Location message={message} />}
+                {message.type == "location" && (
+                  <LocationPreview message={message} />
+                )}
                 <p
                   className={`text-[10px] text-end flex items-end justify-end ${
                     message.sender != currentChatingUser
@@ -120,9 +127,9 @@ const ChatMessage = () => {
       </div>
 
       {isSelectMessage && (
-        <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-50 flex items-center text-base-content overflow-hidden">
+        <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-10 flex items-center text-base-content overflow-hidden">
           <IoClose
-            onClick={closeSelection}
+            onClick={() => handleSelection(false)}
             size={30}
             className="ml-4 cursor-pointer"
           />
@@ -132,8 +139,14 @@ const ChatMessage = () => {
           </p>
           {Object.keys(selectMessage).length > 0 && (
             <div className="flex justify-end w-full mr-3 gap-x-2 ">
-              <IoIosShareAlt size={30} className="" />
-              <LuTrash2 size={30} className="" />
+              <IoIosShareAlt
+                onClick={() => {
+                  handleSelectMessage(true);
+                }}
+                size={30}
+                className="cursor-pointer"
+              />
+              <LuTrash2 size={30} className="cursor-pointer" />
             </div>
           )}
         </div>

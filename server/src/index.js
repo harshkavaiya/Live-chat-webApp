@@ -2,7 +2,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import expressFileupload from "express-fileupload";
-import { app, server, io, getUserSocketId } from "./lib/socket-io.js";
+import { app, server, } from "./lib/socket-io.js";
 dotenv.config();
 app.use(
   cors({
@@ -27,10 +27,6 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoute);
 app.use("/message", messageRoute);
 
-app.post("/api/file", async (req, res) => {
-  console.log(req.body);
-  res.status(200).json({ success: 1, data: req.body });
-});
 
 server.listen(PORT, () => {
   console.log(`server start on http://localhost:${PORT}`);

@@ -1,4 +1,3 @@
-import React from "react";
 import { CiSearch } from "react-icons/ci";
 import { FaAngleDown, FaAngleRight } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
@@ -75,8 +74,7 @@ const Sidebar = () => {
         {/* messeages list */}
         <div className="overflow-y-auto scrollbar-small overflow-x-hidden">
           {messagerUser.map((i, idx) => {
-            const { lastMessageTime, lastMessageType, fullname, lastMessage } =
-              i;
+            const { lastMessageTime, fullname, lastMessage } = i;
             return (
               <div
                 key={idx}

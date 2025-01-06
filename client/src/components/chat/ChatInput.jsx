@@ -6,13 +6,13 @@ import { GrGallery } from "react-icons/gr";
 import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
 import { FaRegPauseCircle, FaRegSmile } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
-import { lazy, memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
-const CreatePoll = lazy("../Poll/CreatePoll");
-const Location = lazy("../Location");
-const SendFilePreview = lazy("../SendDataPreview/SendFilePreview");
-const AudioRecorder = lazy("../Audio/AudioRecorder");
+import CreatePoll from "../Poll/CreatePoll";
+import Location from "../Location";
+import SendFilePreview from "../SendDataPreview/SendFilePreview";
+import AudioRecorder from "../Audio/AudioRecorder";
 import EmojiPicker from "emoji-picker-react";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
@@ -79,7 +79,7 @@ const ChatInput = () => {
             />
             <GoPlus
               onClick={() => OpenCloseMenu(inputMenuRef)}
-              className="cursor-pointer z-20"
+              className="cursor-pointer"
               size={28}
             />
             {text.length <= 0 && (

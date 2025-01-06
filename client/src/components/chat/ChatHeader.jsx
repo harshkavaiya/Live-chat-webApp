@@ -9,7 +9,7 @@ import useMessageStore from "../../store/useMessageStore";
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const [key, setKey] = useState(0);
-  const { openSelection } = useFunctionStore();
+  const { handleSelection } = useFunctionStore();
   const { closeChat } = useMessageStore();
   useEffect(() => {
     headerMenuRef.current.classList.add("hidden");
@@ -73,7 +73,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           </li>
           <li
             onClick={() => {
-              openSelection();
+              handleSelection(true);
               setKey(Math.random());
             }}
           >
