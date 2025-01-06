@@ -15,13 +15,9 @@ const LoginPage = () => {
     login({ phone, password });
   };
   useEffect(() => {
-<<<<<<< HEAD
-    if (authUser) return navigate("/");
+    if (!authUser) return navigate("/");
   }, [authUser]);
-=======
-    if (isLogin) return navigate("/");
-  }, [isLogin, authUser]);
->>>>>>> cf1839bc9f97764def0bada764bcac513edc58b1
+
   return (
     <div className="flex justify-center items-center text-black font-[sans-serif] p-4">
       <div className="max-w-md w-full mx-auto">
