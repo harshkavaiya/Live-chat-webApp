@@ -16,7 +16,7 @@ function App() {
   useEffect(() => {
     const authenticate = async () => {
       await checkAuth();
-      if (!isLogin && !authUser) {
+      if (!isLogin || !authUser) {
         navigate("/Login");
       } else {
         navigate("/");

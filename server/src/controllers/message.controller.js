@@ -73,7 +73,7 @@ export const contactList = async (req, res) => {
 
     const connectedUsers = await Users.find({
       _id: { $in: loggedUser.contacts },
-    }).select("-password");
+    }).select("phone email fullname profilePic");
 
     res.status(200).json(connectedUsers);
   } catch (error) {
