@@ -6,7 +6,7 @@ import { ThemeContext } from "../../GlobalStates/ThemeContext";
 const ThemeDialog = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   return (
-    <dialog id="theme" className="modal backdrop-blur-sm">
+    <dialog id="theme" className="modal">
       <div className="modal-box">
         <h3 className="font-bold mb-4 flex justify-between items-center text-lg">
           Choose Your Theme

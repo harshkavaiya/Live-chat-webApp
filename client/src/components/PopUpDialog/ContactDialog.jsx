@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FaArrowLeft, FaPlus } from "react-icons/fa6";
 import { IoMdSearch } from "react-icons/io";
@@ -18,19 +18,40 @@ const ContactDialog = () => {
     }
   }, [isOpenDialog, contacts, getContactsList]);
 
-  const filteredContacts = contacts.filter((contact) => {
-    const fullNameMatch = contact.fullname
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const phoneNumberMatch = contact.phone
-      ? contact.phone.includes(searchQuery)
-      : false;
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
 
-    return fullNameMatch || phoneNumberMatch;
-  });
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => clearTimeout(handler);
+    }, [value, delay]);
+
+    return debouncedValue;
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const filteredContacts = useMemo(() => {
+    return contacts.filter((contact) => {
+      const fullNameMatch = contact.fullname
+        .toLowerCase()
+        .includes(debouncedSearchQuery.toLowerCase());
+      const phoneNumberMatch = contact.phone
+        ? contact.phone.includes(debouncedSearchQuery)
+        : false;
+      return fullNameMatch || phoneNumberMatch;
+    });
+  }, [contacts, debouncedSearchQuery]);
   return (
-    <dialog id="my_modal_4" className="modal sm:backdrop-blur-sm">
-      <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-4 flex flex-col">
+    <dialog id="my_modal_4" className="modal">
+      <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
         {/* header */}
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-2">
@@ -58,13 +79,15 @@ const ContactDialog = () => {
             className="input w-full input-bordered pl-12"
             placeholder="Search Name or Phone Number"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
         {/* all Contacts show here */}
-        <div className="overflow-y-auto flex flex-col gap-1 py-2 mt-1">
+        <div className="overflow-y-auto scroll-smooth relative h-full flex flex-col gap-1 py-2 mt-1">
           {filteredContacts.length === 0 ? (
-            <p>No contacts found</p> // Message if no contacts match search
+            <p className="text-center inset-x-0 inset-y-1/2 absolute">
+              No contacts found
+            </p>
           ) : (
             filteredContacts.map((i, idx) => (
               <div
