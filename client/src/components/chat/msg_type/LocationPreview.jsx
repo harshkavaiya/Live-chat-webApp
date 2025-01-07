@@ -2,7 +2,6 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const Location = ({ message }) => {
-  console.log(message);
   return (
     <div className="w-56 sm:w-64 md:w-72 h-56 p-0.5">
       <MapContainer

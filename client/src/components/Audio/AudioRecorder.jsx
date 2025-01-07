@@ -1,10 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Visualizer from "./Visualizer";
 import useAudioStore from "../../store/useAudioStore";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
+import WavesurferPlayer from "@wavesurfer/react";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 const AudioRecorder = () => {
+  const [wavesurfer, setWavesurfer] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const {
     isRecording,
     recordingDuration,
@@ -26,6 +31,15 @@ const AudioRecorder = () => {
     return () => clearInterval(interval);
   }, [isRecording, recordingDuration]);
 
+  const onReady = (ws) => {
+    setWavesurfer(ws);
+    setIsPlaying(false);
+  };
+
+  const onPlayPause = () => {
+    wavesurfer && wavesurfer.playPause();
+  };
+
   return (
     <div className="w-full">
       <div className="w-[100%] flex items-center justify-center">
@@ -39,21 +53,43 @@ const AudioRecorder = () => {
         </div>
       </div>
       {audioUrl && (
-        <div className="flex space-x-2">
-          <audio className="w-full" controls src={audioUrl} />
-          <button className="btn btn-error text-error-content rounded-full  p-1 outline-none w-12">
-            <FaRegTrashAlt
-              onClick={deleteRecording}
-              size={20}
-              className="cursor-pointer"
-            />
+        <div className="flex space-x-2 w-full h-full">
+          <button
+            onClick={onPlayPause}
+            className="btn btn-primary text-primary-content rounded-full  p-1 outline-none w-12"
+          >
+            {isPlaying ? (
+              <FaPause size={20} className="cursor-pointer" />
+            ) : (
+              <FaPlay size={20} className="cursor-pointer" />
+            )}
           </button>
-          <button className="btn btn-primary text-primary-content rounded-full  p-1 outline-none w-12">
-            <IoSend
-              onClick={sendRecording}
-              className="cursor-pointer"
-              size={20}
+          <div className="w-[90%] sm:w-[50%] lg:w-[80%] overflow-x-scroll">
+            <WavesurferPlayer
+              waveColor={"black"}
+              width={520}
+              height={50}
+              progressColor={"red"}
+              url={audioUrl}
+              onReady={onReady}
+              barWidth={3}
+              barGap={2}
+              barRadius={10}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
             />
+          </div>
+          <button
+            onClick={deleteRecording}
+            className="btn btn-error text-error-content rounded-full  p-1 outline-none w-12"
+          >
+            <FaRegTrashAlt size={20} className="cursor-pointer" />
+          </button>
+          <button
+            onClick={sendRecording}
+            className="btn btn-primary text-primary-content rounded-full  p-1 outline-none w-12"
+          >
+            <IoSend className="cursor-pointer" size={20} />
           </button>
         </div>
       )}

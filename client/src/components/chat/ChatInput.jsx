@@ -104,27 +104,30 @@ const ChatInput = () => {
         )}
 
         {!audioUrl && (
-          <button className="btn btn-primary rounded-full w-12 p-1 outline-none">
+          <div className="">
             {text.length > 0 ? (
-              <IoSend
+              <button
                 onClick={() => sendMessage({ data: text, type: "text" })}
-                className="cursor-pointer"
-                size={20}
-              />
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <IoSend className="cursor-pointer" size={20} />
+              </button>
             ) : !isRecording ? (
-              <FaMicrophone
+              <button
                 onClick={() => startRecording(mediaRecorderRef)}
-                className="cursor-pointer"
-                size={20}
-              />
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <FaMicrophone className="cursor-pointer" size={20} />
+              </button>
             ) : (
-              <FaRegPauseCircle
+              <button
                 onClick={stopRecording}
-                className="cursor-pointer"
-                size={28}
-              />
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <FaRegPauseCircle className="cursor-pointer" size={28} />
+              </button>
             )}
-          </button>
+          </div>
         )}
         {/* input menu */}
         <div

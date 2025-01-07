@@ -19,7 +19,6 @@ const useMessageStore = create((set, get) => ({
       `/message/send/${get().currentChatingUser}`,
       data
     );
-    toast.success("Message Send");
     set({ messages: [...get().messages, res.data] });
   },
   selectUsertoChat: (data) => {
