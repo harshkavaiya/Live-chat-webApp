@@ -1,54 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
+import React, { useEffect, useMemo, useState } from "react";
 import { FaArrowLeft, FaPlus } from "react-icons/fa6";
 import { IoMdSearch } from "react-icons/io";
 import useContactList from "../../store/useContactList";
+import useSearch from "../../function/SearchFunc";
 
 const ContactDialog = () => {
   const { getContactsList, isOpenDialog, setDialogOpen, contacts, isloading } =
     useContactList();
+  const { searchQuery, filteredData, handleSearchChange } = useSearch(contacts);
   const closeDialog = () => {
     setDialogOpen(false);
     document.getElementById("my_modal_4").close();
   };
-  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     if (isOpenDialog && contacts.length === 0) {
       getContactsList();
     }
   }, [isOpenDialog, contacts, getContactsList]);
 
-  const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-
-    useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
-
-      return () => clearTimeout(handler);
-    }, [value, delay]);
-
-    return debouncedValue;
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
-  const filteredContacts = useMemo(() => {
-    return contacts.filter((contact) => {
-      const fullNameMatch = contact.fullname
-        .toLowerCase()
-        .includes(debouncedSearchQuery.toLowerCase());
-      const phoneNumberMatch = contact.phone
-        ? contact.phone.includes(debouncedSearchQuery)
-        : false;
-      return fullNameMatch || phoneNumberMatch;
-    });
-  }, [contacts, debouncedSearchQuery]);
   return (
     <dialog id="my_modal_4" className="modal">
       <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
@@ -63,7 +32,7 @@ const ContactDialog = () => {
             <span className="flex flex-col items-center justify-center">
               <h3 className="font-bold text-lg">Contacts</h3>
               <div className="badge badge-ghost rounded-btn text-xs">
-                {filteredContacts.length} contacts
+                {filteredData.length} contacts
               </div>
             </span>
           </span>
@@ -77,19 +46,19 @@ const ContactDialog = () => {
           <input
             type="search"
             className="input w-full input-bordered pl-12"
-            placeholder="Search Name or Phone Number"
+            placeholder="Search name or phone number"
             value={searchQuery}
             onChange={handleSearchChange}
           />
         </div>
         {/* all Contacts show here */}
         <div className="overflow-y-auto scroll-smooth relative h-full flex flex-col gap-1 py-2 mt-1">
-          {filteredContacts.length === 0 ? (
+          {filteredData.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
             </p>
           ) : (
-            filteredContacts.map((i, idx) => (
+            filteredData.map((i, idx) => (
               <div
                 key={idx}
                 className="flex gap-3 items-center p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"

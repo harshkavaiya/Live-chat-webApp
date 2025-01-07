@@ -15,10 +15,11 @@ const Sidebar = () => {
   const loading = false;
   const { getMessagerUser, messagerUser, selectUsertoChat } = useMessageStore();
   const users = [...Array(20).keys()];
-  const { setDialogOpen, isOpenDialog } = useContactList();
+  const { setDialogOpen } = useContactList();
 
   const Opendialog = (dialog) => {
-    setDialogOpen(true);
+    if (dialog === 4) setDialogOpen(true);
+
     document.getElementById(`my_modal_${dialog}`).showModal();
   };
 
