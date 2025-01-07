@@ -14,6 +14,10 @@
   height: 100%;
   object-fit: contain;
 }
+.mySwiper2 .swiper-slide video {
+  height: 100%;
+  object-fit: fill;
+}
 
 .mySwiper {
   height: 10vh;

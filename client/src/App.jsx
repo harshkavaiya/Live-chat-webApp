@@ -18,11 +18,13 @@ function App() {
       await checkAuth();
       if (!isLogin || !authUser) {
         navigate("/Login");
+      } else {
+        navigate("/");
       }
     };
 
     authenticate();
-  }, [checkAuth, isLogin, authUser]);
+  }, [isLogin]);
 
   return (
     <div data-theme={theme}>

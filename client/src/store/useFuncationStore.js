@@ -10,6 +10,7 @@ const useFunctionStore = create((set, get) => ({
   isGalleryDataUpload: false,
   selectMessage: {},
   isSelectMessage: false,
+  isMessageShare: false,
   isSelectContact: false,
   selectContact: {},
 
@@ -32,12 +33,11 @@ const useFunctionStore = create((set, get) => ({
     useMessageStore.getState().sendMessage({
       type: "location",
       data: { latitude: get().location[0], longitude: get().location[1] },
-      receiver: useMessageStore().getState().currentChatingUser,
+      receiver: get().currentChatingUser,
     });
     get().locationClose();
   },
   handelGalleryData: (e) => {
-  
     set({ galleryData: [...get().galleryData, ...e.target.files] });
   },
   sendGalleryData: async (data) => {
@@ -78,7 +78,7 @@ const useFunctionStore = create((set, get) => ({
     galleryData.splice(data, 1);
     set({ galleryData: galleryData });
   },
-  onSelectMessage: (data) => {
+  onSelectionMessage: (data) => {
     const { selectMessage } = get();
     if (selectMessage[data._id]) {
       delete selectMessage[data._id];
@@ -88,12 +88,11 @@ const useFunctionStore = create((set, get) => ({
 
     set({ selectMessage: selectMessage });
   },
-  openSelection: () => {
-    set({ isSelectMessage: true });
-  },
-  handleSelectMessage: () => {},
-  closeSelection: () => {
-    set({ isSelectMessage: false, selectMessage: {} });
+  handleSelection: (isSelectMessage) => {
+    if (!isSelectMessage) {
+      set({ selectMessage: {} });
+    }
+    set({ isSelectMessage });
   },
   onSelectContact: async () => {
     if ("contacts" in navigator) {
@@ -103,6 +102,15 @@ const useFunctionStore = create((set, get) => ({
       console.log("Not Select");
       toast.error("Not Select Contact in this Devices");
     }
+  },
+  handleSelectMessage: (isMessageShare) => {
+    set({isSelectMessage:false})
+    set({ isMessageShare });
+  },
+  sendSelectionMessage: () => {
+    console.log(get().selectMessage);
+    set({isMessageShare:false})
+
   },
 }));
 
