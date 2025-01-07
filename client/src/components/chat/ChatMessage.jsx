@@ -1,5 +1,5 @@
 import { BsThreeDots } from "react-icons/bs";
-import { memo, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -15,8 +15,11 @@ import Video from "./msg_type/video";
 import File from "./msg_type/file";
 import Multiplefile from "./msg_type/multiplefile";
 import LocationPreview from "./msg_type/LocationPreview";
+import { BsEmojiLaughing } from "react-icons/bs";
+import ReactionEmoji from "../ReactionEmoji";
 
 const ChatMessage = () => {
+  const [position, setPosition] = useState({ id: 0, x: 0, y: 0, open: false });
   const {
     messages,
     suscribeToMessage,
@@ -47,15 +50,28 @@ const ChatMessage = () => {
     }
   }, [messages]);
 
+  const handleCustomEmoji = (e, id) => {
+    if (position.open && position.id == id) {
+      setPosition({ x: 0, y: 0, open: false });
+    } else {
+      setPosition({
+        id: id,
+        x: e.nativeEvent.pageX,
+        y: e.nativeEvent.pageY,
+        open: true,
+      });
+    }
+  };
   if (isMessageLoading) return <MessageLoadingSkeleton />;
   return (
     <>
-      <div className="flex-1 p-1 space-y-1 overflow-y-scroll h-full">
+      {position.open && <ReactionEmoji position={position} />}
+      <div className="relative flex-1 p-1 space-y-1 overflow-y-scroll h-full">
         {messages.map((message, i) => (
           <div
             ref={messageEndRef}
             key={i}
-            className="flex w-full items-center scroll-smooth"
+            className="flex w-full items-center scroll-smooth "
           >
             {isSelectMessage && (
               <input
@@ -64,16 +80,19 @@ const ChatMessage = () => {
                 className="checkbox ml-2 checkbox-primary text-primary-content"
               />
             )}
+
             <div
-              className={`chat w-full h ${
-                message.sender != currentChatingUser ? "chat-end" : "chat-start"
-              }`}
+              className={`relative h-full chat w-full px-2 flex items-center  ${
+                message.sender != currentChatingUser
+                  ? "justify-end chat-end"
+                  : "justify-start chat-start group"
+              } `}
             >
               <div
-                className={`chat-bubble rounded-xl  max-w-[80%] px-2 py-1 ${
+                className={`chat-bubble rounded-xl max-w-[80%] px-2 py-1 ${
                   message.sender != currentChatingUser
                     ? "bg-primary/70 text-primary-content"
-                    : "bg-base-300 text-base-content"
+                    : "bg-base-300 text-base-content "
                 }`}
               >
                 {message.type == "text" && (
@@ -121,6 +140,16 @@ const ChatMessage = () => {
                   )}
                 </p>
               </div>
+              {message.sender == currentChatingUser && (
+                <button
+                  onClick={(e) => {
+                    handleCustomEmoji(e, i);
+                  }}
+                  className="bg-primary/30  p-2 rounded-full hidden group-hover:block"
+                >
+                  <BsEmojiLaughing className="text-primary-content" />
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -133,6 +162,7 @@ const ChatMessage = () => {
             size={30}
             className="ml-4 cursor-pointer"
           />
+          s
           <p className="flex gap-x-2 items-center text-xl">
             <span className="">{Object.keys(selectMessage).length}</span>{" "}
             Selected

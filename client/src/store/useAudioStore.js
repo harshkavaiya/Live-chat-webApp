@@ -25,7 +25,7 @@ const useAudioStore = create((set, get) => ({
       mediaRecorderRef.current.start();
       set({ mediaRecorder: mediaRecorderRef });
     } catch (error) {
-      set({ recordingDuration: 0 });
+      set({ recordingDuration: 0, isRecording: false });
       console.error("Error accessing microphone:", error);
       toast.error(error.message);
     }
@@ -51,7 +51,6 @@ const useAudioStore = create((set, get) => ({
     set({ recordingDuration: 0 });
   },
   sendRecording: () => {
-
     get().deleteRecording();
   },
   formatDuration: (duration) => {
