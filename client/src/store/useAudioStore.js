@@ -1,5 +1,7 @@
 import toast from "react-hot-toast";
 import { create } from "zustand";
+import useMessageStore from "./useMessageStore";
+import axiosInstance from "../lib/axiosInstance";
 
 const useAudioStore = create((set, get) => ({
   isRecording: false,
@@ -50,7 +52,26 @@ const useAudioStore = create((set, get) => ({
     get().resetAudio();
     set({ recordingDuration: 0 });
   },
-  sendRecording: () => {
+  sendRecording: async () => {
+    const { audioBlob } = get();
+    let date = new Date();
+    let formData = new FormData();
+    formData.append("name", date.getTime());
+    formData.append("audio", audioBlob);
+    const res = await axiosInstance.post(`/audio/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    useMessageStore.getState().sendMessage({
+      type: "audio",
+      data: {
+        name: res.data.name,
+        size: res.data.size,
+      },
+    });
+
     get().deleteRecording();
   },
   formatDuration: (duration) => {

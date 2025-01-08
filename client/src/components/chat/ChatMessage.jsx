@@ -17,6 +17,7 @@ import Multiplefile from "./msg_type/multiplefile";
 import LocationPreview from "./msg_type/LocationPreview";
 import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji from "../ReactionEmoji";
+import Audio from "./msg_type/Audio";
 
 const ChatMessage = () => {
   const [position, setPosition] = useState({ id: 0, x: 0, y: 0, open: false });
@@ -122,6 +123,7 @@ const ChatMessage = () => {
                 {message.type == "location" && (
                   <LocationPreview message={message} />
                 )}
+                {message.type == "audio" && <Audio message={message} />}
                 <p
                   className={`text-[10px] text-end flex items-end justify-end ${
                     message.sender != currentChatingUser
