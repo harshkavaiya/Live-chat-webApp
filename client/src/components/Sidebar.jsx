@@ -8,6 +8,7 @@ import { formatMessageTime } from "../function/TimeFormating";
 import SidebarUser from "./Skeleton/SidebarUser";
 import ContactDialog from "./PopUpDialog/ContactDialog";
 import useContactList from "../store/useContactList";
+import GroupDialog from "./PopUpDialog/GroupDialog";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -17,7 +18,8 @@ const Sidebar = () => {
   const { setDialogOpen } = useContactList();
 
   const Opendialog = (dialog) => {
-    setDialogOpen(true);
+    if (dialog === 4) setDialogOpen(true);
+
     document.getElementById(`my_modal_${dialog}`).showModal();
   };
 
@@ -29,6 +31,8 @@ const Sidebar = () => {
   return (
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
+      <GroupDialog />
+
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
         <div className="flex justify-between items-center pr-2 pb-2">
@@ -88,7 +92,7 @@ const Sidebar = () => {
               <div
                 key={idx}
                 onClick={() => selectUsertoChat(i._id)}
-                className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 transition-all duration-75 group hover:bg-primary/10 items-center
+                className={`flex justify-between pl-4 md:border-b pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
                 ${idx == users.length - 1 && "border-b"}`}
               >
                 <div className="flex items-center">
@@ -160,7 +164,9 @@ const Sidebar = () => {
               </button>
             </li>
             <li>
-              <button className="btn btn-ghost">Groups</button>
+              <button className="btn btn-ghost" onClick={() => Opendialog(5)}>
+                Groups
+              </button>
             </li>
           </ul>
         </div>
