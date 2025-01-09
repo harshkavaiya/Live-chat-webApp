@@ -1,4 +1,3 @@
-
 import { CiSearch } from "react-icons/ci";
 import { FaAngleRight } from "react-icons/fa";
 
@@ -44,7 +43,7 @@ const SidebarUser = () => {
             <input
               type="search"
               className="input input-primary h-9 w-full pl-10"
-              placeholder="Search messages..."
+              placeholder="Search name or number"
             />
           </div>
         </div>

@@ -22,7 +22,7 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
       },
     },
     {
-      url: "https://www.w3schools.com/html/mov_bbb.mp4", // MP4 Video
+      url: "https://i.imgur.com/Zo5Kpnd.mp4", // MP4 Video
       type: "video", // Specify type for videos
       header: {
         heading: "Video Story",
@@ -50,7 +50,7 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
   }, []);
   return (
     <dialog id="my_modal_3" className="modal">
-      <div className="w-full h-full bg-base-300 flex flex-col">
+      <div className="w-full h-full bg-base-300 flex items-center flex-col">
         <FaArrowLeft
           size={20}
           className="absolute top-6 z-10 left-5 cursor-pointer"
@@ -58,11 +58,11 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
         />
 
         {currentStoryIndex !== null && (
-          <div className="fixed w-full h-full flex items-center justify-center bg-black">
+          <div className="fixed sm:w-96 w-full h-full flex items-center justify-center bg-black">
             <Stories
               stories={stories.slice(currentStoryIndex)}
               defaultInterval={3000}
-              width="30vw"
+              width={"inherit"}
               height="100vh"
               onAllStoriesEnd={closeStory}
               storyStyles={{

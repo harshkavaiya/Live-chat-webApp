@@ -47,12 +47,12 @@ const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get("/auth/logout");
       console.log(res);
-      get().diconnectSocket();
       toast.success("Logout");
     } catch (error) {
+      console.log(error);
       toast.error(error.message);
     } finally {
-      get().diconnectSocket();
+      get().disconnectSocket();
     }
   },
   connectSocket: () => {

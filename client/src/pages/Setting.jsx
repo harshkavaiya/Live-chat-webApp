@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import ThemeDialog from "../components/setting/ThemeDialog";
 import { MdLogout } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
+import useAuthStore from "../store/useAuthStore";
 
 const Setting = ({ setActivePage, activePage }) => {
   const icons = [
@@ -14,6 +15,8 @@ const Setting = ({ setActivePage, activePage }) => {
       name: "Logout",
     },
   ];
+  const { logout } = useAuthStore();
+
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* setting logo */}
@@ -54,6 +57,9 @@ const Setting = ({ setActivePage, activePage }) => {
           <div
             key={idx}
             className="grid grid-cols-10 cursor-pointer hover:bg-primary/10"
+            onClick={
+              i.name == "Logout" ? () => logout() : () => alert("Privacy")
+            }
           >
             <span className="col-span-2 grid place-items-center">
               <i.icon

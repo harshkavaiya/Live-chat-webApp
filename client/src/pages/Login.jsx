@@ -14,10 +14,9 @@ const LoginPage = () => {
   const Signin = () => {
     login({ phone, password });
   };
-  useEffect(() => {
-    
-    if (isLogin && authUser) return navigate("/");
-  }, [isLogin]);
+  // useEffect(() => {
+  //   if (isLogin && authUser) return navigate("/");
+  // }, [isLogin]);
 
   return (
     <div className="flex justify-center items-center text-black font-[sans-serif] p-4">

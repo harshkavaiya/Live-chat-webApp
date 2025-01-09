@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
+  isLoading: true,
   isMessageLoading: false,
   currentChatingUser: false,
   setMessages: (messages) => {
@@ -30,7 +31,7 @@ const useMessageStore = create((set, get) => ({
   getMessagerUser: async () => {
     try {
       let res = await axiosInstance.get("/message/user");
-
+      set({ isLoading: true });
       if (!res.data.success) {
         return set({ messagerUser: [] });
       }
@@ -42,6 +43,8 @@ const useMessageStore = create((set, get) => ({
     } catch (error) {
       console.error("Error fetching messager users:", error);
       toast.error(error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 

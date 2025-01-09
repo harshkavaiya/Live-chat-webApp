@@ -29,12 +29,19 @@ export const getUserSocketId = (data) => {
   return onlineUser[data];
 };
 
+const emitOnlineUsers = () => {
+  console.log("Online Users", onlineUser);
+  const onlineUsersList = Object.keys(onlineUser);
+  io.emit("onlineUsers", onlineUsersList);
+};
+
 io.on("connection", (socket) => {
   console.log("new Connection", socket.id);
 
   const id = socket.handshake.query.userId;
 
   onlineUser[id] = socket.id;
+  emitOnlineUsers();
 
   // join room for voice call
   socket.on("join-room", (roomId, peerId) => {
@@ -46,6 +53,7 @@ io.on("connection", (socket) => {
   socket.on("disconnected", () => {
     console.log("User is Disconnected", socket.id);
     delete onlineUser[id];
+    emitOnlineUsers();
   });
 });
 
