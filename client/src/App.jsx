@@ -24,7 +24,7 @@ function App() {
     };
 
     authenticate();
-  }, [isLogin, authUser]);
+  }, [isLogin]);
 
   return (
     <div data-theme={theme}>
