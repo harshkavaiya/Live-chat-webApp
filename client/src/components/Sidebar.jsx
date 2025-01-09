@@ -22,15 +22,14 @@ const Sidebar = () => {
   useEffect(() => {
     if (socket) {
       socket.on("onlineUsers", (users) => {
-        console.log(users);
         setOnlineUsers(users);
       });
-
+      console.log(onlineUsers);
       return () => {
         socket.off("onlineUsers");
       };
     }
-  }, [socket, onlineUsers]);
+  }, [socket]);
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
@@ -67,18 +66,24 @@ const Sidebar = () => {
           </p>
         </div>
         <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pl-2 cursor-pointer">
-          {onlineUsers.map((i, index) => (
-            <div key={index} className="indicator relative ">
-              <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
-              <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
-                <img
-                  src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
-                  alt="user"
-                  className="object-cover"
-                />
+          {onlineUsers.length === 0 ? (
+            <p className="text-center badge badge-outline">
+              No any users online
+            </p>
+          ) : (
+            onlineUsers.map((i, index) => (
+              <div key={index} className="indicator relative">
+                <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
+                <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
+                  <img
+                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                    alt="user"
+                    className="object-cover"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 

@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("user-connected", peerId);
   });
 
-  socket.on("disconnected", () => {
+  socket.on("disconnect", () => {
     console.log("User is Disconnected", socket.id);
     delete onlineUser[id];
     emitOnlineUsers();

@@ -53,7 +53,7 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
       <div className="w-full h-full bg-base-300 flex items-center flex-col">
         <FaArrowLeft
           size={20}
-          className="absolute top-6 z-10 left-5 cursor-pointer"
+          className="absolute hidden sm:inline top-6 z-10 left-5 cursor-pointer"
           onClick={closeStory}
         />
 
@@ -71,6 +71,11 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
                 alignItems: "center",
                 objectFit: "cover",
               }}
+            />
+            <RxCross2
+              size={22}
+              className="absolute sm:hidden top-6 right-5 cursor-pointer"
+              onClick={closeStory}
             />
           </div>
         )}
