@@ -3,7 +3,6 @@ import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
-import { useQuery } from "@tanstack/react-query";
 
 const useMessageStore = create((set, get) => ({
   messages: [],

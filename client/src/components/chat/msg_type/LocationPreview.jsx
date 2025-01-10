@@ -7,6 +7,11 @@ const Location = ({ message }) => {
       <MapContainer
         center={[message.data.latitude, message.data.longitude]}
         zoom={15}
+        scrollWheelZoom={false}
+        dragging={false}
+        doubleClickZoom={false}
+        attributionControl={false}
+        zoomControl={false}
         className="z-0 rounded-md w-full h-full"
       >
         <TileLayer

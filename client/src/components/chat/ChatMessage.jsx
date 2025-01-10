@@ -20,7 +20,13 @@ import ReactionEmoji from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 
 const ChatMessage = () => {
-  const [position, setPosition] = useState({ id: 0, x: 0, y: 0, open: false });
+  const emojiRef = useRef();
+  const [customEmojiPopup, setCustomEmojiPopup] = useState({
+    id: 0,
+    x: 0,
+    y: 0,
+    open: false,
+  });
   const {
     messages,
     suscribeToMessage,
@@ -51,23 +57,27 @@ const ChatMessage = () => {
     }
   }, [messages]);
 
-  const handleCustomEmoji = (e, id) => {
-    if (position.open && position.id == id) {
-      setPosition({ x: 0, y: 0, open: false });
+  const handleCustomEmoji = useCallback((e, id) => {
+    if (customEmojiPopup.open && customEmojiPopup.id == id) {
+      setCustomEmojiPopup({ x: 0, y: 0, open: false });
     } else {
-      setPosition({
+      setCustomEmojiPopup({
         id: id,
         x: e.nativeEvent.pageX,
         y: e.nativeEvent.pageY,
         open: true,
       });
     }
-  };
+  }, []);
+
   if (isMessageLoading) return <MessageLoadingSkeleton />;
   return (
     <>
-      {position.open && <ReactionEmoji position={position} />}
-      <div className="relative flex-1 p-1 space-y-1 overflow-y-scroll h-full">
+      <ReactionEmoji ref={emojiRef} position={customEmojiPopup}  setPosition={setCustomEmojiPopup}/>
+
+      <div
+        className={`relative flex-1 p-1 space-y-1 overflow-y-scroll  h-full`}
+      >
         {messages.map((message, i) => (
           <div
             ref={messageEndRef}
@@ -142,12 +152,12 @@ const ChatMessage = () => {
                   )}
                 </p>
               </div>
-              {message.sender == currentChatingUser && (
+              {message.sender == currentChatingUser && !isSelectMessage && (
                 <button
                   onClick={(e) => {
                     handleCustomEmoji(e, i);
                   }}
-                  className="bg-primary/30  p-2 rounded-full hidden group-hover:block"
+                  className="bg-base-300  p-2 rounded-full hidden group-hover:block"
                 >
                   <BsEmojiLaughing className="text-primary-content" />
                 </button>
@@ -164,7 +174,7 @@ const ChatMessage = () => {
             size={30}
             className="ml-4 cursor-pointer"
           />
-          s
+
           <p className="flex gap-x-2 items-center text-xl">
             <span className="">{Object.keys(selectMessage).length}</span>{" "}
             Selected

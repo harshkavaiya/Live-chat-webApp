@@ -109,7 +109,7 @@ const useFunctionStore = create((set, get) => ({
   },
   sendSelectionMessage: () => {
     console.log(get().selectMessage);
-    set({isMessageShare:false})
+    set({isMessageShare:false,selectContact:{}})
 
   },
 }));

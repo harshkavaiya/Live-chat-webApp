@@ -1,19 +1,17 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import { OpenCloseMenu } from "../../function/function";
+import { OpenCloseMenu, useOutSideClick } from "../../function/function";
 import useFunctionStore from "../../store/useFuncationStore";
 import { IoChevronBackOutline } from "react-icons/io5";
 import useMessageStore from "../../store/useMessageStore";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
-  const headerMenuRef = useRef();
-  const [key, setKey] = useState(0);
+  const headerMenuRef = useOutSideClick(() => {
+    OpenCloseMenu(headerMenuRef);
+  });
   const { handleSelection } = useFunctionStore();
   const { closeChat } = useMessageStore();
-  useEffect(() => {
-    headerMenuRef.current.classList.add("hidden");
-  }, [key]);
 
   return (
     <>
@@ -59,7 +57,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
       {/*Header menu */}
       <div
         ref={headerMenuRef}
-        className="absolute right-2 z-20 top-[50px] hidden"
+        className="absolute z-20 w-full h-full top-[51px] hidden"
       >
         <ul className="menu bg-base-100 rounded-md border border-base-300 w-56 p-0 [&_li>*]:rounded-none">
           <li>
@@ -74,7 +72,6 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           <li
             onClick={() => {
               handleSelection(true);
-              setKey(Math.random());
             }}
           >
             <p>Select Messages</p>

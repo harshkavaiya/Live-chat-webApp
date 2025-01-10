@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 
 export const OpenCloseMenu = (ref) => {
   if (ref.current?.classList?.contains("hidden")) {
@@ -7,3 +8,19 @@ export const OpenCloseMenu = (ref) => {
   }
 };
 
+export const useOutSideClick = (callback) => {
+  const ref = useRef();
+  const handleClick = (e) => {
+    if (ref?.current && ref.current.contains(e.target)) {
+      callback();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
+    //pending
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [ref]);
+  return ref;
+};

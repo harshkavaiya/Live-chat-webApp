@@ -4,7 +4,7 @@ import { GoPlus } from "react-icons/go";
 import { FaMicrophone } from "react-icons/fa6";
 import { GrGallery } from "react-icons/gr";
 import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
-import { FaRegPauseCircle, FaRegSmile } from "react-icons/fa";
+import { FaRegPauseCircle } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import { memo, useCallback, useRef, useState } from "react";
 import { OpenCloseMenu } from "../../function/function";
@@ -13,7 +13,6 @@ import CreatePoll from "../Poll/CreatePoll";
 import Location from "../Location";
 import SendFilePreview from "../SendDataPreview/SendFilePreview";
 import AudioRecorder from "../Audio/AudioRecorder";
-import EmojiPicker from "emoji-picker-react";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMessageStore from "../../store/useMessageStore";
@@ -40,10 +39,6 @@ const ChatInput = () => {
   const inputMenuRef = useRef();
   const { sendMessage } = useMessageStore();
 
-  const onEmojiClick = (data) => {
-    setText((pre) => pre + data.emoji);
-  };
-
   const handleCreatPoll = (data) => {
     sendMessage({
       type: "poll",
@@ -65,11 +60,6 @@ const ChatInput = () => {
       <div className="flex items-center space-x-2 px-3 py-2 w-full border-t border-base-300 bg-base-100">
         {!isRecording && !audioUrl && (
           <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
-            <FaRegSmile
-              onClick={() => setIsEmojiSelect(!isEmojiSelect)}
-              className="cursor-pointer"
-              size={20}
-            />
             <input
               className="w-[82%] sm:w-full p-1 md:p-2"
               value={text}
@@ -107,7 +97,10 @@ const ChatInput = () => {
           <div className="">
             {text.length > 0 ? (
               <button
-                onClick={() => sendMessage({ data: text, type: "text" })}
+                onClick={() => {
+                  sendMessage({ data: text, type: "text" });
+                  setText("");
+                }}
                 className="btn btn-primary rounded-full w-12 p-1 outline-none"
               >
                 <IoSend className="cursor-pointer" size={20} />
@@ -192,16 +185,7 @@ const ChatInput = () => {
           </ul>
         </div>
       </div>
-      {/* Emoji Select */}
-      <div className="absolute left-0 bottom-16">
-        <EmojiPicker
-          open={isEmojiSelect}
-          searchDisabled={true}
-          lazyLoadEmojis={true}
-          onEmojiClick={onEmojiClick}
-          // reactionsDefaultOpen={true}
-        />
-      </div>
+
       {/* Create a Poll */}
       {isPollOpen && (
         <CreatePoll

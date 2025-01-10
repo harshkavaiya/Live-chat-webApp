@@ -33,7 +33,7 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="relative">
+      <div className="relative w-full h-full">
         {mediaPreview && <ImagePreview />}
         {!mediaPreview && (
           <div className="bg-base-100 h-screen">
