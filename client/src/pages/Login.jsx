@@ -1,25 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineMail } from "react-icons/md";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
-
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState();
-  const { login, authUser, isLogin } = useAuthStore();
-  const navigate = useNavigate();
+  const { login } = useAuthStore();
   const Signin = () => {
     login({ phone, password });
   };
-  // useEffect(() => {
-  //   if (isLogin && authUser) return navigate("/");
-  // }, [isLogin]);
 
   return (
-    <div className="flex justify-center items-center text-black font-[sans-serif] p-4">
+    <div className="w-full h-screen flex justify-center items-center bg-primary/10 text-black font-[sans-serif] p-4">
       <div className="max-w-md w-full mx-auto">
         <form className="bg-opacity-70 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-3px_rgba(6,81,237,0.3)]">
           <div className="mb-12">
@@ -31,9 +26,9 @@ const LoginPage = () => {
               <input
                 name="phone"
                 required
-                className="bg-transparent w-full text-sm text-gray-800 border-b border-gray-400 focus:border-gray-800 px-2 py-3 outline-none placeholder:text-gray-800"
+                className="bg-transparent w-full text-sm  text-gray-800 border-b border-gray-400 focus:border-gray-800 px-2 py-3 outline-none placeholder:text-gray-800"
                 placeholder="Enter phone"
-                type="number"
+                type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />

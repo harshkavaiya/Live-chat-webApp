@@ -24,7 +24,6 @@ const Sidebar = () => {
       socket.on("onlineUsers", (users) => {
         setOnlineUsers(users);
       });
-      console.log(onlineUsers);
       return () => {
         socket.off("onlineUsers");
       };
@@ -103,7 +102,7 @@ const Sidebar = () => {
             </span>
             <input
               type="search"
-              className="input input-primary h-9 w-full pl-10"
+              className="input font-normal text-sm input-primary h-9 w-full pl-10"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search name or number"
