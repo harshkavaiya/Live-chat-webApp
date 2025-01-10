@@ -43,24 +43,25 @@ const ChatHeader = ({ setIsProfileOpen }) => {
             </Link>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
+
           <IoVideocam className="cursor-pointer" size={20} />
+
+          <div className="dropdown dropdown-bottom dropdown-end">
           <IoEllipsisVerticalSharp
             onClick={() => {
               OpenCloseMenu(headerMenuRef);
             }}
+            role="button"
+            tabIndex={0}
             className="cursor-pointer"
             size={20}
-          />
-        </div>
-      </div>
-      {/*Header menu */}
-      <div
-        ref={headerMenuRef}
-        className="absolute z-20 w-full h-full top-[51px] hidden"
-      >
-        <ul className="menu bg-base-100 rounded-md border border-base-300 w-56 p-0 [&_li>*]:rounded-none">
-          <li>
+            />
+             <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
+                >
+                   <li>
             <button
               onClick={() => {
                 setIsProfileOpen(true);
@@ -85,8 +86,14 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           <li>
             <p>Report</p>
           </li>
-        </ul>
+                </ul>
+            </div>
+        </div>
       </div>
+      {/*Header menu */}
+        
+
+    
     </>
   );
 };

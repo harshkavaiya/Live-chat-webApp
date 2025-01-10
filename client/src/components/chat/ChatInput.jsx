@@ -67,11 +67,42 @@ const ChatInput = () => {
               placeholder="Write your message..."
               type="text"
             />
+<div className="dropdown dropdown-top  dropdown-end">
+
             <GoPlus
               onClick={() => OpenCloseMenu(inputMenuRef)}
               className="cursor-pointer"
               size={28}
-            />
+              role="button"
+            tabIndex={0}
+              />
+<ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
+                >
+                   <li>
+            <button
+              
+            >
+              Profile
+            </button>
+          </li>
+          <li
+            
+          >
+            <p>Select Messages</p>
+          </li>
+          <li>
+            rth
+          </li>
+          <li>
+            <p>Clear Chat</p>
+          </li>
+          <li>
+            <p>Report</p>
+          </li>
+                </ul>
+              </div>
             {text.length <= 0 && (
               <label>
                 <span className="flex gap-x-2">
@@ -123,7 +154,7 @@ const ChatInput = () => {
           </div>
         )}
         {/* input menu */}
-        <div
+        {/* <div
           ref={inputMenuRef}
           className="absolute right-24 z-20 bottom-[50px] hidden"
         >
@@ -183,7 +214,7 @@ const ChatInput = () => {
               button={getLocation}
             />
           </ul>
-        </div>
+        </div> */}
       </div>
 
       {/* Create a Poll */}
