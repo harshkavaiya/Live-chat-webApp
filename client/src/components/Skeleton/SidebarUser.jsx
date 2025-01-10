@@ -42,7 +42,7 @@ const SidebarUser = () => {
             </span>
             <input
               type="search"
-              className="input input-primary h-9 w-full pl-10"
+              className="input font-normal text-sm input-primary h-9 w-full pl-10"
               placeholder="Search name or number"
             />
           </div>
