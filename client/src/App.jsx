@@ -10,11 +10,12 @@ import { Toaster } from "react-hot-toast";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, checkAuth, isLogin } = useAuthStore();
+  const { authUser, checkAuth, isLogin, loadAuthFromStorage } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
     const authenticate = async () => {
+      await loadAuthFromStorage();
       await checkAuth();
       if (!isLogin || authUser == null) {
         navigate("/Login");

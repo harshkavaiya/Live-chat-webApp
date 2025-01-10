@@ -11,22 +11,34 @@ const useAuthStore = create((set, get) => ({
   friends: [],
   group: [],
   favFriends: [],
+
+  loadAuthFromStorage: () => {
+    const storedUser = sessionStorage.getItem("authUser");
+    if (storedUser) {
+      set({ authUser: JSON.parse(storedUser), isLogin: true });
+    }
+  },
+
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
+      if (!get().authUser) {
+        const res = await axiosInstance.get("/auth/check");
+        if (!res.data.success) {
+          set({ authUser: null, isLogin: false });
+          sessionStorage.removeItem("authUser");
+          return;
+        }
 
-      const res = await axiosInstance.get("/auth/check");
-      if (!res.data.success) {
-        set({ authUser: null, isLogin: false });
-        return;
+        set({ authUser: res.data.user, isLogin: true });
+        sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
+        get().connectSocket();
       }
-
-      set({ authUser: res.data.user, isLogin: true });
-      get().connectSocket();
     } catch (error) {
       console.error("Error in checkAuth:", error);
       set({ authUser: null, isLogin: false });
       get().diconnectSocket();
+      sessionStorage.removeItem("authUser");
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -38,6 +50,7 @@ const useAuthStore = create((set, get) => ({
     if (res.data.success) {
       toast.success("Login Success");
       set({ authUser: res.data, isLogin: true });
+      sessionStorage.setItem("authUser", JSON.stringify(res.data));
       get().connectSocket();
     } else {
       toast.error(res.data.message);
@@ -49,6 +62,7 @@ const useAuthStore = create((set, get) => ({
       console.log(res);
       toast.success("Logout");
       set({ authUser: null, isLogin: false });
+      sessionStorage.removeItem("authUser");
     } catch (error) {
       console.log(error);
       toast.error(error.message);
