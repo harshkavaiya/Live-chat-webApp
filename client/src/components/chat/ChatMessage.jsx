@@ -18,6 +18,7 @@ import LocationPreview from "./msg_type/LocationPreview";
 import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
+import { GoPlus } from "react-icons/go";
 
 const ChatMessage = () => {
   const emojiRef = useRef();
@@ -152,16 +153,38 @@ const ChatMessage = () => {
                   )}
                 </p>
               </div>
-              {message.sender == currentChatingUser && !isSelectMessage && (
+              <div className="dropdown dropdown-top  dropdown-right group hidden group-hover:block">
                 <button
-                  onClick={(e) => {
-                    handleCustomEmoji(e, i);
-                  }}
-                  className="bg-base-300  p-2 rounded-full hidden group-hover:block"
+                  className="cursor-pointer rounded-full w-7 h-7 bg-base-200   grid place-items-center"
+                  role="button"
+                  tabIndex={0}
                 >
                   <BsEmojiLaughing className="text-primary-content" />
                 </button>
-              )}
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-20 p-2 shadow-lg gap-1"
+                >
+      <ReactionEmoji />
+                  
+                </ul>
+              </div>
+              {/* {message.sender == currentChatingUser && !isSelectMessage && (
+                <div className="dropdown dropdown-top  dropdown-end">
+                <button
+                role="button"
+                tabIndex={0}
+          
+                  className="bg-base-300  p-2 rounded-full hidden group-hover:block"
+                >
+                  <BsEmojiLaughing className="text-primary-content" />
+                  hk
+                </button>
+                <div className="" tabIndex={0}>
+                  <p>hash</p>
+                </div>
+                </div>
+              )} */}
             </div>
           </div>
         ))}

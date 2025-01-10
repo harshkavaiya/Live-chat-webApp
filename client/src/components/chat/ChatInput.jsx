@@ -59,107 +59,28 @@ const ChatInput = () => {
       {/* input section */}
       <div className="flex items-center space-x-2 px-3 py-2 w-full border-t border-base-300 bg-base-100">
         {!isRecording && !audioUrl && (
-          <label className="input  input-bordered py-1 px-2 flex w-full items-center space-x-1 rounded-full">
+          <div className="py-1 px-2 flex w-full items-center space-x-1 rounded-full border ">
             <input
-              className="w-[82%] sm:w-full p-1 md:p-2"
+              className="w-[82%] sm:w-full p-1 md:p-2 focus:outline-none outline-none"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Write your message..."
               type="text"
             />
 <div className="dropdown dropdown-top  dropdown-end">
-
+   
             <GoPlus
-              onClick={() => OpenCloseMenu(inputMenuRef)}
-              className="cursor-pointer"
+      
+              className="cursor-pointer "
               size={28}
               role="button"
             tabIndex={0}
               />
 <ul
                   tabIndex={0}
-                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
+                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-20 p-2 shadow-lg gap-1"
                 >
-                   <li>
-            <button
-              
-            >
-              Profile
-            </button>
-          </li>
-          <li
-            
-          >
-            <p>Select Messages</p>
-          </li>
-          <li>
-            rth
-          </li>
-          <li>
-            <p>Clear Chat</p>
-          </li>
-          <li>
-            <p>Report</p>
-          </li>
-                </ul>
-              </div>
-            {text.length <= 0 && (
-              <label>
-                <span className="flex gap-x-2">
-                  <LuCamera className="cursor-pointer" size={20} />
-                </span>
-                <input
-                  type="file"
-                  id="imageFile"
-                  onChangeCapture={handelGalleryData}
-                  capture="user"
-                  className="hidden"
-                  accept="image/*"
-                />
-              </label>
-            )}
-          </label>
-        )}
-        {(isRecording || audioUrl != null) && (
-          <AudioRecorder isRecording={isRecording} />
-        )}
-
-        {!audioUrl && (
-          <div className="">
-            {text.length > 0 ? (
-              <button
-                onClick={() => {
-                  sendMessage({ data: text, type: "text" });
-                  setText("");
-                }}
-                className="btn btn-primary rounded-full w-12 p-1 outline-none"
-              >
-                <IoSend className="cursor-pointer" size={20} />
-              </button>
-            ) : !isRecording ? (
-              <button
-                onClick={() => startRecording(mediaRecorderRef)}
-                className="btn btn-primary rounded-full w-12 p-1 outline-none"
-              >
-                <FaMicrophone className="cursor-pointer" size={20} />
-              </button>
-            ) : (
-              <button
-                onClick={stopRecording}
-                className="btn btn-primary rounded-full w-12 p-1 outline-none"
-              >
-                <FaRegPauseCircle className="cursor-pointer" size={28} />
-              </button>
-            )}
-          </div>
-        )}
-        {/* input menu */}
-        {/* <div
-          ref={inputMenuRef}
-          className="absolute right-24 z-20 bottom-[50px] hidden"
-        >
-          <ul className="menu bg-base-100 rounded-md font-medium border border-base-300 w-40 p-0 [&_li>*]:rounded-none">
-            <InputMenu
+                <InputMenu
               icon={<GrGallery size={20} className="opacity-100 " />}
               lable="Gallery"
               input={
@@ -213,6 +134,65 @@ const ChatInput = () => {
               lable="Location"
               button={getLocation}
             />
+                </ul>
+              </div>
+            {text.length <= 0 && (
+              <label>
+                <span className="flex gap-x-2">
+                  <LuCamera className="cursor-pointer" size={20} />
+                </span>
+                <input
+                  type="file"
+                  id="imageFile"
+                  onChangeCapture={handelGalleryData}
+                  capture="user"
+                  className="hidden"
+                  accept="image/*"
+                />
+              </label>
+            )}
+          </div>
+        )}
+        {(isRecording || audioUrl != null) && (
+          <AudioRecorder isRecording={isRecording} />
+        )}
+
+        {!audioUrl && (
+          <div className="">
+            {text.length > 0 ? (
+              <button
+                onClick={() => {
+                  sendMessage({ data: text, type: "text" });
+                  setText("");
+                }}
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <IoSend className="cursor-pointer" size={20} />
+              </button>
+            ) : !isRecording ? (
+              <button
+                onClick={() => startRecording(mediaRecorderRef)}
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <FaMicrophone className="cursor-pointer" size={20} />
+              </button>
+            ) : (
+              <button
+                onClick={stopRecording}
+                className="btn btn-primary rounded-full w-12 p-1 outline-none"
+              >
+                <FaRegPauseCircle className="cursor-pointer" size={28} />
+              </button>
+            )}
+          </div>
+        )}
+        {/* input menu */}
+        {/* <div
+          ref={inputMenuRef}
+          className="absolute right-24 z-20 bottom-[50px] hidden"
+        >
+          <ul className="menu bg-base-100 rounded-md font-medium border border-base-300 w-40 p-0 [&_li>*]:rounded-none">
+           
           </ul>
         </div> */}
       </div>
