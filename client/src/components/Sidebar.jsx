@@ -20,8 +20,10 @@ const Sidebar = () => {
   const { socket } = useAuthStore();
   const [onlineUsers, setOnlineUsers] = useState([]);
   useEffect(() => {
+    console.log("users",socket);
     if (socket) {
       socket.on("onlineUsers", (users) => {
+        
         setOnlineUsers(users);
       });
       return () => {
@@ -42,7 +44,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
-  }, [getMessagerUser, messagerUser]);
+  }, [getMessagerUser]);
 
   if (isLoading) return <SidebarUser />;
 

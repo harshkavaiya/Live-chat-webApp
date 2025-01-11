@@ -61,7 +61,7 @@ const ChatInput = () => {
         {!isRecording && !audioUrl && (
           <div className="py-1 px-2 flex w-full items-center space-x-1 rounded-full border ">
             <input
-              className="w-[82%] sm:w-full p-1 md:p-2 focus:outline-none outline-none"
+              className="w-[82%] bg-transparent sm:w-full p-1 md:p-2 focus:outline-none outline-none"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Write your message..."

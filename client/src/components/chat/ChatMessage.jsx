@@ -74,7 +74,7 @@ const ChatMessage = () => {
   if (isMessageLoading) return <MessageLoadingSkeleton />;
   return (
     <>
-      <ReactionEmoji ref={emojiRef} position={customEmojiPopup}  setPosition={setCustomEmojiPopup}/>
+      {/* <ReactionEmoji ref={emojiRef} position={customEmojiPopup}  setPosition={setCustomEmojiPopup}/> */}
 
       <div
         className={`relative flex-1 p-1 space-y-1 overflow-y-scroll  h-full`}
@@ -104,7 +104,7 @@ const ChatMessage = () => {
                 className={`chat-bubble rounded-xl max-w-[80%] px-2 py-1 ${
                   message.sender != currentChatingUser
                     ? "bg-primary/70 text-primary-content"
-                    : "bg-base-300 text-base-content "
+                    : "bg-secondary/20 text-base-content "
                 }`}
               >
                 {message.type == "text" && (

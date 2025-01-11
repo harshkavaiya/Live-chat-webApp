@@ -21,7 +21,7 @@ const Home = () => {
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
       </div>
       {/* Contact List */}
-      <div className="w-full sm:w-[50%] relative bg-primary/25 overflow-hidden">
+      <div className={`${currentChatingUser&&"hidden sm:block"} w-full sm:w-[50%] relative bg-primary/25 overflow-hidden`}>
         {activePage === "chat" && <Sidebar />}
         {activePage === "status" && <Status />}
         {activePage === "call" && <Call />}
@@ -32,13 +32,13 @@ const Home = () => {
       </div>
 
       {/* Message Area */}
-      <div className="hidden sm:block w-[100%]  bg-base-100">
+      <div className={` ${!currentChatingUser&&"hidden"} sm:block w-[100%]  bg-base-100`}>
         {currentChatingUser ? <ChatPage /> : <NochatSelect />}
       </div>
 
-      <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
+      {!currentChatingUser &&<div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
         <BottomBar activePage={activePage} setActivePage={setActivePage} />
-      </div>
+      </div>}
     </div>
   );
 };
