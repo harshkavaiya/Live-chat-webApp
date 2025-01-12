@@ -20,7 +20,7 @@ const Profile = ({ setIsProfileOpen }) => {
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
 
   return (
-    <div className="w-[50%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
+    <div className="w-full sm:w-[50%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
       {/* Header */}
       <div className="relative p-2 border-b text-center border-base-300 ">
         <button className="absolute right-4 top-3">

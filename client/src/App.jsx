@@ -33,7 +33,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
       </Routes>
     </div>
   );

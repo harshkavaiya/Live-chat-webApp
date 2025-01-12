@@ -28,7 +28,7 @@ const Audio = ({ message }) => {
         )}
       </button>
       <WavesurferPlayer
-        waveColor={"black"}
+        waveColor={"inherit"}
         width={220}
         height={40}
         progressColor={"red"}
