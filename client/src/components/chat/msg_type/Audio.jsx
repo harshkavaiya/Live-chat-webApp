@@ -16,7 +16,7 @@ const Audio = ({ message }) => {
   };
 
   return (
-    <div className="flex items-center justify-center space-x-1">
+    <div className="flex items-center justify-center space-x-1 z-0">
       <button
         onClick={onPlayPause}
         className="btn btn-primary text-primary-content rounded-full outline-none w-12 h-10 p-0.5"

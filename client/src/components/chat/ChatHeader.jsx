@@ -1,15 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import { OpenCloseMenu, useOutSideClick } from "../../function/function";
+import { OpenCloseMenu } from "../../function/function";
 import useFunctionStore from "../../store/useFuncationStore";
 import { IoChevronBackOutline } from "react-icons/io5";
 import useMessageStore from "../../store/useMessageStore";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
-  const headerMenuRef = useOutSideClick(() => {
-    OpenCloseMenu(headerMenuRef);
-  });
+  const headerMenuRef = useRef();
   const { handleSelection } = useFunctionStore();
   const { closeChat } = useMessageStore();
 
@@ -44,56 +42,52 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 ">
-
           <IoVideocam className="cursor-pointer" size={20} />
 
           <div className="dropdown dropdown-bottom dropdown-end">
-          <IoEllipsisVerticalSharp
-            onClick={() => {
-              OpenCloseMenu(headerMenuRef);
-            }}
-            role="button"
-            tabIndex={0}
-            className="cursor-pointer"
-            size={20}
-            />
-             <ul
-                  tabIndex={0}
-                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
-                >
-                   <li>
-            <button
+            <IoEllipsisVerticalSharp
               onClick={() => {
-                setIsProfileOpen(true);
+                OpenCloseMenu(headerMenuRef);
               }}
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer"
+              size={20}
+            />
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-base-100 border mt-3 mr-2 z-20 w-56 rounded-box p-2 shadow-lg gap-1"
             >
-              Profile
-            </button>
-          </li>
-          <li
-            onClick={() => {
-              handleSelection(true);
-            }}
-          >
-            <p>Select Messages</p>
-          </li>
-          <li>
-            <Link to={"/"}>Close Chat</Link>
-          </li>
-          <li>
-            <p>Clear Chat</p>
-          </li>
-          <li>
-            <p>Report</p>
-          </li>
-                </ul>
-            </div>
+              <li>
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(true);
+                  }}
+                >
+                  Profile
+                </button>
+              </li>
+              <li
+                onClick={() => {
+                  handleSelection(true);
+                }}
+              >
+                <p>Select Messages</p>
+              </li>
+              <li>
+                <Link to={"/"}>Close Chat</Link>
+              </li>
+              <li>
+                <p>Clear Chat</p>
+              </li>
+              <li>
+                <p>Report</p>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       {/*Header menu */}
-        
-
-    
     </>
   );
 };
