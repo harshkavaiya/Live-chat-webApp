@@ -1,15 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
-import { OpenCloseMenu, useOutSideClick } from "../../function/function";
+import { OpenCloseMenu } from "../../function/function";
 import useFunctionStore from "../../store/useFuncationStore";
 import { IoChevronBackOutline } from "react-icons/io5";
 import useMessageStore from "../../store/useMessageStore";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
-  const headerMenuRef = useOutSideClick(() => {
-    OpenCloseMenu(headerMenuRef);
-  });
+  const headerMenuRef = useRef();
   const { handleSelection } = useFunctionStore();
   const { closeChat } = useMessageStore();
 

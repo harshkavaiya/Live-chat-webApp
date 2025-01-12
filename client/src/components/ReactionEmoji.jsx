@@ -5,6 +5,7 @@ import e3 from "../assets/emoji/e3.png";
 import e4 from "../assets/emoji/e4.png";
 import e5 from "../assets/emoji/e5.png";
 import e6 from "../assets/emoji/e6.png";
+
 const ReactionEmoji = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState(null);
@@ -23,34 +24,20 @@ const ReactionEmoji = () => {
     setIsOpen(false);
   };
 
-
   return (
-
-      <div
-       
-        
-        className="absolute w-full mb-2 z-10 p-2 flex items-center justify-center gap-1 "
-      >
-       
-        <div
-                  tabIndex={0}
-                  className="dropdown-content menu bg-base-100  border mt-3 mr-2 w-56 rounded-box z-20 p-2 shadow-lg gap-1"
-                >
-          {reactions.map((reaction) => (
-            <button
-              key={reaction.id}
-              onClick={() => handleReactionSelect(reaction)}
-              className="transition-transform hover:scale-110 focus:outline-none"
-              title={reaction.label}
-            >
-              <img className="h-10 w-10" src={reaction.emoji} />
-            </button>
-          ))}
-          </div>
-  
-      </div>
-    )
-  
+    <div className="flex z-20">
+      {reactions.map((reaction) => (
+        <button
+          key={reaction.id}
+          onClick={() => handleReactionSelect(reaction)}
+          className="transition-transform hover:scale-110 focus:outline-none"
+          title={reaction.label}
+        >
+          <img className="h-10 w-10" src={reaction.emoji} />
+        </button>
+      ))}
+    </div>
+  );
 };
 
 export default memo(ReactionEmoji);

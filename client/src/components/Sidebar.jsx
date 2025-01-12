@@ -20,8 +20,10 @@ const Sidebar = () => {
   const { socket } = useAuthStore();
   const [onlineUsers, setOnlineUsers] = useState([]);
   useEffect(() => {
+    console.log("users",socket);
     if (socket) {
       socket.on("onlineUsers", (users) => {
+        
         setOnlineUsers(users);
       });
       return () => {
@@ -42,7 +44,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
-  }, [getMessagerUser, messagerUser]);
+  }, [getMessagerUser]);
 
   if (isLoading) return <SidebarUser />;
 
@@ -192,7 +194,7 @@ const Sidebar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content menu bg-base-100 rounded-box z-[1] p-2 shadow-lg gap-1"
+            className="dropdown-content menu bg-base-100 rounded-box z-20 p-2 shadow-lg gap-1"
           >
             <li>
               <button className="btn btn-ghost" onClick={() => Opendialog(4)}>

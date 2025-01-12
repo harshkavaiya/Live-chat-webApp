@@ -7,10 +7,8 @@ import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
 import { FaRegPauseCircle } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import { memo, useCallback, useRef, useState } from "react";
-import { OpenCloseMenu } from "../../function/function";
 import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
-import Location from "../Location";
 import SendFilePreview from "../SendDataPreview/SendFilePreview";
 import AudioRecorder from "../Audio/AudioRecorder";
 import axiosInstance from "../../lib/axiosInstance";
@@ -20,15 +18,11 @@ import useAudioStore from "../../store/useAudioStore";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
-  const [isEmojiSelect, setIsEmojiSelect] = useState(false);
   const [isPollOpen, setIsPollOpen] = useState(false);
   const mediaRecorderRef = useRef(null);
   const {
     getLocation,
-    isLocationLoading,
-    location,
-    locationClose,
-    locationShare,
+   
     galleryData,
     handelGalleryData,
     onSelectContact,
@@ -36,7 +30,6 @@ const ChatInput = () => {
   const { startRecording, isRecording, stopRecording, audioUrl } =
     useAudioStore();
 
-  const inputMenuRef = useRef();
   const { sendMessage } = useMessageStore();
 
   const handleCreatPoll = (data) => {
@@ -55,87 +48,85 @@ const ChatInput = () => {
   }, []);
 
   return (
-    <div className="">
+    <>
       {/* input section */}
       <div className="flex items-center space-x-2 px-3 py-2 w-full border-t border-base-300 bg-base-100">
         {!isRecording && !audioUrl && (
-          <div className="py-1 px-2 flex w-full items-center space-x-1 rounded-full border ">
+          <div className="py-1 px-2 flex w-full items-center space-x-1 rounded-full border border-base-300">
             <input
-              className="w-[82%] sm:w-full p-1 md:p-2 focus:outline-none outline-none"
+              className="w-[82%] bg-transparent sm:w-full p-1 md:p-2 focus:outline-none outline-none"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Write your message..."
               type="text"
             />
-<div className="dropdown dropdown-top  dropdown-end">
-   
-            <GoPlus
-      
-              className="cursor-pointer "
-              size={28}
-              role="button"
-            tabIndex={0}
+            <div className="dropdown dropdown-top  dropdown-end">
+              <GoPlus
+                className="cursor-pointer "
+                size={28}
+                role="button"
+                tabIndex={0}
               />
-<ul
-                  tabIndex={0}
-                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-20 p-2 shadow-lg gap-1"
-                >
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-20 p-2 shadow-lg gap-1"
+              >
                 <InputMenu
-              icon={<GrGallery size={20} className="opacity-100 " />}
-              lable="Gallery"
-              input={
-                <input
-                  type="file"
-                  className="hidden"
-                  multiple
-                  onChange={handelGalleryData}
-                  accept=".jpg,.png,.jpeg,.mp4,.mkv"
+                  icon={<GrGallery size={20} className="opacity-100 " />}
+                  lable="Gallery"
+                  input={
+                    <input
+                      type="file"
+                      className="hidden"
+                      multiple
+                      onChange={handelGalleryData}
+                      accept=".jpg,.png,.jpeg,.mp4,.mkv"
+                    />
+                  }
                 />
-              }
-            />
-            <InputMenu
-              icon={<LuCamera size={20} />}
-              lable="Camera"
-              input={
-                <input
-                  type="file"
-                  id="imageFile"
-                  onChangeCapture={handelGalleryData}
-                  capture="user"
-                  className="hidden"
-                  accept="image/*"
+                <InputMenu
+                  icon={<LuCamera size={20} />}
+                  lable="Camera"
+                  input={
+                    <input
+                      type="file"
+                      id="imageFile"
+                      onChangeCapture={handelGalleryData}
+                      capture="user"
+                      className="hidden"
+                      accept="image/*"
+                    />
+                  }
                 />
-              }
-            />
-            <InputMenu
-              icon={<MdOutlinePermContactCalendar size={20} />}
-              lable="Contact"
-              button={onSelectContact}
-            />
-            <InputMenu
-              icon={<TiDocumentAdd size={20} />}
-              lable="Document"
-              input={
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handelUploadDocument}
-                  accept=".doc,.docx,.docm,.txt,.pdf"
+                <InputMenu
+                  icon={<MdOutlinePermContactCalendar size={20} />}
+                  lable="Contact"
+                  button={onSelectContact}
                 />
-              }
-            />
-            <InputMenu
-              icon={<MdOutlinePoll size={20} />}
-              lable="Poll"
-              button={() => setIsPollOpen(!isPollOpen)}
-            />
-            <InputMenu
-              icon={<GrMapLocation size={20} />}
-              lable="Location"
-              button={getLocation}
-            />
-                </ul>
-              </div>
+                <InputMenu
+                  icon={<TiDocumentAdd size={20} />}
+                  lable="Document"
+                  input={
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={handelUploadDocument}
+                      accept=".doc,.docx,.docm,.txt,.pdf"
+                    />
+                  }
+                />
+                <InputMenu
+                  icon={<MdOutlinePoll size={20} />}
+                  lable="Poll"
+                  button={() => setIsPollOpen(!isPollOpen)}
+                />
+                <InputMenu
+                  icon={<GrMapLocation size={20} />}
+                  lable="Location"
+                  button={getLocation}
+                />
+              </ul>
+            </div>
             {text.length <= 0 && (
               <label>
                 <span className="flex gap-x-2">
@@ -186,15 +177,6 @@ const ChatInput = () => {
             )}
           </div>
         )}
-        {/* input menu */}
-        {/* <div
-          ref={inputMenuRef}
-          className="absolute right-24 z-20 bottom-[50px] hidden"
-        >
-          <ul className="menu bg-base-100 rounded-md font-medium border border-base-300 w-40 p-0 [&_li>*]:rounded-none">
-           
-          </ul>
-        </div> */}
       </div>
 
       {/* Create a Poll */}
@@ -204,21 +186,9 @@ const ChatInput = () => {
           handleCreatPoll={handleCreatPoll}
         />
       )}
-
-      {/* Location Send */}
-
-      {!isLocationLoading && location.length > 0 && (
-        <Location
-          latitude={location[0]}
-          longitude={location[1]}
-          close={locationClose}
-          shareLocation={() => locationShare()}
-        />
-      )}
-
       {/* Gallery Data preview*/}
       {galleryData.length > 0 && <SendFilePreview />}
-    </div>
+    </>
   );
 };
 

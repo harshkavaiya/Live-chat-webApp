@@ -10,11 +10,18 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../lib/axiosInstance";
 import Share from "../components/share/share";
 import useFunctionStore from "../store/useFuncationStore";
+import Location from "../components/Location";
 
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { mediaPreview } = useMediaStore();
-  const { isMessageShare } = useFunctionStore();
+  const {
+    isMessageShare,
+    isLocationLoading,
+    location,
+    locationClose,
+    locationShare,
+  } = useFunctionStore();
   const { setMessages, currentChatingUser } = useMessageStore();
   const { data, isLoading } = useQuery({
     queryKey: [`chat-${currentChatingUser}`],
@@ -33,10 +40,10 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-screen mb-52 ">
         {mediaPreview && <ImagePreview />}
         {!mediaPreview && (
-          <div className="bg-base-100 h-screen">
+          <div className="bg-base-100 h-full">
             {/* Header */}
             <div className="w-full h-[10%]">
               <ChatHeader
@@ -59,6 +66,14 @@ const ChatPage = () => {
       </div>
       {/* share data */}
       {isMessageShare && <Share />}
+      {!isLocationLoading && location.length > 0 && (
+        <Location
+          latitude={location[0]}
+          longitude={location[1]}
+          close={locationClose}
+          shareLocation={() => locationShare()}
+        />
+      )}
     </>
   );
 };

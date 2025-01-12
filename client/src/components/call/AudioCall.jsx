@@ -6,7 +6,7 @@ import Peer from "peerjs";
 import io from "socket.io-client";
 
 const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
-  const caller = [1, 2, 3, 4, 5, 6];
+  const caller = [1, 2,5,4,5,8];
   const [isAudioActive, setIsAudioActive] = useState(false);
 
   // const [peerId, setPeerId] = useState(null);

@@ -16,6 +16,9 @@ const useAuthStore = create((set, get) => ({
     const storedUser = sessionStorage.getItem("authUser");
     if (storedUser) {
       set({ authUser: JSON.parse(storedUser), isLogin: true });
+      
+      get().connectSocket()
+      
     }
   },
 
