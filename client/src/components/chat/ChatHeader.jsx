@@ -44,56 +44,52 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 ">
-
           <IoVideocam className="cursor-pointer" size={20} />
 
           <div className="dropdown dropdown-bottom dropdown-end">
-          <IoEllipsisVerticalSharp
-            onClick={() => {
-              OpenCloseMenu(headerMenuRef);
-            }}
-            role="button"
-            tabIndex={0}
-            className="cursor-pointer"
-            size={20}
-            />
-             <ul
-                  tabIndex={0}
-                  className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
-                >
-                   <li>
-            <button
+            <IoEllipsisVerticalSharp
               onClick={() => {
-                setIsProfileOpen(true);
+                OpenCloseMenu(headerMenuRef);
               }}
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer"
+              size={20}
+            />
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
             >
-              Profile
-            </button>
-          </li>
-          <li
-            onClick={() => {
-              handleSelection(true);
-            }}
-          >
-            <p>Select Messages</p>
-          </li>
-          <li>
-            <Link to={"/"}>Close Chat</Link>
-          </li>
-          <li>
-            <p>Clear Chat</p>
-          </li>
-          <li>
-            <p>Report</p>
-          </li>
-                </ul>
-            </div>
+              <li>
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(true);
+                  }}
+                >
+                  Profile
+                </button>
+              </li>
+              <li
+                onClick={() => {
+                  handleSelection(true);
+                }}
+              >
+                <p>Select Messages</p>
+              </li>
+              <li>
+                <Link to={"/"}>Close Chat</Link>
+              </li>
+              <li>
+                <p>Clear Chat</p>
+              </li>
+              <li>
+                <p>Report</p>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       {/*Header menu */}
-        
-
-    
     </>
   );
 };
