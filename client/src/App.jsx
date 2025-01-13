@@ -7,33 +7,27 @@ import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
+import VideoCall from "./components/call/VideoCall";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, checkAuth, isLogin, loadAuthFromStorage } = useAuthStore();
-  const navigate = useNavigate();
+  const { authUser, checkAuth, isLogin, socket } = useAuthStore();
 
   useEffect(() => {
-    const authenticate = async () => {
-      await loadAuthFromStorage();
-      await checkAuth();
-      if (!isLogin || authUser == null) {
-        navigate("/Login");
-      } else {
-        navigate("/");
-      }
-    };
-
-    authenticate();
-  }, [isLogin]);
+    if (!socket) {
+      checkAuth();
+    }
+  }, [socket, isLogin]);
 
   return (
     <div data-theme={theme}>
       <Toaster />
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
-      </Routes>
+      </Routes> */}
+      {authUser && <VideoCall />}
+      {/* {authUser ? <Home /> : <LoginPage />} */}
     </div>
   );
 }

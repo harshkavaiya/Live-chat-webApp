@@ -14,29 +14,28 @@ const useAuthStore = create((set, get) => ({
 
   loadAuthFromStorage: () => {
     const storedUser = sessionStorage.getItem("authUser");
-    if (storedUser) {
+
+    if (storedUser != null) {
       set({ authUser: JSON.parse(storedUser), isLogin: true });
-      
-      get().connectSocket()
-      
+      get().connectSocket();
     }
   },
 
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      if (!get().authUser) {
-        const res = await axiosInstance.get("/auth/check");
-        if (!res.data.success) {
-          set({ authUser: null, isLogin: false });
-          sessionStorage.removeItem("authUser");
-          return;
-        }
+      if (get().authUser) return;
 
-        set({ authUser: res.data.user, isLogin: true });
-        sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
-        get().connectSocket();
+      const res = await axiosInstance.get("/auth/check");
+      if (!res.data.success) {
+        set({ authUser: null, isLogin: false });
+        // sessionStorage.removeItem("authUser");
+        return;
       }
+
+      set({ authUser: res.data.user, isLogin: true });
+      // sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
+      get().connectSocket();
     } catch (error) {
       console.error("Error in checkAuth:", error);
       set({ authUser: null, isLogin: false });
@@ -61,8 +60,8 @@ const useAuthStore = create((set, get) => ({
   },
   logout: async () => {
     try {
-      const res = await axiosInstance.get("/auth/logout");
-      console.log(res);
+      await axiosInstance.get("/auth/logout");
+
       toast.success("Logout");
       set({ authUser: null, isLogin: false });
       sessionStorage.removeItem("authUser");
@@ -80,8 +79,7 @@ const useAuthStore = create((set, get) => ({
         userId: get().authUser?._id,
       },
     });
-    socket.connect();
-    socket.on("connect", (socket) => {
+    socket.on("connect", () => {
       console.log("Connected!");
     });
 
@@ -90,7 +88,6 @@ const useAuthStore = create((set, get) => ({
   disconnectSocket: () => {
     const { socket } = get();
     if (socket?.connected) socket.disconnect();
-
     set({ socket: null });
   },
 }));

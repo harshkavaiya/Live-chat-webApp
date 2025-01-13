@@ -42,7 +42,7 @@ const ChatMessage = () => {
   useEffect(() => {
     suscribeToMessage();
     return () => unsuscribeFromMessage();
-  }, [suscribeToMessage, socket, unsuscribeFromMessage]);
+  }, [suscribeToMessage, unsuscribeFromMessage]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {

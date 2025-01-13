@@ -10,7 +10,6 @@ app.use(express.json());
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
     credentials: true,
   },
 });
@@ -43,17 +42,19 @@ io.on("connection", (socket) => {
   onlineUser[id] = socket.id;
   emitOnlineUsers();
 
-  // join room for voice call
-  socket.on("join-room", (roomId, peerId) => {
-    console.log(`User joined room: ${roomId}, PeerID: ${peerId}`);
-    socket.join(roomId);
-    socket.to(roomId).emit("user-connected", peerId);
-  });
-
   socket.on("disconnect", () => {
     console.log("User is Disconnected", socket.id);
     delete onlineUser[id];
     emitOnlineUsers();
+  });
+
+  socket.on("call_user", (data) => {
+    const { id, offer } = data;
+    io.to(onlineUser[id]).emit("request_call", { offer, id: socket.id });
+  });
+  socket.on("call_accept", (data) => {
+    const { id, answer } = data;
+    io.to(onlineUser[id]).emit("call_accepted", answer);
   });
 });
 

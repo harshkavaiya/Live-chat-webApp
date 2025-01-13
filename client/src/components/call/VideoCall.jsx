@@ -1,48 +1,73 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
+import useAuthStore from "../../store/useAuthStore";
+import useVideoCallStore from "../../store/useVideoCallStore";
 import CallControl from "./CallControl";
+import ReactPlayer from "react-player";
 
 const VideoCall = ({ name }) => {
-  // const videoRef = useRef(null);
-  // useEffect(() => {
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true, audio: false })
-  //     .then((stream) => {
-  //       if (videoRef.current) {
-  //         videoRef.current.srcObject = stream;
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error accessing the camera: ", error);
-  //     });
-  // }, []);
+  const { socket } = useAuthStore();
+  const {
+    callUser,
+    handleRequestCall,
+    handleAccpetedCall,
+    myStream,
+    peer,
+    trackRemoteStream,
+    remoteStream,
+    handleNegotiation,
+  } = useVideoCallStore();
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("request_call", handleRequestCall);
+
+      peer.addEventListener("track", trackRemoteStream);
+      peer.addEventListener(
+        "negotiationneeded",
+        async () => await handleNegotiation("676ccfa646ccd0eedd02d05c", socket)
+      );
+
+      return () => {
+        socket.off("request_call", handleRequestCall);
+        socket.off("call_accepted", handleAccpetedCall);
+
+        peer.removeEventListener("track", trackRemoteStream);
+        peer.removeEventListener("negotiationneeded", () =>
+          handleNegotiation("676ccfa646ccd0eedd02d05c")
+        );
+      };
+    }
+  }, [
+    peer,
+    handleRequestCall,
+    handleAccpetedCall,
+    trackRemoteStream,
+    callUser,
+  ]);
 
   return (
-    <dialog id="my_modal_1" className="modal overflow-hidden">
-      <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
-        {/* Video Screen */}
-        <div className="w-full h-full sm:h-screen flex sm:gap-1">
-          <div className="w-auto h-10 bg-base-100 shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
-            <h3 className="font-bold text-base">{name}</h3>
-          </div>
+    // <dialog id="my_modal_1" className="modal overflow-hidden">
+    <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
+      {/* Video Screen */}
 
-          <video
-            // Video 1
-            src="https://cdn.pixabay.com/video/2016/08/22/4723-179738625_large.mp4"
-            autoPlay
-            className="h-full sm:h-auto sm:w-1/2 sm:rounded-r-box object-cover"
-          />
+      <button
+        className="w-20 h-16 bg-primary "
+        onClick={() => callUser("676ccfa646ccd0eedd02d05c", socket)}
+      >
+        Call
+      </button>
+      <div className="w-full h-full sm:h-screen flex sm:gap-1">
+        {/* <div className="w-auto h-10 bg-base-100 shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
+          <h3 className="font-bold text-base">{name}</h3>
+        </div> */}
 
-          <video
-            // Video 2
-            src="https://cdn.pixabay.com/video/2016/08/22/4723-179738625_large.mp4"
-            autoPlay
-            className="w-36 h-36 sm:h-auto sm:w-1/2 object-cover sm:rounded-r-box rounded-box absolute sm:static bottom-32 right-5"
-          />
-        </div>
-
-        <CallControl model={1} />
+        <ReactPlayer url={myStream} playing muted />
+        <ReactPlayer url={remoteStream} playing />
       </div>
-    </dialog>
+
+      <CallControl model={1} />
+    </div>
+    // </dialog>
   );
 };
 
