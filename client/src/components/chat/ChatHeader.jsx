@@ -56,7 +56,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
             />
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-base-100 border mt-3 mr-2 z-20 w-56 rounded-box p-2 shadow-lg gap-1"
+              className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box z-[1] p-2 shadow-lg gap-1"
             >
               <li>
                 <button
