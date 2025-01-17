@@ -20,7 +20,10 @@ const Sidebar = () => {
   const { socket } = useAuthStore();
   const [onlineUsers, setOnlineUsers] = useState([]);
   useEffect(() => {
+<<<<<<< HEAD
     console.log("users", socket);
+=======
+>>>>>>> 97a3279b9b9e21a7e126d978ba99f53fb840e654
     if (socket) {
       socket.on("onlineUsers", (users) => {
         setOnlineUsers(users);
@@ -29,7 +32,7 @@ const Sidebar = () => {
         socket.off("onlineUsers");
       };
     }
-  }, [socket]);
+  }, []);
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =

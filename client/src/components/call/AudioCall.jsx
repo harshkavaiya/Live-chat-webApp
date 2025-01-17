@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
-import AudioWave from "./audioWave";
-import Peer from "peerjs";
-import io from "socket.io-client";
 
 const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
   const caller = [1, 2,5,4,5,8];
