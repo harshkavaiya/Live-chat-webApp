@@ -7,27 +7,44 @@ import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
-import VideoCall from "./components/call/VideoCall";
+// import VideoCall from "./components/call/VideoCall";
+import NewVideoCall from "./components/call/NewVideoCall";
 
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, checkAuth, isLogin, socket } = useAuthStore();
+  const { authUser, loadAuthFromStorage, checkAuth, isLogin, socket } =
+    useAuthStore();
+
+  // useEffect(() => {
+  //   if (!socket && !authUser) {
+  //     console.log("authUser is null, calling checkAuth...");
+  //     checkAuth();
+  //   }
+  // }, [socket, authUser]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!socket) {
+    // Load user from session storage and then check authentication
+    loadAuthFromStorage();
+    setIsInitialized(true); // Mark as initialized
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized && !authUser) {
+      console.log("authUser is null, calling checkAuth...");
       checkAuth();
     }
-  }, [socket, isLogin]);
+  }, [authUser, isInitialized]);
 
   return (
     <div data-theme={theme}>
       <Toaster />
-      {/* <Routes>
+      {authUser != null ? <Home /> : <LoginPage />}
+      <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
-      </Routes> */}
-      {authUser && <VideoCall />}
-      {/* {authUser ? <Home /> : <LoginPage />} */}
+      </Routes>
+      {/* {authUser && <NewVideoCall />} */}
     </div>
   );
 }

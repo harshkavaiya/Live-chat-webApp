@@ -15,31 +15,66 @@ const useAuthStore = create((set, get) => ({
   loadAuthFromStorage: () => {
     const storedUser = sessionStorage.getItem("authUser");
 
-    if (storedUser != null) {
-      set({ authUser: JSON.parse(storedUser), isLogin: true });
-      get().connectSocket();
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Loaded user from session storage:", parsedUser);
+      set({ authUser: parsedUser, isLogin: true }); // Set user from session storage
+      get().connectSocket(); // Initialize socket
+    } else {
+      console.log("No user found in session storage.");
+      set({ authUser: null, isLogin: false }); // Clear state if no user in session
     }
   },
+
+  // checkAuth: async () => {
+  //   try {
+  //     set({ isCheckingAuth: true });
+  //     if (get().authUser) return; // if already logged in
+
+  //     const res = await axiosInstance.get("/auth/check");
+  //     if (!res.data.success) {
+  //       set({ authUser: null, isLogin: false });
+  //       console.log("User in checkAuth not ", res.data);
+  //       // sessionStorage.removeItem("authUser");
+  //       return;
+  //     }
+
+  //     console.log("User in checkAuth", res.data.user);
+  //     set({ authUser: res.data.user, isLogin: true });
+  //     // sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
+  //     get().connectSocket();
+  //   } catch (error) {
+  //     console.error("Error in checkAuth:", error);
+  //     set({ authUser: null, isLogin: false });
+  //     get().diconnectSocket();
+  //     sessionStorage.removeItem("authUser");
+  //   } finally {
+  //     set({ isCheckingAuth: false });
+  //   }
+  // },
 
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      if (get().authUser) return;
+      console.log("authUser before check:", get().authUser);
+
+      if (get().authUser) return; // Skip if already logged in
 
       const res = await axiosInstance.get("/auth/check");
-      if (!res.data.success) {
+      if (res.data.success) {
+        const user = res.data.user;
+        set({ authUser: user, isLogin: true });
+        sessionStorage.setItem("authUser", JSON.stringify(user));
+        console.log("User authenticated:", user);
+        get().connectSocket(); // Connect socket
+      } else {
+        console.log("Authentication failed.");
         set({ authUser: null, isLogin: false });
-        // sessionStorage.removeItem("authUser");
-        return;
+        sessionStorage.removeItem("authUser");
       }
-
-      set({ authUser: res.data.user, isLogin: true });
-      // sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
-      get().connectSocket();
     } catch (error) {
       console.error("Error in checkAuth:", error);
       set({ authUser: null, isLogin: false });
-      get().diconnectSocket();
       sessionStorage.removeItem("authUser");
     } finally {
       set({ isCheckingAuth: false });

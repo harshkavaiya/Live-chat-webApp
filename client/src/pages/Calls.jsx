@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import VideoCall from "../components/call/VideoCall";
 import { CiSearch } from "react-icons/ci";
 import { FiPhoneIncoming } from "react-icons/fi";
@@ -7,6 +7,8 @@ import { FaVideo } from "react-icons/fa6";
 import { FiPhoneOutgoing } from "react-icons/fi";
 import { formatMessageTime } from "../function/TimeFormating";
 import AudioCall from "../components/call/AudioCall";
+import useAuthStore from "../store/useAuthStore";
+import useVideoCall from "../store/useVideoCall";
 const Calls = () => {
   const users = [
     {
@@ -15,6 +17,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-28T14:30:00Z",
       misscall: true,
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -22,6 +25,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/jane_smith.jpg",
       callType: "outgoing",
       time: "2024-12-28T10:00:00Z",
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "video",
     },
     {
@@ -45,6 +49,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T18:30:00Z",
       misscall: true,
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -52,6 +57,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/sophia_wilson.jpg",
       callType: "outgoing",
       time: "2024-12-26T19:00:00Z",
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "video",
     },
     {
@@ -67,6 +73,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/olivia_moore.jpg",
       callType: "outgoing",
       time: "2024-12-26T21:00:00Z",
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "video",
     },
     {
@@ -82,25 +89,43 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/isabella_anderson.jpg",
       callType: "outgoing",
       time: "2024-12-26T23:00:00Z",
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "video",
     },
   ];
   const [isCallActive, setIsCallActive] = useState(false);
   const [callName, setcallerName] = useState("");
+  const [remoteID, setRemoteId] = useState("");
+  const [ready, setReady] = useState(false);
+  const { startCall } = useVideoCall();
   const VcallsHandler = (data) => {
-    setcallerName(data);
+    setcallerName(data.name);
+    setRemoteId(data.Id);
     document.getElementById("my_modal_1").showModal();
+    setReady(true);
   };
 
   const callsHandler = (data) => {
     setcallerName(data);
     setIsCallActive(true);
     document.getElementById("my_modal_2").showModal();
+    setReady(true);
   };
+
+  useEffect(() => {
+    if (remoteID && ready) {
+      startCall(remoteID);
+      setReady(false);
+    }
+  }, [remoteID, ready]);
 
   return (
     <div className="flex flex-col h-screen">
-      <VideoCall name={callName} />
+      <VideoCall
+        name={callName}
+        remoteID={remoteID}
+        setRemoteId={setRemoteId}
+      />
       <AudioCall
         name={callName}
         isCallActive={isCallActive}
@@ -173,7 +198,7 @@ const Calls = () => {
                   <FaVideo
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => VcallsHandler(i.name)}
+                    onClick={() => VcallsHandler(i)}
                   />
                 ) : (
                   <MdCall
