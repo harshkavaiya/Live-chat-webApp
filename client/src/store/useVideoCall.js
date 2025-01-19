@@ -53,14 +53,23 @@ const useVideoCall = create((set, get) => ({
     const { peer, socket } = get();
 
     get().GetLocalStream();
+    // Assign local stream to the `myVideo` element
+    const { localStream } = get();
+    if (myVideoRef && localStream) {
+      myVideoRef.srcObject = localStream;
+    }
 
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
       console.log("Call accepted by:", data.from);
+      console.log("remotePeerId", get().remotePeerId);
+      console.log("localstream", get().localStream);
       const call = peer.call(get().remotePeerId, get().localStream);
       set({ currentCall: call, isCallInProgress: true });
+      console.log("call data", call);
       // Check if peerVideoRef exists and assign remoteStream
       call.on("stream", (remoteStream) => {
+        console.log("peerVideoRef is", remoteStream);
         if (peerVideoRef) {
           console.log("Remote stream received.");
           peerVideoRef.srcObject = remoteStream;
@@ -95,7 +104,7 @@ const useVideoCall = create((set, get) => ({
       return;
     }
 
-    console.log("Accepting call from:", incomingCall);
+    console.log("Accepting call from:", peerId);
 
     // Proceed to get the local stream if not available
     if (!localStream) {
@@ -107,10 +116,10 @@ const useVideoCall = create((set, get) => ({
 
       // Handle the stream once the call is established
       call.on("stream", (remoteStream) => {
-        if (get().peerVideoRef) {
-          console.log("stream received");
-          get().peerVideoRef.srcObject = remoteStream;
-        }
+        // if (get().peerVideoRef) {
+        console.log("stream received");
+        // get().peerVideoRef.srcObject = remoteStream;
+        // }
       });
       // Set the current call and update the state
       set({ currentCall: call, isCallInProgress: true });

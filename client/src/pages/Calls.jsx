@@ -121,11 +121,7 @@ const Calls = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <VideoCall
-        name={callName}
-        remoteID={remoteID}
-        setRemoteId={setRemoteId}
-      />
+      <VideoCall name={callName} />
       <AudioCall
         name={callName}
         isCallActive={isCallActive}

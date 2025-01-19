@@ -30,7 +30,7 @@ const Home = () => {
       hasRegisteredPeerId.current = true;
       // console.log("Has Registered aftre", hasRegisteredPeerId.current);
     }
-  }, [peer]);
+  }, []);
 
   useEffect(() => {
     // Handle incoming call offers
