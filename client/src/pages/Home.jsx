@@ -20,6 +20,7 @@ const Home = () => {
   const { socket, authUser } = useAuthStore();
   const hasRegisteredPeerId = useRef(false);
   const { createPeerId, peer, incomingCallAnswere } = useVideoCall();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
@@ -36,9 +37,12 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       socket.on("callOffer", (data) => {
+        setOpen(true);
         console.log("Incoming call offer from:", data.from);
         incomingCallAnswere(data.from);
-        document.getElementById("incomingDialog").showModal();
+        
+          // document.getElementById("incomingDialog").showModal();
+        
       });
     }
   }, []);
@@ -46,7 +50,7 @@ const Home = () => {
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
-      <IncomingCallDialog />
+      {open && <IncomingCallDialog />}
       {/* user setting */}
       <div className="w-[5rem] hidden sm:block bg-primary-content">
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
