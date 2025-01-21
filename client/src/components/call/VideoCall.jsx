@@ -27,6 +27,7 @@ const VideoCall = ({ name }) => {
             // Video 1
             ref={myVideoRef}
             autoPlay
+            muted
             className={`h-full sm:h-auto ${
               isCallInProgress ? "sm:w-1/2" : "w-full"
             }  sm:rounded-r-box object-cover`}
