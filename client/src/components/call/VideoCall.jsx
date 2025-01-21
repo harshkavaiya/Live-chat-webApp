@@ -19,7 +19,8 @@ const VideoCall = ({ name }) => {
 
   const { localStream } = useVideoCall.getState();
   useEffect(() => {
-    // Handle incoming call (when another user calls
+    // Handle incoming call (when another user call
+    console.log(localStream)
     if (localStream) {
       peer.on("call", (call) => {
         console.log("localStream", localStream);
