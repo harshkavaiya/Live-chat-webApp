@@ -114,12 +114,15 @@ const useVideoCall = create((set, get) => ({
     if (peer && incomingCall) {
       const call = peer.call(incomingCall, localStream); // Create the call
 
-      // Handle the stream once the call is established
-      call.on("stream", (remoteStream) => {
-        // if (get().peerVideoRef) {
-        console.log("stream received");
-        // get().peerVideoRef.srcObject = remoteStream;
-        // }
+      peer.on("call", (call) => {
+        console.log("localStream", localStream);
+        call.answer(localStream);
+
+        // Handle the stream once the call is established
+        call.on("stream", (remoteStream) => {
+          console.log("stream-received", remoteStream);
+          get().peerVideoRef.srcObject = remoteStream;
+        });
       });
       // Set the current call and update the state
       set({ currentCall: call, isCallInProgress: true });
@@ -130,46 +133,6 @@ const useVideoCall = create((set, get) => ({
       console.error("Error: Peer or incoming call is missing.");
     }
   },
-
-  // answerCall: () => {
-  //   const { incomingCall, localStream, peer, socket, peerId } = get();
-
-  //   // Debugging the values
-  //   console.log("Incoming call:", incomingCall);
-  //   console.log("Local stream:", localStream);
-
-  //   if (!incomingCall || !localStream) {
-  //     console.error(
-  //       "Cannot accept call: incomingCall or localStream is missing."
-  //     );
-  //     return;
-  //   }
-
-  //   console.log("Accepting call from:", incomingCall);
-
-  //   // Proceed to get the local stream if not available
-  //   if (!localStream) {
-  //     get().GetLocalStream(); // This ensures we have the local stream
-  //   }
-  //   // Once localStream is available, establish the call
-  //   if (peer && incomingCall) {
-  //     const call = peer.call(incomingCall, localStream); // Create the call
-
-  //     // Handle the stream once the call is established
-  //     call.on("stream", (remoteStream) => {
-  //       if (get().peerVideoRef.current) {
-  //         get().peerVideoRef.current.srcObject = remoteStream;
-  //       }
-  //     });
-  //     // Set the current call and update the state
-  //     set({ currentCall: call, isCallInProgress: true });
-
-  //     // Emit an event to notify the server that the call is accepted
-  //     socket.emit("acceptCall", { to: incomingCall, from: peerId });
-  //   } else {
-  //     console.error("Error: Peer or incoming call is missing.");
-  //   }
-  // },
 
   GetLocalStream: () => {
     // Get local media
@@ -196,11 +159,12 @@ const useVideoCall = create((set, get) => ({
   },
 
   incomingCallAnswere: (CallerPeerId) => {
-    console.log("Incoming call from:", CallerPeerId);
+    // console.log("Incoming call from:", CallerPeerId);
     set({ incomingCall: CallerPeerId });
 
     // If local stream is not available, fetch it
     if (!get().localStream) {
+      console.log("Local stream is missing, fetching...", get().localStream);
       get().GetLocalStream(); // Ensure the local stream is ready
     }
   },
@@ -215,72 +179,13 @@ const useVideoCall = create((set, get) => ({
     }
 
     set({ remotePeerId });
-    const call = peer.call(remotePeerId, localStream); // Create the call
+    // const call = peer.call(remotePeerId, localStream); // Create the call
     console.log("Calling peer:", remotePeerId);
 
-    set({ currentCall: call, isCallInProgress: true });
-
-    call.on("stream", (remoteStream) => {
-      if (get().peerVideoRef) {
-        console.log("Remote stream received, displaying.");
-        get().peerVideoRef.srcObject = remoteStream;
-      }
-    });
-
-    call.on("close", () => {
-      console.log("Call closed.");
-      set({ isCallInProgress: false, currentCall: null });
-    });
+    // set({ currentCall: call, isCallInProgress: true });
 
     socket.emit("callOffer", { to: remotePeerId, from: peerId });
   },
-
-  // Start a call
-  // startCall: (remotePeerId) => {
-  //   const { peer, localStream, socket, peerId } = get();
-  //   // Check if peer or localStream is undefined
-  //   if (!peer || !localStream) {
-  //     console.error(
-  //       "Cannot start call: peer or localStream is not initialized."
-  //     );
-  //     return; // Prevent call if peer or localStream is not initialized
-  //   }
-  //   set({ remotePeerId });
-  //   const call = peer.call(remotePeerId, localStream);
-  //   console.log("Calling peer:", remotePeerId);
-
-  //   set({ currentCall: call, isCallInProgress: true });
-
-  //   call.on("stream", (remoteStream) => {
-  //     if (get().peerVideoRef) {
-  //       get().peerVideoRef.srcObject = remoteStream;
-  //     }
-  //   });
-
-  //   call.on("close", () => {
-  //     console.log("Call closed.");
-  //     set({ isCallInProgress: false, currentCall: null });
-  //   });
-
-  //   socket.emit("callOffer", { to: remotePeerId, from: peerId });
-  // },
-
-  // Answer a call
-  // answerCall: () => {
-  //   const { incomingCall, localStream, peer, socket, peerId } = get();
-  //   console.log("accepting call", incomingCall);
-  //   if (incomingCall) {
-  //     const call = peer.call(incomingCall, localStream);
-  //     // const call = peer.current.call(from, localStream.current);
-  //     set({ currentCall: call, isCallInProgress: true });
-  //     call.on("stream", (remoteStream) => {
-  //       if (get().peerVideoRef) {
-  //         get().peerVideoRef.srcObject = remoteStream;
-  //       }
-  //     });
-  //     socket.emit("acceptCall", { to: incomingCall, from: peerId });
-  //   }
-  // },
 
   // Reject a call
   rejectCall: () => {

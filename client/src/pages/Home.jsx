@@ -16,20 +16,17 @@ import useVideoCall from "../store/useVideoCall";
 const Home = () => {
   const [activePage, setActivePage] = useState("chat");
   const { currentChatingUser } = useMessageStore();
-  const { incomingCall } = useVideoCall();
   const { socket, authUser } = useAuthStore();
   const hasRegisteredPeerId = useRef(false);
-  const { createPeerId, peer, incomingCallAnswere } = useVideoCall();
+  const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
       console.log("Registering Peer ID:", authUser._id);
-      // console.log("Has Registered Peer ID:", hasRegisteredPeerId.current);
       socket.emit("registerPeerId", authUser._id);
       createPeerId(authUser._id);
       hasRegisteredPeerId.current = true;
-      // console.log("Has Registered aftre", hasRegisteredPeerId.current);
     }
   }, []);
 
