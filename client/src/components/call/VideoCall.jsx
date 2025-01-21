@@ -5,7 +5,7 @@ import useVideoCall from "../../store/useVideoCall";
 
 const VideoCall = ({ name }) => {
   const { initializeVideoCall, peer } = useVideoCall.getState();
-  const myVideoReff = document.getElementById("myVideo");
+  // const myVideoReff = document.getElementById("myVideo");
   // const peerVideoReff = document.getElementById("peerVideo");
 
   // const remoteRef = useRef();
