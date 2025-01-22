@@ -85,11 +85,11 @@ const useVideoCall = create((set, get) => ({
       });
     });
 
-    // Handle ended calls
-    socket.on("callEnded", (data) => {
-      console.log("Call ended by:", data.from);
-      get().endCall();
-    });
+    // // Handle ended calls
+    // socket.on("callEnded", (data) => {
+    //   console.log("Call ended by:", data.from);
+    //   get().endCall();
+    // });
   },
 
   answerCall: () => {
@@ -202,10 +202,6 @@ const useVideoCall = create((set, get) => ({
       currentCall,
       localStream,
       incomingCall,
-      socket,
-      remotePeerId,
-      peerId,
-      isCallInProgress,
     } = get();
     if (currentCall != null) {
       currentCall.close();

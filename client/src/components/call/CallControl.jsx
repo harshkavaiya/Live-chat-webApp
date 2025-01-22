@@ -8,7 +8,7 @@ import useVideoCall from "../../store/useVideoCall";
 const CallControl = ({ model, setIsCallActive, isCallActive }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
-  const { endCall } = useVideoCall();
+  const { endCallByPeer } = useVideoCall();
   const micHanlder = () => {
     setmic(!miccontroll);
   };
@@ -16,7 +16,7 @@ const CallControl = ({ model, setIsCallActive, isCallActive }) => {
     if (isCallActive) {
       setIsCallActive(false);
     }
-    endCall();
+    endCallByPeer();
     document.getElementById(`my_modal_${model}`).close();
   };
 

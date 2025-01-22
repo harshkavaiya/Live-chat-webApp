@@ -4,7 +4,8 @@ import useAuthStore from "../../store/useAuthStore";
 import useVideoCall from "../../store/useVideoCall";
 
 const VideoCall = ({ name }) => {
-  const { initializeVideoCall, isCallInProgress } = useVideoCall.getState();
+  const { initializeVideoCall, isCallInProgress,endCall } = useVideoCall.getState();
+  const { socket } = useAuthStore();
 
   const myVideoRef = useRef(null); // Local video
   const peerVideoRef = useRef(null); // Remote video
@@ -13,6 +14,17 @@ const VideoCall = ({ name }) => {
     initializeVideoCall(myVideoRef.current, peerVideoRef.current);
     console.log("Video call initialized");
   }, [initializeVideoCall]);
+
+  useEffect(() => {
+    if (socket) {
+      // Handle ended calls
+      socket.on("callEnded", (data) => {
+        console.log("Call ended by:", data.from);
+        document.getElementById("my_modal_1").close();
+      endCall();
+      });
+    }
+  }, []);
 
   return (
     <dialog id="my_modal_1" className="modal overflow-hidden">
