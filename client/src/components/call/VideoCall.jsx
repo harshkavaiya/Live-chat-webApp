@@ -28,8 +28,10 @@ const VideoCall = ({ name }) => {
             ref={myVideoRef}
             autoPlay
             muted
-            className={`h-full sm:h-auto ${
-              isCallInProgress ? "sm:w-1/2" : "w-full"
+            className={`transition-all duration-500 ease-in-out sm:h-auto ${
+              isCallInProgress
+                ? "sm:w-1/2 w-36 h-36 rounded-box sm:rounded-none absolute sm:static bottom-32 right-5 scale-90 sm:scale-100"
+                : "w-full h-full scale-100"
             }  sm:rounded-r-box object-cover`}
           />
 
@@ -37,9 +39,9 @@ const VideoCall = ({ name }) => {
             // Video 2
             ref={peerVideoRef}
             autoPlay
-            className={`w-36 h-36 sm:h-auto ${
+            className={`w-full h-full sm:h-auto ${
               !isCallInProgress && "hidden"
-            } sm:w-1/2 object-cover sm:rounded-r-box rounded-box absolute sm:static bottom-32 right-5`}
+            } sm:w-1/2 object-cover sm:rounded-l-box`}
           />
         </div>
 

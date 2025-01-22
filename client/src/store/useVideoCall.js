@@ -198,19 +198,42 @@ const useVideoCall = create((set, get) => ({
 
   // End a call
   endCall: () => {
-    const { currentCall, localStream, socket, remotePeerId, peerId } = get();
-    if (currentCall) {
+    const {
+      currentCall,
+      localStream,
+      incomingCall,
+      socket,
+      remotePeerId,
+      peerId,
+      isCallInProgress,
+    } = get();
+    if (currentCall != null) {
       currentCall.close();
       set({ currentCall: null });
     }
 
-    if (localStream) {
+    if (localStream != null) {
       localStream.getTracks().forEach((track) => track.stop());
       set({ localStream: null });
     }
 
-    set({ isCallInProgress: false });
-    socket.emit("endCall", { to: remotePeerId, from: peerId });
+    incomingCall == null
+      ? console.log("Incoming call ended.", incomingCall)
+      : console.log("Call ended.incomingcalll", incomingCall);
+  },
+
+  endCallByPeer: () => {
+    const { incomingCall, socket, remotePeerId, peerId, isCallInProgress } =
+      get();
+    if (isCallInProgress) {
+      socket.emit("endCall", {
+        to: incomingCall == null ? remotePeerId : incomingCall,
+        from: peerId,
+      });
+      console.log(isCallInProgress);
+      set({ isCallInProgress: false });
+      get().endCall();
+    }
   },
 
   // Toggle microphone
