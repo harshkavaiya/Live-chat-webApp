@@ -58,18 +58,16 @@ const useVideoCall = create((set, get) => ({
     if (myVideoRef && localStream) {
       myVideoRef.srcObject = localStream;
     }
-
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
       console.log("Call accepted by:", data.from);
-      console.log("remotePeerId", get().remotePeerId);
-      console.log("localstream", get().localStream);
       const call = peer.call(get().remotePeerId, get().localStream);
       set({ currentCall: call, isCallInProgress: true });
       console.log("call data", call);
       // Check if peerVideoRef exists and assign remoteStream
       call.on("stream", (remoteStream) => {
         console.log("peerVideoRef is", remoteStream);
+        // console.log("initializeVideoCall", peerVideoRef);
         if (peerVideoRef) {
           console.log("Remote stream received.");
           peerVideoRef.srcObject = remoteStream;
@@ -78,18 +76,9 @@ const useVideoCall = create((set, get) => ({
 
       call.on("close", () => {
         console.log("Call closed.");
-        set({ isCallInProgress: false, currentCall: null });
-        if (peerVideoRef) {
-          peerVideoRef.srcObject = null;
-        }
+        get().endCall();
       });
     });
-
-    // // Handle ended calls
-    // socket.on("callEnded", (data) => {
-    //   console.log("Call ended by:", data.from);
-    //   get().endCall();
-    // });
   },
 
   answerCall: () => {
@@ -134,48 +123,39 @@ const useVideoCall = create((set, get) => ({
     }
   },
 
-  GetLocalStream: () => {
-    // Get local media
-    navigator.mediaDevices
-      .getUserMedia({
+  GetLocalStream: async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
-      })
-      .then((stream) => {
-        console.log("Local stream obtained successfully.");
-        set({ localStream: stream });
-
-        // Set the local video stream for the UI
-        if (get().myVideoRef) {
-          get().myVideoRef.srcObject = stream;
-        }
-      })
-      .catch((err) => {
-        console.error("Error accessing media devices:", err);
-        alert(
-          "Failed to access media devices. Please check your camera/microphone permissions."
-        );
       });
-  },
-
-  incomingCallAnswere: (CallerPeerId) => {
-    // console.log("Incoming call from:", CallerPeerId);
-    set({ incomingCall: CallerPeerId });
-
-    // If local stream is not available, fetch it
-    if (!get().localStream) {
-      console.log("Local stream is missing, fetching...", get().localStream);
-      get().GetLocalStream(); // Ensure the local stream is ready
+      set({ localStream: stream });
+      console.log("Local stream initialized");
+      // Set the local video stream for the UI
+      if (get().myVideoRef) {
+        get().myVideoRef.srcObject = stream;
+      }
+    } catch (error) {
+      console.error("Failed to get local stream:", error);
+      alert("Please allow access to camera and microphone.");
     }
   },
 
+  incomingCallAnswere: (CallerPeerId) => {
+    // If local stream is not available, fetch it
+    if (!get().localStream) {
+      console.log("Local stream is missing, fetching...", get().localStream);
+      get().GetLocalStream();
+    }
+    set({ incomingCall: CallerPeerId });
+  },
+
   startCall: (remotePeerId) => {
-    const { peer, localStream, socket, peerId } = get();
+    const { localStream, socket, peerId } = get();
 
     if (!localStream) {
-      console.error("Cannot start call: localStream is not initialized.");
+      console.log("Cannot start call: localStream is not initialized.");
       get().GetLocalStream(); // Fetch the stream if it's missing
-      return;
     }
 
     set({ remotePeerId });
@@ -198,24 +178,40 @@ const useVideoCall = create((set, get) => ({
 
   // End a call
   endCall: () => {
-    const {
-      currentCall,
-      localStream,
-      incomingCall,
-    } = get();
-    if (currentCall != null) {
+    // const { currentCall, localStream, incomingCall } = get();
+    // if (currentCall != null && incomingCall != null && localStream != null) {
+    //   currentCall.close();
+    //   set({ currentCall: null });
+    //   localStream.getTracks().forEach((track) => track.stop());
+    //   set({ localStream: null });
+    //   set({ incomingCall: null });
+    // }
+    const { currentCall, localStream, incomingCall, peerVideoRef, myVideoRef } =
+      get();
+
+    // Call ko close karo
+    if (currentCall) {
       currentCall.close();
-      set({ currentCall: null });
     }
 
-    if (localStream != null) {
+    // Local stream ke tracks ko stop karo
+    if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       set({ localStream: null });
     }
 
-    incomingCall == null
-      ? console.log("Incoming call ended.", incomingCall)
-      : console.log("Call ended.incomingcalll", incomingCall);
+    // Remote video stream clear karo
+    if (peerVideoRef) {
+      peerVideoRef.srcObject = null;
+    }
+
+    // Local video stream clear karo
+    if (myVideoRef) {
+      myVideoRef.srcObject = null;
+    }
+
+    // State reset karo
+    set({ currentCall: null, incomingCall: null, isCallInProgress: false });
   },
 
   endCallByPeer: () => {
@@ -226,20 +222,20 @@ const useVideoCall = create((set, get) => ({
         to: incomingCall == null ? remotePeerId : incomingCall,
         from: peerId,
       });
-      console.log(isCallInProgress);
-      set({ isCallInProgress: false });
+
       get().endCall();
     }
   },
 
   // Toggle microphone
-  toggleMic: () => {
+  toggleMic: (mictong) => {
     const { localStream, isMicOn } = get();
     const audioTrack = localStream
       ?.getTracks()
       .find((track) => track.kind === "audio");
     if (audioTrack) {
-      audioTrack.enabled = !audioTrack.enabled;
+      audioTrack.enabled = mictong;
+      console.log("mic is : ", mictong);
       set({ isMicOn: audioTrack.enabled });
     }
   },

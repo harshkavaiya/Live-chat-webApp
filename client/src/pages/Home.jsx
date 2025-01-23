@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -20,6 +20,11 @@ const Home = () => {
   const hasRegisteredPeerId = useRef(false);
   const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
+  const [incomOpen, setIncomOpen] = useState(false);
+
+  const dialoghandler = useCallback((dilog) => {
+    setOpen(dilog);
+  }, []);
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
@@ -34,7 +39,8 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       socket.on("callOffer", (data) => {
-        setOpen(true);
+        setIncomOpen(true);
+        dialoghandler(true);
         console.log("Incoming call offer from:", data.from);
         incomingCallAnswere(data.from);
       });
@@ -44,7 +50,9 @@ const Home = () => {
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
-      {open && <IncomingCallDialog />}
+      {incomOpen && (
+        <IncomingCallDialog dialoghandler={dialoghandler} open={open} />
+      )}
       {/* user setting */}
       <div className="w-[5rem] hidden sm:block bg-primary-content">
         <SideSetting setActivePage={setActivePage} activePage={activePage} />
