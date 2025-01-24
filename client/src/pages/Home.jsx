@@ -22,9 +22,13 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [incomOpen, setIncomOpen] = useState(false);
 
-  const dialoghandler = useCallback((dilog) => {
+  useEffect(() => {
+    console.log("active", activePage);
+  }, [activePage]);
+
+  const dialoghandler = (dilog) => {
     setOpen(dilog);
-  }, []);
+  };
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
@@ -47,6 +51,25 @@ const Home = () => {
     }
   }, []);
 
+  const renderActivePage = () => {
+    switch (activePage) {
+      case "chat":
+        return <Sidebar activePage={activePage} />;
+      case "status":
+        return <Status />;
+      case "call":
+        return <Call />;
+      case "settings":
+        return (
+          <Setting setActivePage={setActivePage} activePage={activePage} />
+        );
+      case "myprofile":
+        return <Myprofile />;
+      default:
+        return <Sidebar activePage={activePage} />;
+    }
+  };
+
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
@@ -59,24 +82,22 @@ const Home = () => {
       </div>
       {/* Contact List */}
       <div
-        className={`${
-          currentChatingUser && "hidden sm:block"
-        } w-full sm:w-[50%] relative bg-primary/25 overflow-hidden`}
+        className={`
+          w-full sm:w-[35%] 
+          relative 
+          bg-primary/25 
+          overflow-hidden
+          ${currentChatingUser && "hidden sm:block"} 
+        `}
       >
-        {activePage === "chat" && <Sidebar />}
-        {activePage === "status" && <Status />}
-        {activePage === "call" && <Call />}
-        {activePage === "settings" && (
-          <Setting setActivePage={setActivePage} activePage={activePage} />
-        )}
-        {activePage === "myprofile" && <Myprofile />}
+        {renderActivePage()}
       </div>
 
       {/* Message Area */}
       <div
-        className={` ${
-          !currentChatingUser && "hidden"
-        } sm:block w-[100%]  bg-base-100`}
+        className={`w-full sm:w-[65%] bg-base-100 ${
+          currentChatingUser ? "block" : "hidden sm:block"
+        }`}
       >
         {currentChatingUser ? <ChatPage /> : <NochatSelect />}
       </div>

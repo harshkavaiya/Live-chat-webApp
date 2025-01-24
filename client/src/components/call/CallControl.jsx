@@ -14,10 +14,10 @@ const CallControl = ({ model, setIsCallActive, isCallActive }) => {
     toggleMic(!miccontroll);
   };
   const endCallHandler = () => {
+    endCallByPeer();
     if (isCallActive) {
       setIsCallActive(false);
     }
-    endCallByPeer();
     document.getElementById(`my_modal_${model}`).close();
   };
 

@@ -178,39 +178,26 @@ const useVideoCall = create((set, get) => ({
 
   // End a call
   endCall: () => {
-    // const { currentCall, localStream, incomingCall } = get();
-    // if (currentCall != null && incomingCall != null && localStream != null) {
-    //   currentCall.close();
-    //   set({ currentCall: null });
-    //   localStream.getTracks().forEach((track) => track.stop());
-    //   set({ localStream: null });
-    //   set({ incomingCall: null });
-    // }
     const { currentCall, localStream, incomingCall, peerVideoRef, myVideoRef } =
       get();
 
-    // Call ko close karo
     if (currentCall) {
       currentCall.close();
     }
 
-    // Local stream ke tracks ko stop karo
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       set({ localStream: null });
     }
 
-    // Remote video stream clear karo
     if (peerVideoRef) {
       peerVideoRef.srcObject = null;
     }
 
-    // Local video stream clear karo
     if (myVideoRef) {
       myVideoRef.srcObject = null;
     }
 
-    // State reset karo
     set({ currentCall: null, incomingCall: null, isCallInProgress: false });
   },
 
@@ -222,17 +209,18 @@ const useVideoCall = create((set, get) => ({
         to: incomingCall == null ? remotePeerId : incomingCall,
         from: peerId,
       });
-
-      get().endCall();
     }
+    get().endCall();
   },
 
   // Toggle microphone
   toggleMic: (mictong) => {
     const { localStream, isMicOn } = get();
+    console.log("mic local-", localStream, "mic-", isMicOn);
     const audioTrack = localStream
       ?.getTracks()
       .find((track) => track.kind === "audio");
+      console.log("auditrack",audioTrack);
     if (audioTrack) {
       audioTrack.enabled = mictong;
       console.log("mic is : ", mictong);

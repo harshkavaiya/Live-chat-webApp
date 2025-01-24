@@ -1,4 +1,3 @@
-
 import { FiPhoneCall } from "react-icons/fi";
 import { MdChat } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
