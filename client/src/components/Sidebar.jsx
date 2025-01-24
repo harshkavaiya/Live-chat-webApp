@@ -11,14 +11,16 @@ import useContactList from "../store/useContactList";
 import GroupDialog from "./PopUpDialog/GroupDialog";
 import useSearch from "../function/SearchFunc";
 import useAuthStore from "../store/useAuthStore";
+import useHomePageNavi from "../store/useHomePageNavi";
 
-const Sidebar = ({ activePage }) => {
+const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
   const { socket } = useAuthStore();
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const { activePage } = useHomePageNavi.getState();
   useEffect(() => {
     if (socket) {
       socket.on("onlineUsers", (users) => {

@@ -12,19 +12,16 @@ import useMessageStore from "../store/useMessageStore";
 import useAuthStore from "../store/useAuthStore";
 import IncomingCallDialog from "../components/PopUpDialog/IncomingCallDialog";
 import useVideoCall from "../store/useVideoCall";
+import useHomePageNavi from "../store/useHomePageNavi";
 
 const Home = () => {
-  const [activePage, setActivePage] = useState("chat");
   const { currentChatingUser } = useMessageStore();
   const { socket, authUser } = useAuthStore();
   const hasRegisteredPeerId = useRef(false);
   const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
   const [incomOpen, setIncomOpen] = useState(false);
-
-  useEffect(() => {
-    console.log("active", activePage);
-  }, [activePage]);
+  const { SetActivePage, activePage } = useHomePageNavi();
 
   const dialoghandler = (dilog) => {
     setOpen(dilog);
@@ -54,19 +51,17 @@ const Home = () => {
   const renderActivePage = () => {
     switch (activePage) {
       case "chat":
-        return <Sidebar activePage={activePage} />;
+        return <Sidebar />;
       case "status":
         return <Status />;
       case "call":
         return <Call />;
       case "settings":
-        return (
-          <Setting setActivePage={setActivePage} activePage={activePage} />
-        );
+        return <Setting />;
       case "myprofile":
         return <Myprofile />;
       default:
-        return <Sidebar activePage={activePage} />;
+        return <Sidebar />;
     }
   };
 
@@ -78,7 +73,7 @@ const Home = () => {
       )}
       {/* user setting */}
       <div className="w-[5rem] hidden sm:block bg-primary-content">
-        <SideSetting setActivePage={setActivePage} activePage={activePage} />
+        <SideSetting />
       </div>
       {/* Contact List */}
       <div
@@ -104,7 +99,7 @@ const Home = () => {
 
       {!currentChatingUser && (
         <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
-          <BottomBar activePage={activePage} setActivePage={setActivePage} />
+          <BottomBar />
         </div>
       )}
     </div>
