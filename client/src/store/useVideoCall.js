@@ -52,12 +52,6 @@ const useVideoCall = create((set, get) => ({
     set({ myVideoRef, peerVideoRef });
     const { peer, socket } = get();
 
-    get().GetLocalStream();
-    // Assign local stream to the `myVideo` element
-    const { localStream } = get();
-    if (myVideoRef && localStream) {
-      myVideoRef.srcObject = localStream;
-    }
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
       console.log("Call accepted by:", data.from);
@@ -220,7 +214,7 @@ const useVideoCall = create((set, get) => ({
     const audioTrack = localStream
       ?.getTracks()
       .find((track) => track.kind === "audio");
-      console.log("auditrack",audioTrack);
+    console.log("auditrack", audioTrack);
     if (audioTrack) {
       audioTrack.enabled = mictong;
       console.log("mic is : ", mictong);
