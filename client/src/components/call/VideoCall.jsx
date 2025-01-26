@@ -14,17 +14,16 @@ const VideoCall = ({ name }) => {
   const [Ringing, setRinging] = useState(true);
 
   useEffect(() => {
-    initializeVideoCall(myVideoRef.current, peerVideoRef.current);
-    console.log("Video call initialized");
-    return () => {
-      // Cleanup video refs when the component unmounts
-      if (myVideoRef.current) {
-        myVideoRef.current.srcObject = null;
-      }
-      if (peerVideoRef.current) {
-        peerVideoRef.current.srcObject = null;
-      }
-    };
+    if (myVideoRef.current) {
+      initializeVideoCall(myVideoRef.current, peerVideoRef.current);
+      console.log(
+        "Initialized with video refs:",
+        myVideoRef.current,
+        peerVideoRef.current
+      );
+    } else {
+      console.error("myVideoRef is null during initialization");
+    }
   }, []);
 
   useEffect(() => {
@@ -67,13 +66,19 @@ const VideoCall = ({ name }) => {
     };
   }, [Ringing, isCallInProgress]);
 
+  useEffect(() => {
+    if (myVideoRef.current && localStream) {
+      myVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
   return (
     <dialog id="my_modal_1" className="modal overflow-hidden">
       <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
         {/* Video Screen */}
         <div className="w-full h-full sm:h-screen flex sm:gap-1">
-          <div className="w-auto h-10 bg-base-100 z-10 shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
-            <h3 className="font-bold text-base">{name}</h3>
+          <div className="w-auto sm:h-10 h-7 bg-base-100 z-[11] shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
+            <h3 className="font-bold sm:text-base text-xs">{name}</h3>
           </div>
           {Ringing && (
             <div className="flex items-center justify-center absolute z-20 top-4 left-1/2 transform -translate-x-1/2 gap-2 bg-primary backdrop-blur-sm bg-opacity-20 shadow-lg rounded-btn w-auto h-10 p-3">
