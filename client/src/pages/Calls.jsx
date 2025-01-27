@@ -95,7 +95,7 @@ const Calls = () => {
   ];
   const [isCallActive, setIsCallActive] = useState(false);
   const [callName, setcallerName] = useState("");
-  const [remoteID, setRemoteId] = useState("");
+  const [remoteID, setRemoteId] = useState(null);
   const [ready, setReady] = useState(false);
   const { startCall } = useVideoCall();
   const VcallsHandler = (data) => {

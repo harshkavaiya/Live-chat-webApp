@@ -74,7 +74,6 @@ const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      console.log("authUser before check:", get().authUser);
 
       if (get().authUser) return; // Skip if already logged in
 
@@ -86,7 +85,6 @@ const useAuthStore = create((set, get) => ({
         console.log("User authenticated:", user);
         get().connectSocket(); // Connect socket
       } else {
-        console.log("Authentication failed.");
         set({ authUser: null, isLogin: false });
         sessionStorage.removeItem("authUser");
       }

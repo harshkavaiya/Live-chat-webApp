@@ -66,7 +66,13 @@ const SideSetting = () => {
           </span>
         </div>
         {/* User */}
-        <div className="tooltip tooltip-right" data-tip="MY PROFILE">
+        <div
+          className={`tooltip w-16 h-12 grid py-2 place-content-center tooltip-right ${
+            activePage === "myprofile" &&
+            "bg-gradient-to-r from-primary/10 to-primary/0 border-2 border-y-transparent border-r-transparent border-primary"
+          }`}
+          data-tip="MY PROFILE"
+        >
           <div
             className="w-10 h-10 rounded-full cursor-pointer overflow-hidden"
             onClick={() => SetActivePage("myprofile")}

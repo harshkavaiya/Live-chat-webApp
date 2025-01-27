@@ -39,7 +39,7 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
   useEffect(() => {
     const disableEscClose = (e) => {
       if (e.key === "Escape") {
-        e.preventDefault();
+        e.preventDefault(); // Prevent the default behavior
       }
     };
     document.addEventListener("keydown", disableEscClose);
@@ -58,25 +58,28 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
         />
 
         {currentStoryIndex !== null && (
-          <div className="fixed sm:w-96 w-full h-full flex items-center justify-center bg-black">
-            <Stories
-              stories={stories.slice(currentStoryIndex)}
-              defaultInterval={3000}
-              width={"inherit"}
-              height="100vh"
-              onAllStoriesEnd={closeStory}
-              storyStyles={{
-                objectFit: "cover",
-                width: "100%",
-                height: "100%",
-              }}
-            />
-            <RxCross2
-              size={22}
-              className="absolute sm:hidden top-6 right-5 cursor-pointer"
+          <>
+            <div className="fixed sm:w-96 w-full h-full flex items-center justify-center bg-black">
+              <Stories
+                stories={stories.slice(currentStoryIndex)}
+                defaultInterval={3000}
+                width={"inherit"}
+                height="100vh"
+                onAllStoriesEnd={closeStory}
+                storyStyles={{
+                  objectFit: "cover",
+                  width: "100%",
+                  height: "100%",
+                }}
+              />
+            </div>
+            <span
+              className="absolute sm:hidden top-6 p-1 bg-base-300 rounded-full right-5 cursor-pointer"
               onClick={closeStory}
-            />
-          </div>
+            >
+              <RxCross2 size={18} />
+            </span>
+          </>
         )}
       </div>
     </dialog>

@@ -76,18 +76,19 @@ const Home = () => {
         <SideSetting />
       </div>
       {/* Contact List */}
-      <div
-        className={`
+      {authUser && (
+        <div
+          className={`
           w-full sm:w-[35%] 
           relative 
           bg-primary/25 
           overflow-hidden
           ${currentChatingUser && "hidden sm:block"} 
         `}
-      >
-        {renderActivePage()}
-      </div>
-
+        >
+          {renderActivePage()}
+        </div>
+      )}
       {/* Message Area */}
       <div
         className={`w-full sm:w-[65%] bg-base-100 ${
@@ -97,7 +98,7 @@ const Home = () => {
         {currentChatingUser ? <ChatPage /> : <NochatSelect />}
       </div>
 
-      {!currentChatingUser && (
+      {!currentChatingUser && authUser && (
         <div className="flex items-center sm:hidden w-full z-50 bottom-0 bg-primary-content h-20 fixed">
           <BottomBar />
         </div>
