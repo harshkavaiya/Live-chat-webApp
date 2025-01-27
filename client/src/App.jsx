@@ -9,6 +9,7 @@ import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
 // import VideoCall from "./components/call/VideoCall";
 import NewVideoCall from "./components/call/NewVideoCall";
+import Register from "./pages/Register";
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -43,6 +44,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
+        <Route path="/Register" element={<Register />} />
       </Routes>
       {/* {authUser && <NewVideoCall />} */}
     </div>

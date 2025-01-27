@@ -18,18 +18,10 @@ const Sidebar = () => {
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
-  const { socket } = useAuthStore();
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const { FetchOnlineUsers, onlineUsers } = useAuthStore();
   const { activePage } = useHomePageNavi.getState();
   useEffect(() => {
-    if (socket) {
-      socket.on("onlineUsers", (users) => {
-        setOnlineUsers(users);
-      });
-      return () => {
-        socket.off("onlineUsers");
-      };
-    }
+    FetchOnlineUsers();
   }, []);
 
   const { setDialogOpen } = useContactList();

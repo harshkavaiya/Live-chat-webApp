@@ -39,7 +39,7 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
   useEffect(() => {
     const disableEscClose = (e) => {
       if (e.key === "Escape") {
-        e.preventDefault(); // Prevent the default behavior
+        e.preventDefault();
       }
     };
     document.addEventListener("keydown", disableEscClose);
@@ -66,10 +66,9 @@ const StatusShow = ({ currentStoryIndex, setCurrentStoryIndex }) => {
               height="100vh"
               onAllStoriesEnd={closeStory}
               storyStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
                 objectFit: "cover",
+                width: "100%",
+                height: "100%",
               }}
             />
             <RxCross2

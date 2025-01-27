@@ -11,6 +11,7 @@ const useAuthStore = create((set, get) => ({
   friends: [],
   group: [],
   favFriends: [],
+  onlineUsers: [],
 
   loadAuthFromStorage: () => {
     const storedUser = sessionStorage.getItem("authUser");
@@ -23,6 +24,23 @@ const useAuthStore = create((set, get) => ({
     } else {
       console.log("No user found in session storage.");
       set({ authUser: null, isLogin: false }); // Clear state if no user in session
+    }
+  },
+
+  FetchOnlineUsers: () => {
+    const { socket, authUser } = get();
+
+    if (socket && authUser) {
+      socket.on("onlineUsers", (onlineUsersList) => {
+        const filteredUsers = onlineUsersList.filter(
+          (userId) => userId !== authUser._id
+        );
+        set({ onlineUsers: filteredUsers });
+      });
+
+      return () => {
+        socket.off("onlineUsers");
+      };
     }
   },
 

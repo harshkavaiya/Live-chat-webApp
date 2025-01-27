@@ -72,7 +72,7 @@ const Home = () => {
         <IncomingCallDialog dialoghandler={dialoghandler} open={open} />
       )}
       {/* user setting */}
-      <div className="w-[5rem] hidden sm:block bg-primary-content">
+      <div className="w-[4rem] hidden sm:block bg-primary-content">
         <SideSetting />
       </div>
       {/* Contact List */}
@@ -98,7 +98,7 @@ const Home = () => {
       </div>
 
       {!currentChatingUser && (
-        <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
+        <div className="flex items-center sm:hidden w-full z-50 bottom-0 bg-primary-content h-20 fixed">
           <BottomBar />
         </div>
       )}

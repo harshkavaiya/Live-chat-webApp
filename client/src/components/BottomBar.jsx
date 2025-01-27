@@ -29,13 +29,20 @@ const BottomBar = () => {
       {sideIcon.map((icon, idx) => (
         <div
           key={idx}
-          className={`flex flex-col cursor-pointer w-20 rounded-t-btn items-center ${
-            activePage === icon.page && "bg-primary/10"
-          }`}
+          className="flex flex-col cursor-pointer w-20 rounded-t-btn items-center"
           onClick={() => SetActivePage(icon.page)}
         >
-          <span className=" w-12 h-12 grid place-items-center cursor-pointer">
-            <icon.icon size={25} className="text-primary" />
+          <span
+            className={`w-11 h-11 grid place-items-center rounded-box cursor-pointer ${
+              activePage == icon.page && "bg-primary/15"
+            }`}
+          >
+            <icon.icon
+              size={25}
+              className={`${
+                activePage == icon.page ? "text-primary" : "text-primary/40"
+              }`}
+            />
           </span>
           <p className="text-base text-primary capitalize">{icon.page}</p>
         </div>
