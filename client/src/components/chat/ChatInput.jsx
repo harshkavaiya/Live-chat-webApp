@@ -22,7 +22,7 @@ const ChatInput = () => {
   const mediaRecorderRef = useRef(null);
   const {
     getLocation,
-   
+
     galleryData,
     handelGalleryData,
     onSelectContact,

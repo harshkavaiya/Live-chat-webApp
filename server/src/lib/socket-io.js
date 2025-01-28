@@ -94,6 +94,29 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+  socket.on("call_user", (data) => {
+    const { id, offer } = data;
+    console.log(onlineUser[id], "call_user", "100");
+    io.to(onlineUser[id]).emit("request_call", { offer, id: socket.id });
+  });
+  socket.on("call_accept", (data) => {
+    const { id, answer } = data;
+    console.log("call_accept", id, "105");
+    io.to(id).emit("call_accepted", answer);
+  });
+
+  socket.on("negotiatition", (data) => {
+    const { id, offer } = data;
+    console.log("negotiatition", id, "110");
+    io.to(onlineUser[id]).emit("negotiatition_request", {offer,id:socket.id});
+  });
+
+  socket.on("negotiatition_accpet", (data) => {
+    const { id, answer } = data;
+    console.log("negotiatition_accpet", id, "115");
+    io.to(id).emit("negotiatition_accepted", answer);
+  });
 });
 
 export { app, io, server };

@@ -5,86 +5,119 @@ const useVideoCallStore = create((set, get) => ({
   peer: new RTCPeerConnection(),
   myStream: null,
   remoteStream: null,
-  handleRequestCall: async ({ offer, id }) => {
+  isCalling: false, // New state to track if a call is ongoing
+  callUser: async (id) => {
     const { peer } = get();
-    console.log(offer, id);
+
     try {
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+
+      // Emit the offer to the server
+      useAuthStore.getState().socket.emit("call_user", { id, offer });
+
+      // Request user media (local stream)
+      await get().getUserMedia();
+    } catch (e) {
+      console.error("Error occurred in callUser:", e);
+    } finally {
+      // Reset calling state after attempting to call
+    }
+  },
+  handleRequestCall: async (data) => {
+    const { id, offer } = data;
+    const { peer } = get();
+
+    try {
+      console.log("Handling incoming offer...", data);
+
       await peer.setRemoteDescription(offer);
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
 
-      useAuthStore
-        .getState()
-        .socket.emit("call_accept", { answer, id: "676e285fa50bb46cb7b5effd" });
-    } catch (e) {
-      console.log("error occure in RequestCall", e);
-    } finally {
+      // Emit the answer back to the caller
+      useAuthStore.getState().socket.emit("call_accept", { answer, id });
+
+      // Request user media (local stream)
       await get().getUserMedia();
+    } catch (e) {
+      console.error("Error occurred in handleRequestCall:", e);
+    } finally {
     }
   },
-  handleAccpetedCall: async (answer) => {
+
+  handleAcceptedCall: async (answer) => {
+    const { peer } = get();
+
     try {
-      const { peer } = get();
+      console.log(answer, "connected calls");
       await peer.setRemoteDescription(answer);
     } catch (e) {
-      console.log("error occure in Accpeted Call", e);
+      console.error("Error occurred in handleAcceptedCall:", e);
     }
   },
-  callUser: async (id) => {
-    const { peer } = get();
-    try {
-      let offer = await peer.createOffer();
 
-      await peer.setLocalDescription(offer);
-      useAuthStore.getState().socket.emit("call_user", { id, offer });
-      await get().getUserMedia();
-    } catch (e) {
-      console.log("error occure in Call User", e);
-    }
+  handleNegotiatiton: async () => {
+    if (useAuthStore.getState().authUser?._id == "676ccfa646ccd0eedd02d05c")
+      return;
+    console.log(useAuthStore.getState().authUser);
+    await get().callUser("676ccfa646ccd0eedd02d05c");
+    
   },
+
   getUserMedia: async () => {
     try {
-      let myStream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
+      // Check if stream already exists before requesting
+      if (get().myStream) return;
+
+      const myStream = await navigator.mediaDevices.getUserMedia({
         video: true,
       });
+
       get().sendStream(myStream);
+
       set({ myStream });
     } catch (e) {
-      console.log("error occure in gerUsermedia", e);
+      console.error("Error occurred in getUserMedia:", e);
     }
   },
+
   sendStream: (stream) => {
     const { peer } = get();
     try {
       const tracks = stream.getTracks();
-      for (const track of tracks) {
+      tracks.forEach((track) => {
         peer.addTrack(track, stream);
-      }
+      });
     } catch (e) {
-      console.log("error occure in SendStream", e);
+      console.error("Error occurred in sendStream:", e);
     }
   },
+
   trackRemoteStream: (e) => {
     const streams = e.streams;
     if (streams.length > 0) {
       set({ remoteStream: streams[0] });
     }
   },
-  handleNegotiation: (id) => {
-    const { peer } = get();
-    try {
-      const localoffer = peer.localDescription;
-      useAuthStore
-        .getState()
-        .socket.emit("call_user", { id, offer: localoffer });
-    } catch (e) {
-      console.log("error occure in RequestCall", e);
+
+  cleanup: () => {
+    const { peer, myStream } = get();
+
+    // Close the peer connection and stop tracks to clean up
+    if (peer) {
+      peer.close();
     }
-  },
-  handleIceCandidate: (candidate) => {
-    const { peer } = get();
-    peer.addIceCandidate(new RTCIceCandidate(candidate));
+
+    if (myStream) {
+      myStream.getTracks().forEach((track) => track.stop());
+    }
+
+    set({
+      peer: new RTCPeerConnection(),
+      myStream: null,
+      remoteStream: null,
+    });
   },
 }));
 

@@ -9,6 +9,7 @@ import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
 // import VideoCall from "./components/call/VideoCall";
 import NewVideoCall from "./components/call/NewVideoCall";
+import HVidoeCall from "./components/call/HVideoCall";
 
 function App() {
   const { theme } = useContext(ThemeContext);
@@ -39,11 +40,13 @@ function App() {
   return (
     <div data-theme={theme}>
       <Toaster />
-      {authUser != null ? <Home /> : <LoginPage />}
-      <Routes>
+      {authUser && authUser._id}
+      {/* {authUser != null ? <Home /> : <LoginPage />} */}
+      {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
-      </Routes>
+      </Routes> */}
+      <HVidoeCall />
       {/* {authUser && <NewVideoCall />} */}
     </div>
   );
