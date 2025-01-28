@@ -3,8 +3,9 @@ import ThemeDialog from "../components/setting/ThemeDialog";
 import { MdLogout } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
 import useAuthStore from "../store/useAuthStore";
+import useHomePageNavi from "../store/useHomePageNavi";
 
-const Setting = ({ setActivePage, activePage }) => {
+const Setting = () => {
   const icons = [
     {
       icon: MdLockOutline,
@@ -15,6 +16,7 @@ const Setting = ({ setActivePage, activePage }) => {
       name: "Logout",
     },
   ];
+  const { SetActivePage } = useHomePageNavi.getState();
   const { logout } = useAuthStore();
 
   return (
@@ -27,7 +29,7 @@ const Setting = ({ setActivePage, activePage }) => {
       {/* user profile */}
       <div
         className="flex px-5 py-2 items-center cursor-pointer gap-3 hover:bg-primary/10"
-        onClick={() => setActivePage("myprofile")}
+        onClick={() => SetActivePage("myprofile")}
       >
         <div className="rounded-full cursor-pointer bg-primary-content overflow-hidden w-20 h-20">
           <img

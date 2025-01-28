@@ -3,18 +3,21 @@ import { LuSwitchCamera } from "react-icons/lu";
 import { MdCallEnd, MdMic, MdMicOff } from "react-icons/md";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import { BiSolidPhoneCall } from "react-icons/bi";
+import useVideoCall from "../../store/useVideoCall";
 
 const CallControl = ({ model, setIsCallActive, isCallActive }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
+  const { endCallByPeer, toggleMic } = useVideoCall.getState();
   const micHanlder = () => {
     setmic(!miccontroll);
+    toggleMic(!miccontroll);
   };
-  const endCall = () => {
+  const endCallHandler = () => {
+    endCallByPeer();
     if (isCallActive) {
       setIsCallActive(false);
     }
-
     document.getElementById(`my_modal_${model}`).close();
   };
 
@@ -44,7 +47,7 @@ const CallControl = ({ model, setIsCallActive, isCallActive }) => {
         </button>
         <button
           className="btn w-14 h-14 bg-red-700 group hover:bg-red-800 border-none shadow-lg rounded-full"
-          onClick={endCall}
+          onClick={endCallHandler}
         >
           <MdCallEnd
             size={30}

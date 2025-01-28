@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -12,24 +12,27 @@ import useMessageStore from "../store/useMessageStore";
 import useAuthStore from "../store/useAuthStore";
 import IncomingCallDialog from "../components/PopUpDialog/IncomingCallDialog";
 import useVideoCall from "../store/useVideoCall";
+import useHomePageNavi from "../store/useHomePageNavi";
 
 const Home = () => {
-  const [activePage, setActivePage] = useState("chat");
   const { currentChatingUser } = useMessageStore();
-  const { incomingCall } = useVideoCall();
   const { socket, authUser } = useAuthStore();
   const hasRegisteredPeerId = useRef(false);
-  const { createPeerId, peer, incomingCallAnswere } = useVideoCall();
+  const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
+  const [incomOpen, setIncomOpen] = useState(false);
+  const { SetActivePage, activePage } = useHomePageNavi();
+
+  const dialoghandler = (dilog) => {
+    setOpen(dilog);
+  };
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
       console.log("Registering Peer ID:", authUser._id);
-      // console.log("Has Registered Peer ID:", hasRegisteredPeerId.current);
       socket.emit("registerPeerId", authUser._id);
       createPeerId(authUser._id);
       hasRegisteredPeerId.current = true;
-      // console.log("Has Registered aftre", hasRegisteredPeerId.current);
     }
   }, []);
 
@@ -37,51 +40,67 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       socket.on("callOffer", (data) => {
-        setOpen(true);
+        setIncomOpen(true);
+        dialoghandler(true);
         console.log("Incoming call offer from:", data.from);
         incomingCallAnswere(data.from);
-        
-          // document.getElementById("incomingDialog").showModal();
-        
       });
     }
   }, []);
 
+  const renderActivePage = () => {
+    switch (activePage) {
+      case "chat":
+        return <Sidebar />;
+      case "status":
+        return <Status />;
+      case "call":
+        return <Call />;
+      case "settings":
+        return <Setting />;
+      case "myprofile":
+        return <Myprofile />;
+      default:
+        return <Sidebar />;
+    }
+  };
+
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
-      {open && <IncomingCallDialog />}
+      {incomOpen && (
+        <IncomingCallDialog dialoghandler={dialoghandler} open={open} />
+      )}
       {/* user setting */}
-      <div className="w-[5rem] hidden sm:block bg-primary-content">
-        <SideSetting setActivePage={setActivePage} activePage={activePage} />
+      <div className="w-[4rem] hidden sm:block bg-primary-content">
+        <SideSetting />
       </div>
       {/* Contact List */}
-      <div
-        className={`${
-          currentChatingUser && "hidden sm:block"
-        } w-full sm:w-[50%] relative bg-primary/25 overflow-hidden`}
-      >
-        {activePage === "chat" && <Sidebar />}
-        {activePage === "status" && <Status />}
-        {activePage === "call" && <Call />}
-        {activePage === "settings" && (
-          <Setting setActivePage={setActivePage} activePage={activePage} />
-        )}
-        {activePage === "myprofile" && <Myprofile />}
-      </div>
-
+      {authUser && (
+        <div
+          className={`
+          w-full sm:w-[35%] 
+          relative 
+          bg-primary/25 
+          overflow-hidden
+          ${currentChatingUser && "hidden sm:block"} 
+        `}
+        >
+          {renderActivePage()}
+        </div>
+      )}
       {/* Message Area */}
       <div
-        className={` ${
-          !currentChatingUser && "hidden"
-        } sm:block w-[100%]  bg-base-100`}
+        className={`w-full sm:w-[65%] bg-base-100 ${
+          currentChatingUser ? "block" : "hidden sm:block"
+        }`}
       >
         {currentChatingUser ? <ChatPage /> : <NochatSelect />}
       </div>
 
-      {!currentChatingUser && (
-        <div className="flex items-center sm:hidden w-full z-50 bottom-0 rounded-t-box bg-primary-content h-20 fixed">
-          <BottomBar activePage={activePage} setActivePage={setActivePage} />
+      {!currentChatingUser && authUser && (
+        <div className="flex items-center sm:hidden w-full z-50 bottom-0 bg-primary-content h-20 fixed">
+          <BottomBar />
         </div>
       )}
     </div>

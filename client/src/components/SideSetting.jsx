@@ -1,10 +1,10 @@
-
 import { IoSettingsOutline } from "react-icons/io5";
 import { TbCircleDashed } from "react-icons/tb";
 import { MdChat } from "react-icons/md";
 import { FiPhoneCall } from "react-icons/fi";
+import useHomePageNavi from "../store/useHomePageNavi";
 
-const SideSetting = ({ setActivePage, activePage }) => {
+const SideSetting = () => {
   const sideIcon = [
     {
       icon: MdChat,
@@ -22,7 +22,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
       active: false,
     },
   ];
-
+  const { SetActivePage, activePage } = useHomePageNavi.getState();
   return (
     <div className="h-screen w-full flex flex-col justify-between items-center py-5">
       {/* top */}
@@ -38,7 +38,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
                 activePage === item.page &&
                 "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"
               } w-16 h-12 grid place-items-center cursor-pointer`}
-              onClick={() => setActivePage(item.page)}
+              onClick={() => SetActivePage(item.page)}
             >
               <item.icon
                 size={25}
@@ -57,7 +57,7 @@ const SideSetting = ({ setActivePage, activePage }) => {
               activePage === "settings" &&
               "bg-gradient-to-r from-primary/10 to-primary/0 border-l-2 border-primary"
             } w-16 h-12 grid place-items-center cursor-pointer`}
-            onClick={() => setActivePage("settings")}
+            onClick={() => SetActivePage("settings")}
           >
             <IoSettingsOutline
               size={25}
@@ -66,10 +66,16 @@ const SideSetting = ({ setActivePage, activePage }) => {
           </span>
         </div>
         {/* User */}
-        <div className="tooltip tooltip-right" data-tip="MY PROFILE">
+        <div
+          className={`tooltip w-16 h-12 grid py-2 place-content-center tooltip-right ${
+            activePage === "myprofile" &&
+            "bg-gradient-to-r from-primary/10 to-primary/0 border-2 border-y-transparent border-r-transparent border-primary"
+          }`}
+          data-tip="MY PROFILE"
+        >
           <div
             className="w-10 h-10 rounded-full cursor-pointer overflow-hidden"
-            onClick={() => setActivePage("myprofile")}
+            onClick={() => SetActivePage("myprofile")}
           >
             <img
               src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"

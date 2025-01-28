@@ -76,7 +76,7 @@ const Myprofile = () => {
       {/* inputs field */}
       <div className="flex flex-col gap-10 px-4">
         <div className="flex gap-2 flex-col">
-          <p className="text-sm text-secondary">Your Name</p>
+          <p className="text-sm text-primary">Your Name</p>
           <span className="w-full flex relative">
             <input
               type="text"
@@ -112,12 +112,12 @@ const Myprofile = () => {
               </>
             )}
           </span>
-          <p className="text-sm text-secondary font-light">
+          <p className="text-sm text-primary font-light">
             This is not your username and pin it is show only display name
           </p>
         </div>
         <div className="flex gap-2 flex-col">
-          <p className="text-sm text-secondary">About</p>
+          <p className="text-sm text-primary">About</p>
           <span className="w-full flex relative">
             <input
               type="text"
