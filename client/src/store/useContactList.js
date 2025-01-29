@@ -12,12 +12,17 @@ const useContactList = create((set, get) => ({
     try {
       set({ isloading: true });
       const res = await axiosInstance.get("message/contactlist");
+
+      // Sorting by `savedName` in A-Z order
       const sortedContacts = [...res.data].sort((a, b) => {
-        return a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase());
+        return a.savedName
+          .toLowerCase()
+          .localeCompare(b.savedName.toLowerCase());
       });
+
       set({ contacts: sortedContacts });
     } catch (error) {
-      console.log("error in contact List:", error);
+      console.log("Error in contact list:", error);
     } finally {
       set({ isloading: false });
     }

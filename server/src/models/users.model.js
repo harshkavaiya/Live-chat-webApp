@@ -25,7 +25,12 @@ const usersSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    contacts: [{ type: mongoose.Schema.Types.ObjectId }],
+    contacts: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+        savedName: { type: String, required: true },
+      },
+    ],
   },
   {
     timestamps: true,

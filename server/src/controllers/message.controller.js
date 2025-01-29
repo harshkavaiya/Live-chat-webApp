@@ -61,7 +61,6 @@ export const sidebarUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export const contactList = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
@@ -71,62 +70,139 @@ export const contactList = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Extracting all userIds and their respective saved names
+    const contactsWithUserIds = loggedUser.contacts.map((contact) => ({
+      userId: contact.userId,
+      savedName: contact.savedName, // savedName ko bhi map kar rahe hain
+    }));
+
+    // Extract userIds
+    const userIds = contactsWithUserIds.map((contact) => contact.userId);
+
+    // Finding users whose ids are in the contact list of logged user
     const connectedUsers = await Users.find({
-      _id: { $in: loggedUser.contacts },
+      _id: { $in: userIds },
     }).select("phone email fullname profilePic");
 
-    res.status(200).json(connectedUsers);
+    // Adding savedName to the user data
+    const usersWithSavedNames = connectedUsers.map((user) => {
+      const contact = contactsWithUserIds.find(
+        (contact) => contact.userId.toString() === user._id.toString()
+      );
+      return {
+        ...user._doc,
+        savedName: contact ? contact.savedName : "", // Adding savedName
+      };
+    });
+
+    res.status(200).json(usersWithSavedNames);
   } catch (error) {
-    console.log("error in contactList controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    console.log("Error in contactList controller: ", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 export const addNewContact = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
-    const { phone } = req.body;
+    const { phone, savedName } = req.body;
 
-    if (!phone) {
-      return res.status(400).json({ message: "Phone number is required" });
+    if (!phone || !savedName) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number and saved name are required",
+      });
     }
 
     const contactUser = await Users.findOne({ phone }).select("-password");
 
     if (!contactUser) {
-      return res
-        .status(404)
-        .json({ message: "User with this phone number not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User with this phone number not found",
+      });
     }
 
     if (contactUser._id.toString() === loggedUserId.toString()) {
-      return res
-        .status(400)
-        .json({ message: "You cannot add yourself as a contact" });
+      return res.status(400).json({
+        success: false,
+        message: "You cannot add yourself as a contact",
+      });
     }
 
     const loggedUser = await Users.findById(loggedUserId);
 
-    if (loggedUser.contacts.includes(contactUser._id)) {
-      return res
-        .status(400)
-        .json({ message: "User is already in your contacts" });
+    if (!loggedUser.contacts) {
+      loggedUser.contacts = [];
     }
 
-    loggedUser.contacts.push(contactUser._id);
+    const isAlreadyAdded = loggedUser.contacts.some(
+      (contact) =>
+        contact.userId &&
+        contact.userId.toString() === contactUser._id.toString()
+    );
+
+    if (isAlreadyAdded) {
+      return res.status(400).json({
+        success: false,
+        message: "User is already in your contacts",
+      });
+    }
+
+    loggedUser.contacts.push({
+      userId: contactUser._id,
+      savedName: savedName,
+    });
     await loggedUser.save();
 
-    // Optional
-    //   if (!contactUser.contacts.includes(loggedUserId)) {
-    //     contactUser.contacts.push(loggedUserId);
-    //     await contactUser.save();
-    //   }
+    res.status(200).json({
+      success: true,
+      message: "Contact added successfully",
+      contact: {
+        userId: contactUser._id,
+        savedName: savedName,
+        phone: contactUser.phone,
+      },
+    });
+  } catch (error) {
+    console.log("Error in newAddContact controller: ", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
-    res
-      .status(200)
-      .json({ message: "Contact added successfully", contact: contactUser });
-  } catch {
-    console.log("error in newAddContact controller: ", error.message);
+export const deleteContact = async (req, res) => {
+  try {
+    const loggedUserId = req.user._id;
+    const { contactId } = req.params;
+
+    if (!contactId) {
+      return res.status(400).json({ message: "Contact ID is required" });
+    }
+
+    const loggedUser = await Users.findById(loggedUserId);
+
+    if (!loggedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if contact exists in the list
+    const contactIndex = loggedUser.contacts.findIndex(
+      (contact) => contact.userId.toString() === contactId
+    );
+
+    if (contactIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Contact not found in your list" });
+    }
+
+    // Remove contact from the array
+    loggedUser.contacts.splice(contactIndex, 1);
+    await loggedUser.save();
+
+    res.status(200).json({ message: "Contact deleted successfully" });
+  } catch (error) {
+    console.log("Error in deleteContact controller: ", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };
