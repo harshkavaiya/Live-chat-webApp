@@ -94,32 +94,6 @@ io.on("connection", (socket) => {
       }
     }
   });
-
-  socket.on("call_user", (data) => {
-    const { id, offer } = data;
-    console.log(onlineUser[id], "call_user", "100");
-    io.to(onlineUser[id]).emit("request_call", { offer, id: socket.id });
-  });
-  socket.on("call_accept", (data) => {
-    const { id, answer } = data;
-    console.log("call_accept", id, "105");
-    io.to(id).emit("call_accepted", answer);
-  });
-
-  socket.on("request_call_popup", (id) => {
-    io.to(onlineUser[id]).emit("receive_call_popup", socket.id);
-  });
-  socket.on("request_call_popup_accept", (id) => {
-    io.to(id).emit("receive_call_popup_accept");
-  });
-  socket.on("request_call_popup_rejected", (id) => {
-    console.log("Rejected", id);
-    io.to(id).emit("receive_call_popup_rejected");
-  });
-  socket.on("call_end", (id) => {
-    console.log(onlineUser[id], "end");
-    io.to(onlineUser[id]).emit("call_end");
-  });
 });
 
 export { app, io, server };

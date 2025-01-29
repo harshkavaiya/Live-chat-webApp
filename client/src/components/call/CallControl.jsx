@@ -4,14 +4,12 @@ import { MdCallEnd, MdMic, MdMicOff } from "react-icons/md";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import useVideoCall from "../../store/useVideoCall";
-import useAuthStore from "../../store/useAuthStore";
 
-const CallControl = ({ model, handleEndCall }) => {
+const CallControl = ({ model }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
-  const {socket}=useAuthStore()
 
-  const { endCallByPeer, toggleMic } = useVideoCall.getState();
+  const { endCallByPeer, toggleMic } = useVideoCall
   const micHanlder = () => {
     setmic(!miccontroll);
     toggleMic(!miccontroll);

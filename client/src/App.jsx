@@ -1,19 +1,13 @@
 import "./App.css";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
-import ChatPage from "./pages/ChatPage";
 import { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
-// import VideoCall from "./components/call/VideoCall";
-import NewVideoCall from "./components/call/NewVideoCall";
-import HVidoeCall from "./components/call/HVideoCall";
-import Register from "./pages/Register";
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, loadAuthFromStorage, checkAuth, isLogin, socket } =
+  const { authUser, loadAuthFromStorage, checkAuth } =
     useAuthStore();
 
   // useEffect(() => {
@@ -41,14 +35,12 @@ function App() {
     <div data-theme={theme}>
       <Toaster />
       {/* {authUser && authUser._id} */}
-      {/* {authUser != null ? <Home /> : <LoginPage />} */}
+      {authUser != null ? <Home /> : <LoginPage />}
       {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} />
 
       </Routes> */}
-      <HVidoeCall />
-
       {/* <Route path="/Register" element={<Register />} /> */}
       {/* {authUser && <NewVideoCall />} */}
     </div>
