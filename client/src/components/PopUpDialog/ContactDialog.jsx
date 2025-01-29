@@ -4,6 +4,7 @@ import { IoMdSearch } from "react-icons/io";
 import useContactList from "../../store/useContactList";
 import useSearch from "../../function/SearchFunc";
 import AddContact from "./AddContact";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const ContactDialog = () => {
   const { getContactsList, isOpenDialog, setDialogOpen, contacts, isloading } =
@@ -65,8 +66,12 @@ const ContactDialog = () => {
           </div>
           {/* all Contacts show here */}
           <div className="overflow-y-auto scroll-smooth relative h-full flex flex-col gap-1 py-2 mt-1">
-            {filteredData.length === 0 ? (
-              <p className="text-center inset-x-0 inset-y-1/2 absolute">
+            {isloading ? (
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <AiOutlineLoading3Quarters size={30} className="animate-spin" />
+              </div>
+            ) : filteredData.length === 0 ? (
+              <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 No contacts found
               </p>
             ) : (

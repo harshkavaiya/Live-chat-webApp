@@ -39,7 +39,13 @@ function App() {
 
   return (
     <div data-theme={theme}>
-      <Toaster />
+      <Toaster
+        position="top-center"
+        limit={3}
+        reverseOrder={false}
+        toastOptions={{ style: { zIndex: 9999 } }}
+      />
+
       {authUser != null ? <Home /> : <LoginPage />}
       <Routes>
         <Route path="/" element={<Home />} />

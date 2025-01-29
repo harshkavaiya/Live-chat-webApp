@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import useContactList from "../../store/useContactList";
+import toast from "react-hot-toast";
 
 const AddContact = () => {
+  const { AddContact, isAddLoading } = useContactList();
+  const [newUser, setNewUser] = useState({
+    savedName: "",
+    phone: "",
+  });
   const closeDialog = () => {
     document.getElementById("AddContactDialog").close();
+  };
+  const addusers = (e) => {
+    e.preventDefault();
+    if (newUser.savedName && newUser.phone) {
+      AddContact(newUser.savedName, newUser.phone);
+    } else {
+      toast.error("Both filed required", { id: "field" });
+    }
   };
   return (
     <dialog id="AddContactDialog" className="modal">
@@ -18,19 +34,32 @@ const AddContact = () => {
           />
         </div>
         {/* user detail */}
-        <div className="flex flex-col gap-2">
+        <form onSubmit={addusers} className="flex flex-col gap-2">
           <input
             type="text"
             className="input input-bordered"
+            value={newUser.savedName}
+            onChange={(e) =>
+              setNewUser({ ...newUser, savedName: e.target.value })
+            }
             placeholder="name"
           />
           <input
             type="text"
             className="input input-bordered"
+            value={newUser.phone}
+            onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
             placeholder="phone"
           />
-          <button className="btn btn-primary">Add</button>
-        </div>
+
+          <button type="submit" className="btn btn-primary">
+            {isAddLoading ? (
+              <AiOutlineLoading3Quarters size={20} className="animate-spin" />
+            ) : (
+              "add"
+            )}
+          </button>
+        </form>
       </div>
     </dialog>
   );
