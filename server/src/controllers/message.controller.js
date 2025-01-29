@@ -108,7 +108,7 @@ export const addNewContact = async (req, res) => {
     const { phone, savedName } = req.body;
 
     if (!phone || !savedName) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "Phone number and saved name are required",
       });
@@ -117,14 +117,14 @@ export const addNewContact = async (req, res) => {
     const contactUser = await Users.findOne({ phone }).select("-password");
 
     if (!contactUser) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "User with this phone number not found",
       });
     }
 
     if (contactUser._id.toString() === loggedUserId.toString()) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "You cannot add yourself as a contact",
       });
@@ -143,7 +143,7 @@ export const addNewContact = async (req, res) => {
     );
 
     if (isAlreadyAdded) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "User is already in your contacts",
       });
@@ -173,7 +173,7 @@ export const addNewContact = async (req, res) => {
 export const deleteContact = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
-    const { contactId } = req.params;
+    const { contactId } = req.body;
 
     if (!contactId) {
       return res.status(400).json({ message: "Contact ID is required" });

@@ -64,9 +64,9 @@ const AddUserGroup = ({
               No contacts found
             </p>
           ) : (
-            filteredData.map((contact) => (
+            filteredData.map((contact, idx) => (
               <div
-                key={contact._id}
+                key={idx}
                 onClick={() => handleUserClick(contact._id, contact.fullname)}
                 className="flex items-center  justify-between border-b border-base-100 cursor-pointer sm:hover:bg-primary/5 sm:rounded-lg p-1 sm:p-2 pr-4"
               >
