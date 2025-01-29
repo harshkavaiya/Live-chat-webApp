@@ -5,11 +5,13 @@ const useVideoCallStore = create((set, get) => ({
   peer: new RTCPeerConnection(),
   myStream: null,
   remoteStream: null,
+  incomingCall: null,
   isCalling: false, // New state to track if a call is ongoing
   callUser: async (id) => {
     const { peer } = get();
 
     try {
+      set({ isCalling: true });
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
 
@@ -24,13 +26,14 @@ const useVideoCallStore = create((set, get) => ({
       // Reset calling state after attempting to call
     }
   },
+
   handleRequestCall: async (data) => {
     const { id, offer } = data;
     const { peer } = get();
 
     try {
       console.log("Handling incoming offer...", data);
-
+      set({ incomingCall: id });
       await peer.setRemoteDescription(offer);
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
@@ -54,15 +57,15 @@ const useVideoCallStore = create((set, get) => ({
       await peer.setRemoteDescription(answer);
     } catch (e) {
       console.error("Error occurred in handleAcceptedCall:", e);
+    } finally {
+      set({ isCalling: false });
     }
   },
 
   handleNegotiatiton: async () => {
     if (useAuthStore.getState().authUser?._id == "676ccfa646ccd0eedd02d05c")
       return;
-    console.log(useAuthStore.getState().authUser);
     await get().callUser("676ccfa646ccd0eedd02d05c");
-    
   },
 
   getUserMedia: async () => {
@@ -117,7 +120,11 @@ const useVideoCallStore = create((set, get) => ({
       peer: new RTCPeerConnection(),
       myStream: null,
       remoteStream: null,
+      isCalling: false,
     });
+  },
+  setIsCalling: (isCalling) => {
+    set({ isCalling });
   },
 }));
 

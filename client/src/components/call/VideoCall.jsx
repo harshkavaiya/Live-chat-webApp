@@ -73,7 +73,7 @@ const VideoCall = ({ name }) => {
   }, [localStream]);
 
   return (
-    <dialog id="my_modal_1" className="modal overflow-hidden">
+    <dialog id="my_modal_1" className={`modal overflow-hidden`}>
       <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
         {/* Video Screen */}
         <div className="w-full h-full sm:h-screen flex sm:gap-1">

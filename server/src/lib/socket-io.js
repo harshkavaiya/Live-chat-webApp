@@ -106,16 +106,19 @@ io.on("connection", (socket) => {
     io.to(id).emit("call_accepted", answer);
   });
 
-  socket.on("negotiatition", (data) => {
-    const { id, offer } = data;
-    console.log("negotiatition", id, "110");
-    io.to(onlineUser[id]).emit("negotiatition_request", {offer,id:socket.id});
+  socket.on("request_call_popup", (id) => {
+    io.to(onlineUser[id]).emit("receive_call_popup", socket.id);
   });
-
-  socket.on("negotiatition_accpet", (data) => {
-    const { id, answer } = data;
-    console.log("negotiatition_accpet", id, "115");
-    io.to(id).emit("negotiatition_accepted", answer);
+  socket.on("request_call_popup_accept", (id) => {
+    io.to(id).emit("receive_call_popup_accept");
+  });
+  socket.on("request_call_popup_rejected", (id) => {
+    console.log("Rejected", id);
+    io.to(id).emit("receive_call_popup_rejected");
+  });
+  socket.on("call_end", (id) => {
+    console.log(onlineUser[id], "end");
+    io.to(onlineUser[id]).emit("call_end");
   });
 });
 

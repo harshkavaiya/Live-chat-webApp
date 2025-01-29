@@ -4,21 +4,17 @@ import { MdCallEnd, MdMic, MdMicOff } from "react-icons/md";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import useVideoCall from "../../store/useVideoCall";
+import useAuthStore from "../../store/useAuthStore";
 
-const CallControl = ({ model, setIsCallActive, isCallActive }) => {
+const CallControl = ({ model, handleEndCall }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
+  const {socket}=useAuthStore()
+
   const { endCallByPeer, toggleMic } = useVideoCall.getState();
   const micHanlder = () => {
     setmic(!miccontroll);
     toggleMic(!miccontroll);
-  };
-  const endCallHandler = () => {
-    endCallByPeer();
-    if (isCallActive) {
-      setIsCallActive(false);
-    }
-    document.getElementById(`my_modal_${model}`).close();
   };
 
   const speakerHandler = () => {
@@ -26,7 +22,7 @@ const CallControl = ({ model, setIsCallActive, isCallActive }) => {
   };
 
   return (
-    <div className="flex w-full bottom-5 items-center justify-center absolute z-10">
+    <div className="flex w-full bottom-5 items-center justify-center absolute z-50">
       <div className="bg-base-300 flex items-center gap-5 sm:gap-10 px-3 py-2 bg-opacity-70 rounded-box">
         <button
           className={`btn w-14 h-14 shadow-lg group rounded-full border-none bg-white hover:bg-white/90`}
@@ -47,7 +43,7 @@ const CallControl = ({ model, setIsCallActive, isCallActive }) => {
         </button>
         <button
           className="btn w-14 h-14 bg-red-700 group hover:bg-red-800 border-none shadow-lg rounded-full"
-          onClick={endCallHandler}
+          onClick={()=>handleEndCall(socket)}
         >
           <MdCallEnd
             size={30}
