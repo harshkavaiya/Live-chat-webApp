@@ -7,8 +7,7 @@ import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, loadAuthFromStorage, checkAuth } =
-    useAuthStore();
+  const { authUser, loadAuthFromStorage, checkAuth } = useAuthStore();
 
   // useEffect(() => {
   //   if (!socket && !authUser) {
