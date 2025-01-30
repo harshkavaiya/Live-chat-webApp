@@ -9,10 +9,15 @@ const CallControl = ({ model }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
 
-  const { endCallByPeer, toggleMic } = useVideoCall
+  const { endCallByPeer, toggleMic } = useVideoCall();
   const micHanlder = () => {
     setmic(!miccontroll);
     toggleMic(!miccontroll);
+  };
+  const handleEndCall = () => {
+    document.getElementById("my_modal_1").close();
+    console.log("aavu ho");
+    endCallByPeer();
   };
 
   const speakerHandler = () => {
@@ -41,7 +46,7 @@ const CallControl = ({ model }) => {
         </button>
         <button
           className="btn w-14 h-14 bg-red-700 group hover:bg-red-800 border-none shadow-lg rounded-full"
-          onClick={()=>handleEndCall(socket)}
+          onClick={handleEndCall}
         >
           <MdCallEnd
             size={30}

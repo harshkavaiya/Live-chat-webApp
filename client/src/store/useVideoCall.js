@@ -84,7 +84,6 @@ const useVideoCall = create((set, get) => ({
       console.error(
         "Cannot accept call: incomingCall or localStream is missing."
       );
-      return;
     }
 
     console.log("Accepting call from:", peerId);
