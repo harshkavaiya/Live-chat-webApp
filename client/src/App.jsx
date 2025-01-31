@@ -14,8 +14,7 @@ TimeAgo.addDefaultLocale(en)
 TimeAgo.addLocale(ru)
 function App() {
   const { theme } = useContext(ThemeContext);
-  const { authUser, loadAuthFromStorage, checkAuth } =
-    useAuthStore();
+  const { authUser, loadAuthFromStorage, checkAuth } = useAuthStore();
 
   // useEffect(() => {
   //   if (!socket && !authUser) {

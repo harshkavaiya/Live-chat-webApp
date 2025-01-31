@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import useAuthStore from "./useAuthStore";
 import Peer from "peerjs";
+import toast from "react-hot-toast";
 
 const useVideoCall = create((set, get) => ({
   peer: null,
@@ -15,6 +16,7 @@ const useVideoCall = create((set, get) => ({
   remotePeerId: "",
   myVideoRef: null,
   peerVideoRef: null,
+  callTimeout: null,
 
   createPeerId: (userId) => {
     const { peer } = get();
@@ -55,6 +57,7 @@ const useVideoCall = create((set, get) => ({
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
       console.log("Call accepted by:", data.from);
+      clearTimeout(get().callTimeout); // Clear the timeout if the call is accepted
       const call = peer.call(get().remotePeerId, get().localStream);
       set({ currentCall: call, isCallInProgress: true });
       console.log("call data", call);
@@ -84,7 +87,6 @@ const useVideoCall = create((set, get) => ({
       console.error(
         "Cannot accept call: incomingCall or localStream is missing."
       );
-      return;
     }
 
     console.log("Accepting call from:", peerId);
@@ -112,6 +114,8 @@ const useVideoCall = create((set, get) => ({
 
       // Emit an event to notify the server that the call is accepted
       socket.emit("acceptCall", { to: incomingCall, from: peerId });
+      // Clear the call timeout once the call is accepted
+      clearTimeout(get().callTimeout);
     } else {
       console.error("Error: Peer or incoming call is missing.");
     }
@@ -159,14 +163,28 @@ const useVideoCall = create((set, get) => ({
     // set({ currentCall: call, isCallInProgress: true });
 
     socket.emit("callOffer", { to: remotePeerId, from: peerId });
+    // Set a timeout to automatically reject the call after 15 seconds
+    const callTimeout = setTimeout(() => {
+      console.log("Call timed out - no answer received");
+      socket.emit("callRejected", { to: remotePeerId });
+      set({ incomingCall: null });
+      get().endCall(); // End the call on both sides
+      document.getElementById("my_modal_1").close();
+      toast.error("Call timed out - No response received.");
+    }, 10000); // 15 seconds
+
+    // Save the timeout ID so we can clear it if the call is answered before timeout
+    set({ callTimeout });
   },
 
   // Reject a call
   rejectCall: () => {
     const { incomingCall, socket } = get();
     if (incomingCall) {
+      console.log("reject call by me");
       socket.emit("callRejected", { to: incomingCall });
       set({ incomingCall: null });
+      get().endCall();
     }
   },
 
