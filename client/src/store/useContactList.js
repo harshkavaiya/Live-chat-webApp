@@ -27,7 +27,7 @@ const useContactList = create((set, get) => ({
       const res = await axiosInstance.get("message/contactlist");
 
       const sortedContacts = [...res.data].sort((a, b) => {
-        return a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase());
+        return b.fullname.toLowerCase().localeCompare(a.fullname.toLowerCase());
       });
       console.log(sortedContacts)
 
