@@ -182,4 +182,15 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const MessageReaction = async (req, res) => {
+  const { reaction, id, to } = req.body;
+
+  await Message.findByIdAndUpdate(id, { reaction: reaction });
+  let receiverSoket = getUserSocketId(to);
+  
+  io.to(receiverSoket).emit("message_reaction", { id, reaction });
+
+  res.status(200).json({ success: 1 });
+};
+
 //socket.io

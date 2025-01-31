@@ -15,6 +15,7 @@ const useContactList = create((set, get) => ({
       const sortedContacts = [...res.data].sort((a, b) => {
         return a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase());
       });
+      console.log(sortedContacts)
       set({ contacts: sortedContacts });
     } catch (error) {
       console.log("error in contact List:", error);

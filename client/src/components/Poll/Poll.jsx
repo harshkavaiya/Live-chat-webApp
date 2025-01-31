@@ -21,7 +21,7 @@ const Poll = ({ data }) => {
   };
 
   return (
-    <div className="w-52 md:w-80 bg-base-100 text-base-content rounded-lg outline-none border-none p-2">
+    <div className="w-48 sm:w-60 md:w-72 lg:w-80 bg-base-100 text-base-content rounded-lg outline-none border-none p-2">
       <div className="p-1 rounded-xl">
         <h2 className="text-lg font-bold text-center">{pollTitle}</h2>
       </div>

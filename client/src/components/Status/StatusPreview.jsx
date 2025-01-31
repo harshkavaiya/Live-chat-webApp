@@ -2,43 +2,39 @@ import { FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { MdOutlineCrop } from "react-icons/md";
 import { RiText } from "react-icons/ri";
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/thumbs";
-import "./SendFilePreview.css";
+import "../SendDataPreview/SendFilePreview.css";
 
 import { FreeMode, Thumbs } from "swiper/modules";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
-import useFunctionStore from "../../store/useFuncationStore";
+import useStatusStore from "../../store/useStatusStore";
 
-const SendFilePreview = () => {
+const StatusPreview = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const {
-    galleryData,
-    sendGalleryData,
-    isGalleryDataUpload,
-    closeGalleryData,
-    handelGalleryData,
-    handleDeleteGalleryImage,
-  } = useFunctionStore();
+  const { status, setStatus, uploadStatus, isUploadingstatus } =
+    useStatusStore();
+  const videoRef = useRef(null);
+  const handleDeleteStatus = (i) => {
+    const newStatus = status.filter((_, index) => index !== i);
+    setStatus(newStatus);
+  };
 
-  if (isGalleryDataUpload)
-    return (
-      <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
-        <span className="loading loading-infinity loading-lg">Loading</span>
-      </div>
-    );
+  const handleMetadataCapture = (e) => {
+    console.log(e.target.duration);
+  };
+
   return (
-    <div className="h-full w-full absolute top-0 left-0 mx-auto bg-base-100 text-base-content z-20">
+    <div className="h-[100%] w-[100%] px-2 md:px-40 lg:px-80 absolute top-0 left-0 mx-auto bg-base-100 text-base-content z-20 ">
       {/* Main Image */}
-      <div className="relative h-full w-full">
+      <div className="relative w-full">
         {/* Top toolbar */}
         <div className="top-0 left-0 right-0 h-14 p-2 flex items-center justify-between">
-          <button onClick={closeGalleryData} className="btn btn-circle">
-            <FaTimes size={20} />
+          <button className="btn btn-circle">
+            <FaTimes onClick={() => setStatus([])} size={20} />
           </button>
 
           <div className="flex items-center gap-1">
@@ -53,7 +49,7 @@ const SendFilePreview = () => {
         </div>
 
         {/* middle Image Slider */}
-        <div className="z-10 w-full h-[75vh]">
+        <div className="z-10 w-full h-[70vh] sm:h-[75vh]">
           <Swiper
             spaceBetween={10}
             thumbs={{ swiper: thumbsSwiper }}
@@ -61,7 +57,7 @@ const SendFilePreview = () => {
             lazy={true}
             className="mySwiper2 "
           >
-            {galleryData.map((item, i) => {
+            {status.map((item, i) => {
               return (
                 <SwiperSlide key={i} className="=">
                   {item.type == "video/mp4" ? (
@@ -69,8 +65,10 @@ const SendFilePreview = () => {
                       src={URL.createObjectURL(item)}
                       type={item.type}
                       controls
-                      className=""
-                    ></video>
+                      ref={videoRef}
+                      onLoadedMetadataCapture={handleMetadataCapture}
+                      className="z-0"
+                    />
                   ) : (
                     <img src={URL.createObjectURL(item)} className="" />
                   )}
@@ -88,22 +86,22 @@ const SendFilePreview = () => {
             modules={[FreeMode, Thumbs]}
             className="mySwiper"
           >
-            {galleryData.map((item, i) => {
+            {status.map((item, i) => {
               return (
                 <SwiperSlide key={i} className="relative group">
                   <div className="absolute flex items-center justify-center w-full h-full group-hover:opacity-90 opacity-0 transition-all duration-200">
                     <FaRegTrashAlt
                       size={20}
                       className="cursor-pointer "
-                      onClick={() => handleDeleteGalleryImage(i)}
+                      onClick={() => handleDeleteStatus(i)}
                     />
                   </div>
 
                   {item.type == "video/mp4" ? (
                     <video
-                      loading="lazy"
                       className="border border-primary"
-                      src={`${URL.createObjectURL(item)}#t=2.1`}
+                      src={`${URL.createObjectURL(item)}#t=0.1`}
+                      ref={videoRef}
                     />
                   ) : (
                     <img
@@ -124,7 +122,9 @@ const SendFilePreview = () => {
                   type="file"
                   className="hidden"
                   multiple
-                  onChange={handelGalleryData}
+                  onChange={(e) => {
+                    setStatus([...status, ...e.target.files]);
+                  }}
                   accept=".jpg,.png,.jpeg,.mp4,.mkv"
                 />
               </label>
@@ -144,21 +144,25 @@ const SendFilePreview = () => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData)}
+              onClick={uploadStatus}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />
             </button>
           </div>
-
-          {/* User info */}
-          <div className="flex items-center gap-2 px-4 pb-4">
-            <span className="font-semibold">{"Hardik"}</span>
-          </div>
         </div>
+
+        {/* Loading */}
+        {isUploadingstatus && (
+          <div className="absolute w-full h-full top-0 z-10 ">
+            <span className="flex items-center justify-center w-full h-full animate-pulse text-6xl -mt-10 backdrop-blur-sm">
+              Uploading...
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default SendFilePreview;
+export default StatusPreview;

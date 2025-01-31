@@ -23,9 +23,9 @@ const useMediaStore = create((set, get) => ({
     let linkedMedia = [];
 
     media.forEach((element, i) => {
-      if (i == 0) {
-        linkedMedia.push({ prev: null, current: element, next: i + 1 });
-      } else if (i == media.length - 1) {
+      if(i==0 && media.length==1){
+        linkedMedia.push({ prev: null, current: element, next: null });
+      }else if (i == media.length - 1) {
         linkedMedia.push({ prev: i - 1, current: element, next: null });
       } else {
         linkedMedia.push({

@@ -11,6 +11,7 @@ import axiosInstance from "../lib/axiosInstance";
 import Share from "../components/share/share";
 import useFunctionStore from "../store/useFuncationStore";
 import Location from "../components/Location";
+import SendFilePreview from "../components/SendDataPreview/SendFilePreview"
 
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -20,7 +21,7 @@ const ChatPage = () => {
     isLocationLoading,
     location,
     locationClose,
-    locationShare,
+    locationShare,galleryData
   } = useFunctionStore();
   const { setMessages, currentChatingUser } = useMessageStore();
   const { data, isLoading } = useQuery({
@@ -74,6 +75,8 @@ const ChatPage = () => {
           shareLocation={() => locationShare()}
         />
       )}
+      {/* Gallery Data preview*/}
+      {galleryData.length > 0 && <SendFilePreview />}
     </>
   );
 };

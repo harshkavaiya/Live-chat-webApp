@@ -24,6 +24,7 @@ app.use(cookieParser());
 
 import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
+import statusRoute from "./routes/status.route.js"
 import { connDB } from "./lib/db.js";
 
 const PORT = process.env.PORT || 4000;
@@ -37,7 +38,7 @@ const uploadDir = path.join(__dirname, "../upload");
 app.use("/upload", express.static("upload"));
 app.use("/auth", authRoute);
 app.use("/message", messageRoute);
-
+app.use("/status",statusRoute)
 app.post("/audio/upload", async (req, res) => {
   if (!req.files)
     return res.status(404).json({ message: "Audio Not Receive", success: 0 });

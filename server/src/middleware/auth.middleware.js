@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Users from "../models/users.model.js";
+
 export const AuthRoute = async (req, res, next) => {
   try {
     const token = req.cookies.token;

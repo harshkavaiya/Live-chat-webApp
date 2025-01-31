@@ -5,7 +5,7 @@ import {
   contactList,
   getMessages,
   sendMessage,
-  sidebarUser,
+  sidebarUser,MessageReaction
 } from "../controllers/message.controller.js";
 const router = express.Router();
 
@@ -14,5 +14,5 @@ router.get("/contactlist", AuthRoute, contactList);
 router.post("/newcontact", AuthRoute, addNewContact);
 router.get("/chat/:id", AuthRoute, getMessages);
 router.post("/send/:id", AuthRoute, sendMessage);
-
+router.post("/reaction",AuthRoute,MessageReaction)
 export default router;

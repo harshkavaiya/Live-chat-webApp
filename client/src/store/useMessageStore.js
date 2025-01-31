@@ -31,10 +31,7 @@ const useMessageStore = create((set, get) => ({
     try {
       let res = await axiosInstance.get("/message/user");
       set({ isLoading: true });
-      if (!res.data.success) {
-        return set({ messagerUser: [] });
-      }
-
+      if (!res.data.success) return set({ messagerUser: [] });
       const sortedUsers = res.data.usersWithLastMessage.sort(
         (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
       );
@@ -58,6 +55,28 @@ const useMessageStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("newMessage");
+  },
+  SendMessageReaction: async (reaction, index) => {
+    const { messages } = get();
+
+    await axiosInstance.post("/message/reaction", {
+      id: messages[index]._id,
+      reaction,
+      to: messages[index].sender,
+    });
+    messages[index].reaction = reaction;
+    set({ messages });
+  },
+  handleMessageReaction: async (data) => {
+    const { id, reaction } = data;
+    const { messages } = get();
+    messages.forEach((element) => {
+      if (element._id == id) {
+        element.reaction = reaction;
+      }
+    });
+
+    set({ messages });
   },
 }));
 

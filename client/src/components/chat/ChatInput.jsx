@@ -9,7 +9,7 @@ import { LuCamera } from "react-icons/lu";
 import { memo, useCallback, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import CreatePoll from "../Poll/CreatePoll";
-import SendFilePreview from "../SendDataPreview/SendFilePreview";
+
 import AudioRecorder from "../Audio/AudioRecorder";
 import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
@@ -22,8 +22,6 @@ const ChatInput = () => {
   const mediaRecorderRef = useRef(null);
   const {
     getLocation,
-
-    galleryData,
     handelGalleryData,
     onSelectContact,
   } = useFunctionStore();
@@ -44,7 +42,7 @@ const ChatInput = () => {
     let form = new FormData();
 
     form.append("file", e.target.files[0]);
-    let res = await axiosInstance.post("/upload", form);
+ await axiosInstance.post("/upload", form);
   }, []);
 
   return (
@@ -186,8 +184,7 @@ const ChatInput = () => {
           handleCreatPoll={handleCreatPoll}
         />
       )}
-      {/* Gallery Data preview*/}
-      {galleryData.length > 0 && <SendFilePreview />}
+      
     </>
   );
 };

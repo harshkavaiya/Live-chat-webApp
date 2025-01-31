@@ -5,6 +5,13 @@ import { ThemeContext } from "./GlobalStates/ThemeContext";
 import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
+import TimeAgo from 'javascript-time-ago'
+
+import en from 'javascript-time-ago/locale/en'
+import ru from 'javascript-time-ago/locale/ru'
+
+TimeAgo.addDefaultLocale(en)
+TimeAgo.addLocale(ru)
 function App() {
   const { theme } = useContext(ThemeContext);
   const { authUser, loadAuthFromStorage, checkAuth } =

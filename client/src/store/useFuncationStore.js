@@ -54,7 +54,7 @@ const useFunctionStore = create((set, get) => ({
           `https://api.cloudinary.com/v1_1/dr9twts2b/${check}/upload`,
           form
         );
-        dataUrl.push({ url: res.data.secure_url, type: check });
+        dataUrl.push({ url: res.data.secure_url, type: check, read: false });
       }
 
       useMessageStore.getState().sendMessage({
@@ -104,13 +104,12 @@ const useFunctionStore = create((set, get) => ({
     }
   },
   handleSelectMessage: (isMessageShare) => {
-    set({isSelectMessage:false})
+    set({ isSelectMessage: false });
     set({ isMessageShare });
   },
   sendSelectionMessage: () => {
     console.log(get().selectMessage);
-    set({isMessageShare:false,selectContact:{}})
-
+    set({ isMessageShare: false, selectContact: {} });
   },
 }));
 

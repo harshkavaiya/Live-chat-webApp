@@ -8,7 +8,7 @@ const Image = ({ src, handleMediaPreview ,message}) => {
       src={src}
       alt="image"
       onClick={() => handleMediaPreview(true, message.data[0].url)}
-      className="w-72 h-52 rounded-xl object-cover cursor-pointer"
+      className="w-60 h-52 rounded-xl object-cover cursor-pointer"
     />
   );
 };

@@ -13,10 +13,14 @@ import useAuthStore from "../store/useAuthStore";
 import IncomingCallDialog from "../components/PopUpDialog/IncomingCallDialog";
 import useVideoCall from "../store/useVideoCall";
 import useHomePageNavi from "../store/useHomePageNavi";
+import useStatusStore from "../store/useStatusStore";
+import StatusPreview from "../components/Status/StatusPreview";
+import MyStatusPreview from "../components/Status/MyStatusPreview";
 
 const Home = () => {
   const { currentChatingUser } = useMessageStore();
   const { socket, authUser } = useAuthStore();
+  const { status, isStatusPageOpen } = useStatusStore();
   const hasRegisteredPeerId = useRef(false);
   const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
@@ -103,6 +107,9 @@ const Home = () => {
           <BottomBar />
         </div>
       )}
+
+      {status.length > 0 && <StatusPreview />}
+      {isStatusPageOpen && <MyStatusPreview />}
     </div>
   );
 };

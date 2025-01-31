@@ -16,7 +16,7 @@ import File from "./msg_type/file";
 import Multiplefile from "./msg_type/multiplefile";
 import LocationPreview from "./msg_type/LocationPreview";
 import { BsEmojiLaughing } from "react-icons/bs";
-import ReactionEmoji from "../ReactionEmoji";
+import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 
 const ChatMessage = () => {
@@ -26,6 +26,7 @@ const ChatMessage = () => {
     unsuscribeFromMessage,
     isMessageLoading,
     currentChatingUser,
+    handleMessageReaction,
   } = useMessageStore();
   const {
     onSelectionMessage,
@@ -34,9 +35,8 @@ const ChatMessage = () => {
     isSelectMessage,
     handleSelection,
   } = useFunctionStore();
-
-  const { handleMediaPreview } = useMediaStore();
   const { socket } = useAuthStore();
+  const { handleMediaPreview } = useMediaStore();
   const messageEndRef = useRef();
 
   useEffect(() => {
@@ -46,9 +46,17 @@ const ChatMessage = () => {
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView();
     }
   }, [messages]);
+
+  useEffect(() => {
+    socket.on("message_reaction", handleMessageReaction);
+
+    return () => {
+      socket.off("message_reaction");
+    };
+  }, [socket]);
 
   if (isMessageLoading) return <MessageLoadingSkeleton />;
   return (
@@ -78,12 +86,25 @@ const ChatMessage = () => {
                 } `}
               >
                 <div
-                  className={`chat-bubble rounded-xl max-w-[60%] px-2 py-1 ${
+                  className={`chat-bubble relative rounded-xl max-w-[70%] px-2 my-1 py-1 ${
                     sender != currentChatingUser
                       ? "bg-primary/70 text-primary-content"
                       : "bg-base-300 text-base-content "
                   }`}
                 >
+                  {/* reaction empoji */}
+                  {message.reaction && (
+                    <div
+                      className={`badge bg-transparent border-none absolute -bottom-4 p-0.5 w-6 h-6 ${
+                        sender == currentChatingUser ? "left-1" : "right-1 "
+                      }`}
+                    >
+                      <img
+                        className="h-full w-full"
+                        src={reactions[message.reaction.id].emoji}
+                      />
+                    </div>
+                  )}
                   {type == "text" && <p className="text-sm">{data}</p>}
                   {type == "image" && (
                     <Image
@@ -126,18 +147,15 @@ const ChatMessage = () => {
                     )}
                   </p>
                 </div>
-                <div className="dropdown dropdown-top dropdown-right z-20">
+                <div className="dropdown dropdown-top dropdown-hover z-20">
                   <button
                     tabIndex={0}
                     className="cursor-pointer rounded-full bg-base-300 w-7 h-7 hidden group-hover:flex items-center justify-center active:block"
                   >
                     <BsEmojiLaughing className="text-primary-content" />
                   </button>
-                  <div
-                    tabIndex={0}
-                    className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box p-2 shadow-lg gap-1"
-                  >
-                    <ReactionEmoji />
+                  <div className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box p-2 shadow-lg gap-1">
+                    <ReactionEmoji index={i} />
                   </div>
                 </div>
               </div>

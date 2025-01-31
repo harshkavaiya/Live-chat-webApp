@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 
 const Location = ({ message }) => {
   return (
-    <div className="w-56 sm:w-64 md:w-72 h-56 p-0.5 z-0">
+    <div className="w-48 sm:w-60 md:w-72 md:h-64 h-48 p-0.5 z-0 overflow-hidden">
       <MapContainer
         center={[message.data.latitude, message.data.longitude]}
         zoom={15}

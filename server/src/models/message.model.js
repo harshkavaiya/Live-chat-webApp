@@ -18,7 +18,10 @@ const messageSchema = new mongoose.Schema(
     },
     data: {
       type: Object,
-      required:true
+      required: true,
+    },
+    reaction: {
+      type: Object,
     },
     image: {
       type: String,
