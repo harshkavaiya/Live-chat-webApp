@@ -62,6 +62,17 @@ io.on("connection", (socket) => {
     }
   });
 
+  // Listen for call rejection
+  socket.on("callRejected", (data) => {
+    const callerSocketId = peerSocketMap.get(data.to); // Find socket ID for 'to' Peer ID
+    if (callerSocketId) {
+      io.to(callerSocketId).emit("callRejected", { from: data.to }); // Notify caller that the call was rejected
+      console.log(`Call rejected by ${data.to}`);
+    } else {
+      console.log(`Caller ${data.to} not found`);
+    }
+  });
+
   // Listen for end call
   socket.on("endCall", (data) => {
     console.log(`Call ended by ${data.from}`);

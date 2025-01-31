@@ -3,6 +3,7 @@ import CallControl from "./CallControl";
 import useAuthStore from "../../store/useAuthStore";
 import { GoDotFill } from "react-icons/go";
 import useVideoCall from "../../store/useVideoCall";
+import toast from "react-hot-toast";
 
 const VideoCall = ({ name }) => {
   const { initializeVideoCall, localStream, isCallInProgress, endCall } =
@@ -28,8 +29,15 @@ const VideoCall = ({ name }) => {
 
   useEffect(() => {
     if (socket) {
-      // Handle ended calls
+      //reject call
+      socket.on("callRejected", (data) => {
+        setRinging(false); // Stop ringing
+        document.getElementById("my_modal_1").close();
+        endCall();
+        toast.error(`Call rejected by ${data.from}`);
+      });
 
+      // Handle ended calls
       socket.on("callEnded", (data) => {
         console.log("Call ended by:", data.from);
         setRinging(false); // Stop ringing
@@ -40,10 +48,12 @@ const VideoCall = ({ name }) => {
 
       // Clean up socket events on unmount
       return () => {
+        socket.off("callRejected");
         socket.off("callEnded");
       };
     }
   }, [socket]);
+
   const [activeDot, setActiveDot] = useState(0);
 
   useEffect(() => {

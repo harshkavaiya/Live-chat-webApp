@@ -16,7 +16,6 @@ const CallControl = ({ model }) => {
   };
   const handleEndCall = () => {
     document.getElementById("my_modal_1").close();
-    console.log("aavu ho");
     endCallByPeer();
   };
 
