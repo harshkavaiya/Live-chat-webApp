@@ -101,7 +101,7 @@ const ChatMessage = () => {
                     >
                       <img
                         className="h-full w-full"
-                        src={reactions[message.reaction.id].emoji}
+                        src={reactions[message.reaction.id-1].emoji}
                       />
                     </div>
                   )}
