@@ -22,9 +22,12 @@ const useSearch = (data, delay = 500) => {
 
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      const fullNameMatch = item.fullname
-        .toLowerCase()
-        .includes(debouncedSearchQuery.toLowerCase());
+      // Check if savedName and phone are valid strings
+      const fullNameMatch = item.savedName
+        ? item.savedName
+            .toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase())
+        : false;
       const phoneNumberMatch = item.phone
         ? item.phone.includes(debouncedSearchQuery)
         : false;
