@@ -4,12 +4,16 @@ import useVideoCall from "../../store/useVideoCall";
 import VideoCall from "../call/VideoCall";
 
 const IncomingCallDialog = ({ dialoghandler, open }) => {
-  const { answerCall, incomingCall } = useVideoCall();
+  const { answerCall, incomingCall, rejectCall } = useVideoCall();
 
   const AcceptAnswere = () => {
     dialoghandler(false);
     answerCall();
     document.getElementById("my_modal_1").showModal();
+  };
+  const RejectCall = () => {
+    dialoghandler(false); // Close the dialog when rejected
+    rejectCall(); // Reject the call and notify the caller
   };
 
   return (
@@ -21,7 +25,9 @@ const IncomingCallDialog = ({ dialoghandler, open }) => {
           <button className="btn" onClick={AcceptAnswere}>
             accept
           </button>
-          <button className="btn">reject</button>
+          <button className="btn" onClick={RejectCall}>
+            reject
+          </button>
         </div>
       </dialog>
     </>
