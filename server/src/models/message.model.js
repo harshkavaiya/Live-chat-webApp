@@ -19,12 +19,9 @@ const messageSchema = new mongoose.Schema(
     data: {
       type: Object,
       required: true,
-<<<<<<< HEAD
     },
     reaction: {
       type: Object,
-=======
->>>>>>> 18e882c9452abbbc42d84db636feb0f496691200
     },
     image: {
       type: String,
