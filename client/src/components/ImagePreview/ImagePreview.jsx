@@ -16,13 +16,13 @@ const ImagePreview = () => {
   return (
     <>
       {chatUserMedia.length > 0 ? (
-        <div className="fixed inset-0 bg-primary/40 backdrop-blur-lg z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-primary/40 z-50 flex items-center justify-center">
           <ImageControls />
           <CurrentImage />
           <ThumbnailGallery />
         </div>
       ) : (
-        <div className="fixed inset-0 bg-primary/40 backdrop-blur-lg z-50 flex items-center justify-center text-5xl">
+        <div className="fixed inset-0 bg-primary/40 z-50 flex items-center justify-center text-5xl">
           Not Media Share
         </div>
       )}

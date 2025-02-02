@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -20,7 +20,14 @@ import MyStatusPreview from "../components/Status/MyStatusPreview";
 const Home = () => {
   const { currentChatingUser } = useMessageStore();
   const { socket, authUser } = useAuthStore();
-  const { status, isStatusPageOpen } = useStatusStore();
+  const {
+    status,
+    isStatusPageOpen,
+    handleUserStatus,
+    hanldeSeenStatus,
+    findUserStatus,
+  } = useStatusStore();
+
   const hasRegisteredPeerId = useRef(false);
   const { createPeerId, incomingCallAnswere } = useVideoCall();
   const [open, setOpen] = useState(false);
@@ -41,6 +48,10 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    findUserStatus(authUser._id);
+  }, []);
+
+  useEffect(() => {
     // Handle incoming call offers
     if (socket) {
       socket.on("callOffer", (data) => {
@@ -49,6 +60,13 @@ const Home = () => {
         console.log("Incoming call offer from:", data.from);
         incomingCallAnswere(data.from);
       });
+      socket.on("newStatus", handleUserStatus);
+      socket.on("seenStatus", hanldeSeenStatus);
+      return () => {
+        socket.off("newStatus");
+        socket.off("seenStatus");
+        socket.off("callOffer");
+      };
     }
   }, []);
 

@@ -155,7 +155,7 @@ const StatusPreview = () => {
         {/* Loading */}
         {isUploadingstatus && (
           <div className="absolute w-full h-full top-0 z-10 ">
-            <span className="flex items-center justify-center w-full h-full animate-pulse text-6xl -mt-10 backdrop-blur-sm">
+            <span className="flex items-center justify-center w-full h-full animate-pulse text-6xl -mt-10 ">
               Uploading...
             </span>
           </div>

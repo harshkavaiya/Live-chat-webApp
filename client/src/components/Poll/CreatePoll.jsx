@@ -27,7 +27,7 @@ const CreatePoll = ({ close, handleCreatPoll }) => {
   };
 
   return (
-    <div className="w-full h-full p-4 bg-transparent/55 backdrop-blur-sm absolute z-20 top-0 flex items-center overflow-hidden">
+    <div className="w-full h-full p-4 bg-transparent/55 absolute z-20 top-0 flex items-center overflow-hidden">
       <IoClose
         onClick={close}
         size={40}

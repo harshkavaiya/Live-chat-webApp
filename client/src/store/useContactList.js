@@ -29,8 +29,6 @@ const useContactList = create((set, get) => ({
       const sortedContacts = [...res.data].sort((a, b) => {
         return b.fullname.toLowerCase().localeCompare(a.fullname.toLowerCase());
       });
-      console.log(sortedContacts)
-
 
       // Agar response empty hai toh contacts ko update nahi karna
       if (!res.data || res.data.length === 0) {

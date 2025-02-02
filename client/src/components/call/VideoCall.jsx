@@ -91,7 +91,7 @@ const VideoCall = ({ name }) => {
             <h3 className="font-bold sm:text-base text-xs">{name}</h3>
           </div>
           {Ringing && (
-            <div className="flex items-center justify-center absolute z-20 top-4 left-1/2 transform -translate-x-1/2 gap-2 bg-primary backdrop-blur-sm bg-opacity-20 shadow-lg rounded-btn w-auto h-10 p-3">
+            <div className="flex items-center justify-center absolute z-20 top-4 left-1/2 transform -translate-x-1/2 gap-2 bg-primary bg-opacity-20 shadow-lg rounded-btn w-auto h-10 p-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <GoDotFill
                   key={i}

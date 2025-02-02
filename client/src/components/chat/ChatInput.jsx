@@ -20,11 +20,8 @@ const ChatInput = () => {
   const [text, setText] = useState("");
   const [isPollOpen, setIsPollOpen] = useState(false);
   const mediaRecorderRef = useRef(null);
-  const {
-    getLocation,
-    handelGalleryData,
-    onSelectContact,
-  } = useFunctionStore();
+  const { getLocation, handelGalleryData, onSelectContact } =
+    useFunctionStore();
   const { startRecording, isRecording, stopRecording, audioUrl } =
     useAudioStore();
 
@@ -42,7 +39,7 @@ const ChatInput = () => {
     let form = new FormData();
 
     form.append("file", e.target.files[0]);
- await axiosInstance.post("/upload", form);
+    await axiosInstance.post("/upload", form);
   }, []);
 
   return (
@@ -71,7 +68,7 @@ const ChatInput = () => {
               >
                 <InputMenu
                   icon={<GrGallery size={20} className="opacity-100 " />}
-                  lable="Gallery"
+                  label="Gallery"
                   input={
                     <input
                       type="file"
@@ -84,7 +81,7 @@ const ChatInput = () => {
                 />
                 <InputMenu
                   icon={<LuCamera size={20} />}
-                  lable="Camera"
+                  label="Camera"
                   input={
                     <input
                       type="file"
@@ -98,12 +95,12 @@ const ChatInput = () => {
                 />
                 <InputMenu
                   icon={<MdOutlinePermContactCalendar size={20} />}
-                  lable="Contact"
+                  label="Contact"
                   button={onSelectContact}
                 />
                 <InputMenu
                   icon={<TiDocumentAdd size={20} />}
-                  lable="Document"
+                  label="Document"
                   input={
                     <input
                       type="file"
@@ -115,12 +112,12 @@ const ChatInput = () => {
                 />
                 <InputMenu
                   icon={<MdOutlinePoll size={20} />}
-                  lable="Poll"
+                  label="Poll"
                   button={() => setIsPollOpen(!isPollOpen)}
                 />
                 <InputMenu
                   icon={<GrMapLocation size={20} />}
-                  lable="Location"
+                  label="Location"
                   button={getLocation}
                 />
               </ul>
@@ -184,18 +181,17 @@ const ChatInput = () => {
           handleCreatPoll={handleCreatPoll}
         />
       )}
-      
     </>
   );
 };
 
-const InputMenu = ({ icon, lable, button = null, input = null }) => {
+const InputMenu = ({ icon, label, button = null, input = null }) => {
   return (
     <li>
       <label onClick={button}>
         <span className="flex gap-x-2">
           {icon}
-          {lable}
+          {label}
         </span>
         {input}
       </label>

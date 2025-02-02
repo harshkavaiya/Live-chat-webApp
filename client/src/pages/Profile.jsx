@@ -148,26 +148,26 @@ const Profile = ({ setIsProfileOpen }) => {
 
       {/* Actions */}
       <div className="p-4 space-y-4">
-        <ActionMenu icon={<MdOutlineBlock />} lable={"Block"} />
-        <ActionMenu icon={<IoVolumeMuteSharp />} lable={"Mute"} />
+        <ActionMenu icon={<MdOutlineBlock />} label={"Block"} />
+        <ActionMenu icon={<IoVolumeMuteSharp />} label={"Mute"} />
         <ActionMenu
           icon={<MdNotificationsActive />}
-          lable={"Get Notification"}
+          label={"Get Notification"}
         />
-        <ActionMenu icon={<FiShare2 />} lable={"Share Contact"} />
-        <ActionMenu icon={<MdOutlineFileDownload />} lable={"Export Chat"} />
+        <ActionMenu icon={<FiShare2 />} label={"Share Contact"} />
+        <ActionMenu icon={<MdOutlineFileDownload />} label={"Export Chat"} />
 
-        <ActionMenu icon={<LuTrash2 />} lable={"Clear Chat"} />
+        <ActionMenu icon={<LuTrash2 />} label={"Clear Chat"} />
       </div>
     </div>
   );
 };
 
-const ActionMenu = ({ icon, lable }) => {
+const ActionMenu = ({ icon, label }) => {
   return (
     <button className="flex items-center gap-2 w-full py-1">
       {icon}
-      <span>{lable}</span>
+      <span>{label}</span>
     </button>
   );
 };

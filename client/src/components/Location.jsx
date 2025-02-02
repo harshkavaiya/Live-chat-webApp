@@ -4,7 +4,7 @@ import { IoClose, IoLocationOutline } from "react-icons/io5";
 
 const Location = ({ latitude, longitude, close, shareLocation }) => {
   return (
-    <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0 backdrop-blur-sm">
+    <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0">
       <div className="w-[90%] md:w-[40%] h-[90%] md:h-[70%] text-primary-content bg-base-100 border border-base-300 rounded-xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="bg-primary text-primary-content h-[10%] p-3 flex items-center justify-between">

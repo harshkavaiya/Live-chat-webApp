@@ -8,13 +8,14 @@ const useStatusStore = create((set, get) => ({
   status: [],
   isUploadingstatus: false,
   myStatus: [],
-  friendStatus: null,
+  friendStatus: [],
   isStatusPageOpen: false,
   setIsStatusPageOpen: (isStatusPageOpen) => set({ isStatusPageOpen }),
   setStatus: (status) => set({ status }),
   uploadStatus: async () => {
     try {
       const { status, myStatus } = get();
+
       set({ isUploadingstatus: true });
       const { authUser } = useAuthStore.getState();
       const dataUrl = [];
@@ -34,7 +35,7 @@ const useStatusStore = create((set, get) => ({
           type: check,
           read: false,
           time: date.getTime(),
-          seen: 0,
+          seen: [],
         });
       }
 
@@ -45,12 +46,12 @@ const useStatusStore = create((set, get) => ({
       });
       if (res.data.success) {
         toast.success("Upload");
-        set({ myStatus: [...myStatus, ...status] });
+        set({ myStatus: [...myStatus, ...dataUrl] });
       } else {
         toast.error(res.data.message);
       }
-    } catch (error) {
-      toast.error(error.message);
+    } catch (err) {
+      toast.error(err);
     } finally {
       set({ status: [], isUploadingstatus: false });
     }
@@ -63,52 +64,111 @@ const useStatusStore = create((set, get) => ({
     });
 
     let res = await axiosInstance.post("/status/friendStatus", { data: ids });
-    const { find } = res.data;
-    let fndStatus = [];
-    find.forEach((user) => {
-      const { name, author } = user;
-      let status = [];
-      user.status.forEach((element) => {
-        const { time, url, seen, type } = element;
-        status.push({
-          url,
-          type,
-          duration: 5000,
-          seen,
-          time,
-          header: {
-            heading: name,
-            profileImage: "https://picsum.photos/100/100",
-          },
-        });
-      });
-      fndStatus.push({ author, status });
-    });
-    console.log(fndStatus);
-    set({ friendStatus: fndStatus });
+    set({ friendStatus: res.data.find });
   },
   findUserStatus: async (id) => {
     let res = await axiosInstance.get(`/status/${id}`);
 
     if (res.data.success) {
-      let status = [];
-      const data = res.data.data;
-      data.status.forEach((element) => {
-        const { time, url, seen, type } = element;
-        status.push({
-          url,
-          type,
-          duration: 5000,
-          seen,
-          time,
-          header: {
-            heading: data.name,
-            profileImage: "https://picsum.photos/100/100",
-          },
-        });
+      set({ myStatus: [...res.data.data.status] });
+    }
+  },
+  handleUserStatus: async (data) => {
+    const { name, status, id } = data;
+    const { friendStatus } = get();
+
+    let isNewStatus = false;
+    if (friendStatus.length) {
+      friendStatus.forEach((element, i) => {
+        console.log(element.author, id,"83");
+        if (element.author == id) {
+          friendStatus[i].status.push(status);
+          isNewStatus = true;
+          return 0;
+        }
       });
-      set({ myStatus: status });
-      console.log(get().myStatus);
+    }
+
+    if (!isNewStatus) {
+      friendStatus.push({ author: id, name, status });
+    }
+    set({ friendStatus });
+  },
+  currentRunningStatus: null,
+  currentStatusIndex: null,
+  currentUserRunningStatus: null,
+  isStatusRunning: false,
+  isProcess: 0,
+  setCurrentUserRunningStatus: (currentUserRunningStatus) => {
+    set({ currentUserRunningStatus });
+  },
+  setIsProcess: (isProcess) => {
+    set({ isProcess });
+  },
+  setCurrentRunningStatus: (currentRunningStatus) => {
+    set({ currentRunningStatus });
+  },
+  setCurrentStatusIndex: (currentStatusIndex) => {
+    set({ currentStatusIndex });
+  },
+  onPrevious: () => {
+    const {
+      currentRunningStatus,
+      currentStatusIndex,
+      friendStatus,
+      currentUserRunningStatus,
+    } = get();
+    set({ isProcess: 0 });
+
+    if (currentRunningStatus[currentStatusIndex - 1]) {
+      set({ currentStatusIndex: currentStatusIndex - 1 });
+    } else {
+      if (friendStatus[currentUserRunningStatus - 1]) {
+        set({
+          currentRunningStatus:
+            friendStatus[currentUserRunningStatus - 1].status,
+          currentStatusIndex:
+            friendStatus[currentUserRunningStatus - 1].status.length - 1,
+          currentUserRunningStatus: currentUserRunningStatus - 1,
+        });
+      } else {
+        get().onCloseCurrentStatus();
+      }
+    }
+  },
+  onNext: () => {
+    const {
+      currentRunningStatus,
+      currentStatusIndex,
+      friendStatus,
+      currentUserRunningStatus,
+    } = get();
+
+    set({ isProcess: 0 });
+    if (currentRunningStatus[currentStatusIndex + 1]) {
+      set({ currentStatusIndex: currentStatusIndex + 1 });
+    } else {
+      if (friendStatus[currentUserRunningStatus + 1]) {
+        set({
+          currentRunningStatus:
+            friendStatus[currentUserRunningStatus + 1].status,
+          currentStatusIndex: 0,
+          currentUserRunningStatus: currentUserRunningStatus + 1,
+        });
+      } else {
+        get().onCloseCurrentStatus();
+      }
+    }
+  },
+  onCloseCurrentStatus: () => {
+    set({ currentRunningStatus: null, currentStatusIndex: null, isProcess: 0 });
+  },
+  hanldeSeenStatus: (data) => {
+    const { index, newSeenUser } = data;
+    const { myStatus } = get();
+    if (myStatus.length) {
+      myStatus[index].seen.push(newSeenUser);
+      set({ myStatus });
     }
   },
 }));

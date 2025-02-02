@@ -13,10 +13,10 @@ const statusSchema = new mongoose.Schema(
     status: {
       type: Array,
       required: true,
-    },
-    seen: {
-      type: Array,
-    },
+    },seen:{
+      type:Number,
+      default:0
+    }
   },
   { timestamps: true }
 );

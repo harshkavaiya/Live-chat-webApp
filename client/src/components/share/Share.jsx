@@ -53,7 +53,7 @@ const Share = () => {
   };
 
   return (
-    <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0 backdrop-blur-sm">
+    <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0">
       <div className="w-[90%] md:w-[40%] md:h-fit text-primary-content bg-base-100 border border-base-300 rounded-xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="bg-primary text-primary-content p-3 flex items-center justify-between ">
