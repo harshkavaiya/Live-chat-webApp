@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { LuSwitchCamera } from "react-icons/lu";
 import { MdCallEnd, MdMic, MdMicOff } from "react-icons/md";
 import { HiMiniSpeakerWave } from "react-icons/hi2";

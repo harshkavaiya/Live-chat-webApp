@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import  { useContext } from "react";
 import { Themes } from "../../function/Theme";
 import { RxCross2 } from "react-icons/rx";
 import { ThemeContext } from "../../GlobalStates/ThemeContext";

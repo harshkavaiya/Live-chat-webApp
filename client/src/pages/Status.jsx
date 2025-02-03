@@ -1,18 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { FaPlus } from "react-icons/fa6";
 import StatusShow from "../components/Status/StatusShow";
 import useStatusStore from "../store/useStatusStore";
 import StatusRing from "../components/Status/StatusRing";
 import useMessageStore from "../store/useMessageStore";
-import useAuthStore from "../store/useAuthStore";
+
 const Status = () => {
   const { messagerUser } = useMessageStore();
-  const { authUser } = useAuthStore();
+
   const {
     setStatus,
     myStatus,
     setIsStatusPageOpen,
-
     friendStatus,
     fetchFreindStatus,
     setCurrentRunningStatus,
@@ -27,7 +26,11 @@ const Status = () => {
 
   const openStory = useCallback((index, data) => {
     setCurrentRunningStatus(data);
-    setCurrentStatusIndex(index);
+    if (friendStatus[index].seen == data.length) {
+      setCurrentStatusIndex(index);
+    } else {
+      setCurrentStatusIndex(friendStatus[index].seen);
+    }
     setCurrentUserRunningStatus(index);
   });
 
@@ -103,34 +106,61 @@ const Status = () => {
             {friendStatus &&
               friendStatus.map((item, idx) => {
                 const { status } = item;
-                return (
-                  <div
-                    key={idx}
-                    className="flex px-4 gap-3 items-center cursor-pointer py-2 hover:bg-primary/10"
-                    onClick={() => openStory(idx, status)}
-                  >
-                    <StatusRing
-                      imageSrc={
-                        status[0].type == "video"
-                          ? `${status[0].url}#0.1`
-                          : status[0].url
-                      }
-                      type={status[0].type}
-                      totalStatuses={status.length}
-                      viewedStatuses={3}
-                    />
-                    <div className="flex flex-col gap-px">
-                      <p className="font-semibold">df</p>
-                      <p className="text-sm">Today at 10:12 PM</p>
+                if (item.seen != status.length)
+                  return (
+                    <div
+                      key={idx}
+                      className="flex px-4 gap-3 items-center cursor-pointer py-2 hover:bg-primary/10"
+                      onClick={() => openStory(idx, status)}
+                    >
+                      <StatusRing
+                        imageSrc={
+                          status[0].type == "video"
+                            ? `${status[0].url}#0.1`
+                            : status[0].url
+                        }
+                        type={status[0].type}
+                        totalStatuses={status.length}
+                        viewedStatuses={item.seen}
+                      />
+                      <div className="flex flex-col gap-px">
+                        <p className="font-semibold">df</p>
+                        <p className="text-sm">Today at 10:12 PM</p>
+                      </div>
                     </div>
-                  </div>
-                );
+                  );
               })}
           </div>
           {/* View story */}
           <div className="flex flex-col gap-1 pb-10">
             <div className="divider divider-start pl-6 uppercase">Viewed</div>
-
+            {friendStatus &&
+              friendStatus.map((item, idx) => {
+                const { status } = item;
+                if (item.seen == status.length)
+                  return (
+                    <div
+                      key={idx}
+                      className="flex px-4 gap-3 items-center cursor-pointer py-2 hover:bg-primary/10"
+                      onClick={() => openStory(idx, status)}
+                    >
+                      <StatusRing
+                        imageSrc={
+                          status[0].type == "video"
+                            ? `${status[0].url}#0.1`
+                            : status[0].url
+                        }
+                        type={status[0].type}
+                        totalStatuses={status.length}
+                        viewedStatuses={item.seen}
+                      />
+                      <div className="flex flex-col gap-px">
+                        <p className="font-semibold">df</p>
+                        <p className="text-sm">Today at 10:12 PM</p>
+                      </div>
+                    </div>
+                  );
+              })}
             <div className="divider m-0  text-xs">end-to-end encrypted</div>
           </div>
         </div>

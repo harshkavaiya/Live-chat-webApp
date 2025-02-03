@@ -3,9 +3,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import StatusViewer from "./StatusViewer";
 import StatusProgressBar from "./StatusProgressBar";
 import useStatusStore from "../../store/useStatusStore";
-import axiosInstance from "../../lib/axiosInstance";
 import { useEffect } from "react";
-import useAuthStore from "../../store/useAuthStore";
 
 const StatusShow = () => {
   const {
@@ -14,28 +12,13 @@ const StatusShow = () => {
     currentStatusIndex,
     onPrevious,
     onNext,
-    friendStatus,
-    currentUserRunningStatus,
     isProcess,
+    onSeenStatus,
   } = useStatusStore();
-  const { authUser } = useAuthStore();
 
   useEffect(() => {
-    handleStatusSeen();
+    onSeenStatus();
   }, [currentStatusIndex]);
-
-  const handleStatusSeen = async () => {
-    const date = new Date();
-    await axiosInstance.post(
-      `status/seen/${friendStatus[currentUserRunningStatus]._id}`,
-      {
-        index: currentStatusIndex,
-        userId: authUser._id,
-        userName: authUser.fullname,
-        time: date.getTime(),
-      }
-    );
-  };
 
   return (
     <dialog id="my_modal_3" className="modal modal-open">

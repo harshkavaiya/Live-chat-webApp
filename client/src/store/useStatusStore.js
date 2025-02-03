@@ -3,6 +3,7 @@ import axiosInstance from "../lib/axiosInstance";
 import useAuthStore from "./useAuthStore";
 import axios from "axios";
 import toast from "react-hot-toast";
+import useMessageStore from "./useMessageStore";
 
 const useStatusStore = create((set, get) => ({
   status: [],
@@ -10,8 +11,10 @@ const useStatusStore = create((set, get) => ({
   myStatus: [],
   friendStatus: [],
   isStatusPageOpen: false,
+  setStatus: (status) => {
+    set({ status });
+  },
   setIsStatusPageOpen: (isStatusPageOpen) => set({ isStatusPageOpen }),
-  setStatus: (status) => set({ status }),
   uploadStatus: async () => {
     try {
       const { status, myStatus } = get();
@@ -58,6 +61,7 @@ const useStatusStore = create((set, get) => ({
   },
   deleteStatus: () => {},
   fetchFreindStatus: async (data) => {
+    if (!data.length) return;
     let ids = [];
     data.forEach((element) => {
       ids.push(element._id);
@@ -67,10 +71,13 @@ const useStatusStore = create((set, get) => ({
     set({ friendStatus: res.data.find });
   },
   findUserStatus: async (id) => {
+    if (!id) return;
     let res = await axiosInstance.get(`/status/${id}`);
 
     if (res.data.success) {
       set({ myStatus: [...res.data.data.status] });
+    } else {
+      set({ myStatus: [] });
     }
   },
   handleUserStatus: async (data) => {
@@ -80,9 +87,8 @@ const useStatusStore = create((set, get) => ({
     let isNewStatus = false;
     if (friendStatus.length) {
       friendStatus.forEach((element, i) => {
-        console.log(element.author, id,"83");
         if (element.author == id) {
-          friendStatus[i].status.push(status);
+          friendStatus[i].status = [...friendStatus[i].status, ...status];
           isNewStatus = true;
           return 0;
         }
@@ -90,9 +96,25 @@ const useStatusStore = create((set, get) => ({
     }
 
     if (!isNewStatus) {
-      friendStatus.push({ author: id, name, status });
+      friendStatus.push({ author: id, name, status, seen: 0 });
     }
     set({ friendStatus });
+  },
+  hanldeRefreshStatus: () => {
+    get().fetchFreindStatus(useMessageStore.getState().messagerUser);
+    get().findUserStatus(useAuthStore.getState().authUser._id);
+  },
+  onDeleteStatus: async (data) => {
+    const { _id } = useAuthStore.getState().authUser;
+    const { myStatus } = get();
+    let res = await axiosInstance.delete(`status/delete/${_id}?index=${data}`);
+    if (res.data.success) {
+      myStatus.splice(data, 1);
+      if (!myStatus.length) {
+        set({ isStatusPageOpen: false });
+      }
+      set({ myStatus });
+    }
   },
   currentRunningStatus: null,
   currentStatusIndex: null,
@@ -170,6 +192,77 @@ const useStatusStore = create((set, get) => ({
       myStatus[index].seen.push(newSeenUser);
       set({ myStatus });
     }
+  },
+  onSeenStatus: async () => {
+    const { friendStatus, currentUserRunningStatus, currentStatusIndex } =
+      get();
+    const { _id, fullname } = useAuthStore.getState().authUser;
+    const date = new Date();
+
+    let res = await axiosInstance.post(
+      `status/seen/${friendStatus[currentUserRunningStatus].author}`,
+      {
+        index: currentStatusIndex,
+        userId: _id,
+        userName: fullname,
+        time: date.getTime(),
+      }
+    );
+
+    if (res.data.success) {
+      friendStatus[currentUserRunningStatus].seen++;
+      friendStatus[currentUserRunningStatus].status[
+        currentStatusIndex
+      ].read = true;
+      set({ friendStatus });
+    }
+  },
+  handleDeleteStatus: async (data) => {
+    const { id, index } = data;
+    const {
+      friendStatus,
+      currentRunningStatus,
+      currentStatusIndex,
+      currentUserRunningStatus,
+    } = get();
+    friendStatus.forEach((element, i) => {
+      if (element.author == id) {
+        if (element.status[i].read) {
+          element.seen--;
+        }
+        element.status.splice(index, 1);
+        if (
+          currentRunningStatus != null &&
+          currentStatusIndex != null &&
+          currentStatusIndex == index
+        ) {
+          if (currentRunningStatus[i + 1]) {
+            currentRunningStatus.filter((item, j) => {
+              if (j != i) return item;
+            });
+            set({ currentRunningStatus, isProcess: 0 });
+            get().onSeenStatus();
+          } else if (friendStatus[currentUserRunningStatus + 1]) {
+            set({
+              currentRunningStatus: friendStatus[currentUserRunningStatus + 1],
+              currentStatusIndex: 0,
+              isProcess: 0,
+            });
+          } else {
+            set({
+              currentRunningStatus: null,
+              currentStatusIndex: null,
+              isProcess: 0,
+            });
+          }
+        }
+        if (!element.status.length) {
+          return friendStatus.splice(i, 1);
+        }
+        return 0;
+      }
+    });
+    set({ friendStatus });
   },
 }));
 

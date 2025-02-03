@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -26,6 +26,7 @@ const Home = () => {
     handleUserStatus,
     hanldeSeenStatus,
     findUserStatus,
+    hanldeRefreshStatus,handleDeleteStatus
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -62,8 +63,11 @@ const Home = () => {
       });
       socket.on("newStatus", handleUserStatus);
       socket.on("seenStatus", hanldeSeenStatus);
+      socket.on("refreshStatus", hanldeRefreshStatus);
+      socket.on("deleteStatus",handleDeleteStatus)
       return () => {
         socket.off("newStatus");
+        socket.off("refreshStatus");
         socket.off("seenStatus");
         socket.off("callOffer");
       };

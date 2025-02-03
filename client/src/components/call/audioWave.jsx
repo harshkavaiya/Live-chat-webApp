@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import  { useEffect, useRef, useState } from "react";
 
 const AudioWave = ({ startCall, onAudioActivity }) => {
   const mediaStreamRef = useRef(null); // To store the audio stream

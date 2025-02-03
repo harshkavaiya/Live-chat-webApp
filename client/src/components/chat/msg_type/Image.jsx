@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import  { memo } from "react";
 import useMessageStore from "../../../store/useMessageStore";
 
 const Image = ({ src, handleMediaPreview ,message}) => {

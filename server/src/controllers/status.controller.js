@@ -8,10 +8,9 @@ export const UploadStatus = async (req, res) => {
 
     let find = await Status.find({ author });
     let friend = await Users.findById(author).select("contacts");
-
     if (friend.contacts.length) {
       friend.contacts.forEach((element) => {
-        if (getUserSocketId(element.userId) != undefined) {
+        if (getUserSocketId(element.userId)) {
           io.to(getUserSocketId(element.userId)).emit("newStatus", {
             status,
             id: author,
@@ -26,8 +25,10 @@ export const UploadStatus = async (req, res) => {
       return res.status(201).json({ success: 1 });
     }
     await Status.create({ name, author, status });
+
     res.status(201).json({ success: 1 });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message, success: 0 });
   }
 };
@@ -47,7 +48,7 @@ export const FriendStatus = async (req, res) => {
   const { data } = req.body;
   const id = req.user._id;
   let find = await Status.find({ author: data }).select(
-    "-createdAt -updatedAt"
+    "-createdAt -updatedAt -_id"
   );
 
   find.forEach((element) => {
@@ -80,41 +81,70 @@ export const handleStatusSeen = async (req, res) => {
     };
 
     // Find the status document by ID
-    const statusDoc = await Status.findById(id);
-    if (!statusDoc || !statusDoc.status[index]) {
+    const statusDoc = await Status.find({ author: id });
+    if (!statusDoc.length || !statusDoc[0].status[index]) {
       return res.status(200).json({ success: 0 });
     }
-
     // Check if the user has already seen this status
-    const alreadySeen = statusDoc.status[index].seen.some(
-      (user) => user._id.toString() === userId
+    const alreadySeen = statusDoc[0].status[index].seen?.some(
+      (user) => user._id.toString() == userId
     );
+
     if (alreadySeen) {
       return res.status(200).json({ success: 0 });
     }
 
     // If the user hasn't seen the status yet, proceed with the update
-    const updatedStatus = await Status.findByIdAndUpdate(
-      id, // The document ID
+    const updatedStatus = await Status.findOneAndUpdate(
+      { author: id }, // The document ID
       {
         $push: { [`status.${index}.seen`]: newSeenUser }, // Add the new user to the `seen` array at the given index
       },
       { new: true } // Return the updated document
     );
-
     if (!updatedStatus) {
       return res.status(200).json({ success: 0 });
     }
 
     // Return the updated status object with a success response
-
-    io.to(getUserSocketId(statusDoc.author)).emit("seenStatus", {
+    io.to(getUserSocketId(id)).emit("seenStatus", {
       index,
       newSeenUser,
     });
-    return res.status(200).json({ update: updatedStatus, success: 1 });
+    return res.status(200).json({ success: 1 });
   } catch (error) {
     console.error("Error updating status:", error);
-    return res.status(500).json({ message: "Error updating status" });
+    return res
+      .status(500)
+      .json({ message: "Error updating status", success: 0 });
   }
+};
+
+export const DeleteStatus = async (req, res) => {
+  const { index } = req.query;
+  const { id } = req.params;
+
+  let find = await Status.find({ author: id });
+
+  if (!find?.length) return res.status(200).json({ success: 0 });
+
+  let friend = await Users.findById(id).select("contacts");
+
+  friend?.contacts?.forEach((element) => {
+    if (getUserSocketId(element.userId)) {
+      io.to(getUserSocketId(element.userId)).emit("deleteStatus", {
+        index,
+        id: id,
+      });
+    }
+  });
+
+  find[0].status.splice(index, 1);
+
+  if (!find[0].status?.length) {
+    await Status.deleteOne({ author: id });
+    return res.status(200).json({ success: 1 });
+  }
+  find[0].save();
+  return res.status(200).json({ success: 1 });
 };
