@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import  { useContext } from "react";
 import ThemeDialog from "../components/setting/ThemeDialog";
 import { MdLogout } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";

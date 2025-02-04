@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import useContactList from "../../store/useContactList";

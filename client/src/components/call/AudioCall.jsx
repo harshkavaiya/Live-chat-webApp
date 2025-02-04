@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
 import useVideoCall from "../../store/useVideoCall";
