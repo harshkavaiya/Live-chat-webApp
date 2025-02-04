@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import { HiMiniSpeakerWave } from "react-icons/hi2";
+import useVideoCall from "../../store/useVideoCall";
+import toast from "react-hot-toast";
+import useAuthStore from "../../store/useAuthStore";
 
-const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
-  const caller = [1, 2,5,4,5,8];
+const AudioCall = ({ name }) => {
+  const caller = [1, 2];
   const [isAudioActive, setIsAudioActive] = useState(false);
+  const { initializeVideoCall, endCall } = useVideoCall.getState();
+  const { socket } = useAuthStore();
+  const myVideoRef = useRef(null); // Local video
+  const peerVideoRef = useRef(null);
 
   // const [peerId, setPeerId] = useState(null);
   // const [remoteStream, setRemoteStream] = useState(null);
@@ -14,7 +21,6 @@ const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
 
   // const peerInstance = useRef(null);
   // const callInstance = useRef(null);
-  let socket;
 
   // socket = io("http://localhost:4000");
   // useEffect(() => {
@@ -30,6 +36,42 @@ const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
   const handleAudioActivity = (isActive) => {
     setIsAudioActive(isActive);
   };
+  useEffect(() => {
+    if (myVideoRef.current) {
+      initializeVideoCall(myVideoRef.current, peerVideoRef.current);
+      console.log(
+        "Initialized with video refs:",
+        myVideoRef.current,
+        peerVideoRef.current
+      );
+    } else {
+      console.error("myVideoRef is null during initialization");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      //reject call
+      socket.on("callRejected", (data) => {
+        document.getElementById("my_modal_2").close();
+        endCall();
+        toast.error(`Call rejected by ${data.from}`);
+      });
+
+      // Handle ended calls
+      socket.on("callEnded", (data) => {
+        console.log("Call ended by:", data.from);
+        document.getElementById("my_modal_2").close();
+        endCall();
+        console.log("cleaning resources");
+      });
+
+      return () => {
+        socket.off("callRejected");
+        socket.off("callEnded");
+      };
+    }
+  }, [socket]);
 
   return (
     <dialog id="my_modal_2" className="modal">
@@ -76,14 +118,12 @@ const AudioCall = ({ name, isCallActive, setIsCallActive }) => {
               startCall={isCallActive}
               onAudioActivity={handleAudioActivity}
             /> */}
+            <audio ref={myVideoRef} muted></audio>
+            <audio ref={peerVideoRef} autoPlay></audio>
           </div>
         ))}
       </div>
-      <CallControl
-        model={2}
-        setIsCallActive={setIsCallActive}
-        isCallActive={isCallActive}
-      />
+      <CallControl model={2} />
     </dialog>
   );
 };

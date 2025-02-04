@@ -34,6 +34,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T16:00:00Z",
       misscall: false,
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -41,6 +42,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/emily_davis.jpg",
       callType: "outgoing",
       time: "2024-12-26T17:00:00Z",
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -66,6 +68,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T20:00:00Z",
       misscall: true,
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -82,6 +85,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T22:00:00Z",
       misscall: false,
+      Id: "676e285fa50bb46cb7b5effd",
       callNature: "voice",
     },
     {
@@ -93,28 +97,30 @@ const Calls = () => {
       callNature: "video",
     },
   ];
-  const [isCallActive, setIsCallActive] = useState(false);
   const [callName, setcallerName] = useState("");
   const [remoteID, setRemoteId] = useState(null);
+  const [calltype, setCalltype] = useState(null);
   const [ready, setReady] = useState(false);
   const { startCall } = useVideoCall();
   const VcallsHandler = (data) => {
     setcallerName(data.name);
     setRemoteId(data.Id);
+    setCalltype(data.callNature);
     document.getElementById("my_modal_1").showModal();
     setReady(true);
   };
 
   const callsHandler = (data) => {
-    setcallerName(data);
-    setIsCallActive(true);
+    setcallerName(data.name);
+    setRemoteId(data.Id);
+    setCalltype(data.callNature);
     document.getElementById("my_modal_2").showModal();
     setReady(true);
   };
 
   useEffect(() => {
     if (remoteID && ready) {
-      startCall(remoteID);
+      startCall(remoteID, calltype);
       setReady(false);
     }
   }, [remoteID, ready]);
@@ -122,11 +128,7 @@ const Calls = () => {
   return (
     <div className="flex flex-col h-screen">
       <VideoCall name={callName} />
-      <AudioCall
-        name={callName}
-        isCallActive={isCallActive}
-        setIsCallActive={setIsCallActive}
-      />
+      <AudioCall name={callName} />
 
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
@@ -200,7 +202,7 @@ const Calls = () => {
                   <MdCall
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => callsHandler(i.name)}
+                    onClick={() => callsHandler(i)}
                   />
                 )}
               </div>

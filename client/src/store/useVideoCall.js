@@ -17,6 +17,7 @@ const useVideoCall = create((set, get) => ({
   myVideoRef: null,
   peerVideoRef: null,
   callTimeout: null,
+  callType: null,
 
   createPeerId: (userId) => {
     const { peer } = get();
@@ -122,9 +123,11 @@ const useVideoCall = create((set, get) => ({
   },
 
   GetLocalStream: async () => {
+    const { callType } = get();
+    console.log(callType);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: callType === "video" ? true : false,
         audio: true,
       });
       set({ localStream: stream });
@@ -139,7 +142,8 @@ const useVideoCall = create((set, get) => ({
     }
   },
 
-  incomingCallAnswere: (CallerPeerId) => {
+  incomingCallAnswere: (CallerPeerId, callType) => {
+    set({ callType });
     // If local stream is not available, fetch it
     if (!get().localStream) {
       console.log("Local stream is missing, fetching...", get().localStream);
@@ -148,7 +152,8 @@ const useVideoCall = create((set, get) => ({
     set({ incomingCall: CallerPeerId });
   },
 
-  startCall: (remotePeerId) => {
+  startCall: (remotePeerId, callType) => {
+    set({ callType });
     const { localStream, socket, peerId } = get();
 
     if (!localStream) {
@@ -162,7 +167,7 @@ const useVideoCall = create((set, get) => ({
 
     // set({ currentCall: call, isCallInProgress: true });
 
-    socket.emit("callOffer", { to: remotePeerId, from: peerId });
+    socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
     // Set a timeout to automatically reject the call after 15 seconds
     const callTimeout = setTimeout(() => {
       console.log("Call timed out - no answer received");

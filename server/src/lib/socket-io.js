@@ -46,7 +46,10 @@ io.on("connection", (socket) => {
   socket.on("callOffer", (data) => {
     const receiverSocketId = peerSocketMap.get(data.to); // Find socket ID for 'to' Peer ID
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("callOffer", { from: data.from });
+      io.to(receiverSocketId).emit("callOffer", {
+        from: data.from,
+        callType: data.callType,
+      });
       console.log(`Call offer sent from ${data.from} to ${data.to}`);
     } else {
       console.log(`Peer ID ${data.to} not found`);

@@ -57,8 +57,13 @@ const Home = () => {
       socket.on("callOffer", (data) => {
         setIncomOpen(true);
         dialoghandler(true);
-        console.log("Incoming call offer from:", data.from);
-        incomingCallAnswere(data.from);
+        console.log(
+          "Incoming call offer from:",
+          data.from,
+          "////// calltype : ",
+          data.callType
+        );
+        incomingCallAnswere(data.from, data.callType);
       });
       socket.on("newStatus", handleUserStatus);
       socket.on("seenStatus", hanldeSeenStatus);

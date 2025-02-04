@@ -2,14 +2,20 @@ import React, { useState } from "react";
 import useAuthStore from "../../store/useAuthStore";
 import useVideoCall from "../../store/useVideoCall";
 import VideoCall from "../call/VideoCall";
+import AudioCall from "../call/AudioCall";
 
 const IncomingCallDialog = ({ dialoghandler, open }) => {
-  const { answerCall, incomingCall, rejectCall } = useVideoCall();
+  const { answerCall, incomingCall, rejectCall, callType } =
+    useVideoCall.getState();
 
   const AcceptAnswere = () => {
     dialoghandler(false);
     answerCall();
-    document.getElementById("my_modal_1").showModal();
+    if (callType === "video") {
+      document.getElementById("my_modal_1").showModal();
+    } else if (callType === "voice") {
+      document.getElementById("my_modal_2").showModal();
+    }
   };
   const RejectCall = () => {
     dialoghandler(false); // Close the dialog when rejected
@@ -18,7 +24,11 @@ const IncomingCallDialog = ({ dialoghandler, open }) => {
 
   return (
     <>
-      {incomingCall && <VideoCall name={"harsh"} />}
+      {incomingCall && callType === "video" ? (
+        <VideoCall name={"harsh"} />
+      ) : (
+        <AudioCall name={"hk"} />
+      )}
       <dialog id="incomingDialog" className={`modal ${open && "modal-open"}`}>
         <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
           <p>call from : {incomingCall}</p>

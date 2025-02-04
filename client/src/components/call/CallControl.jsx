@@ -9,13 +9,17 @@ const CallControl = ({ model }) => {
   const [miccontroll, setmic] = useState(true);
   const [speaker, setSpeaker] = useState(true);
 
-  const { endCallByPeer, toggleMic } = useVideoCall();
+  const { endCallByPeer, toggleMic, callType } = useVideoCall.getState();
   const micHanlder = () => {
     setmic(!miccontroll);
     toggleMic(!miccontroll);
   };
   const handleEndCall = () => {
-    document.getElementById("my_modal_1").close();
+    if (callType === "video") {
+      document.getElementById("my_modal_1").close();
+    } else if (callType === "voice") {
+      document.getElementById("my_modal_2").close();
+    }
     endCallByPeer();
   };
 
