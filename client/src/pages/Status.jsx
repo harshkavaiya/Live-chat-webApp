@@ -9,7 +9,6 @@ const Status = () => {
   const { messagerUser } = useMessageStore();
 
   const {
-    setStatus,
     myStatus,
     setIsStatusPageOpen,
     friendStatus,
@@ -34,22 +33,11 @@ const Status = () => {
     setCurrentUserRunningStatus(index);
   });
 
-  const handleStatusData = (data) => {
-    const { files } = data.target;
-    setStatus([...files]);
-  };
   return (
     <>
       <div className="flex flex-col h-screen">
         {/* select Status file */}
-        <input
-          id="selectfile"
-          type="file"
-          onChange={handleStatusData}
-          className="hidden"
-          multiple
-          accept=".jpg,.mp4,.png,.jpeg"
-        />
+        <SelectFile />
         {/* story logo */}
         <div className="flex items-center justify-between px-3 pt-2">
           <h2 className="font-bold text-lg">Story</h2>
@@ -169,5 +157,23 @@ const Status = () => {
     </>
   );
 };
-
+export const SelectFile = () => {
+  const { setStatus } = useStatusStore();
+  const handleStatusData = (data) => {
+    data.preventDefault();
+    const { files } = data.target;
+    setStatus([...files]);
+    data.target.value = "";
+  };
+  return (
+    <input
+      id="selectfile"
+      type="file"
+      onChange={handleStatusData}
+      className="hidden"
+      multiple
+      accept=".jpg,.mp4,.png,.jpeg"
+    />
+  );
+};
 export default Status;

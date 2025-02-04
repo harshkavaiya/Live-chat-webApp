@@ -9,6 +9,10 @@ import ReactTimeAgo from "react-time-ago";
 import StatusProgressBar from "./StatusProgressBar";
 import StatusViewer from "./StatusViewer";
 import { useCallback, useState } from "react";
+import { IoClose } from "react-icons/io5";
+import { IoIosArrowUp } from "react-icons/io";
+import WhoSeenStatus from "./WhoSeenStatus";
+import { SelectFile } from "../../pages/Status";
 
 const MyStatusPreview = () => {
   const {
@@ -20,6 +24,7 @@ const MyStatusPreview = () => {
   } = useStatusStore();
   const [currentStatusIndex, setCurrentStatusIndex] = useState(null);
   const [deleteStatusData, setDeleteStatusData] = useState(0);
+  const [isStatusViewer, setIsStatusViewer] = useState(false);
 
   const onPrevious = useCallback(() => {
     if (myStatus[currentStatusIndex - 1]) {
@@ -46,11 +51,11 @@ const MyStatusPreview = () => {
 
   return (
     <>
-      <div className="absolute w-full h-full flex flex-col items-center">
+      <div className="absolute w-full h-full flex flex-col items-center bg-base-200 z-40">
         {currentStatusIndex == null && (
-          <div className="relative flex flex-col h-screen w-full sm:w-[70%] bg-primary/50 text-primary ">
+          <div className="relative flex flex-col h-screen w-full sm:w-[70%]  bg-primary/25">
             {/* Status Header */}
-            <div className=" flex items-center p-3 bg-primary-content/90 shadow-md">
+            <div className=" flex items-center p-3 bg-primary-content/90 text-primary shadow-md">
               <button
                 onClick={() => setIsStatusPageOpen(false)}
                 className="btn btn-ghost btn-circle"
@@ -67,13 +72,13 @@ const MyStatusPreview = () => {
                 return (
                   <div
                     key={i}
-                    className="flex items-center cursor-pointer bg-primary-content p-3.5 rounded-lg shadow-lg hover:shadow-xl"
+                    className="flex items-center cursor-pointer px-3 py-2 border-b"
                   >
                     <div
                       className="avatar"
                       onClick={() => setCurrentStatusIndex(i)}
                     >
-                      <div className="w-14 h-14 rounded-full ring ring-primary ring-offset-[#233138] ring-offset-2">
+                      <div className="w-14 h-14 rounded-full">
                         {type == "image" ? (
                           <img
                             src={url}
@@ -89,10 +94,10 @@ const MyStatusPreview = () => {
                       className="ml-4 flex-1"
                       onClick={() => setCurrentStatusIndex(i)}
                     >
-                      <div className="text-lg font-semibold text-base-100 ">
+                      <div className="text-lg font-semibold">
                         <span className="mr-2">{seen.length}</span>Views
                       </div>
-                      <div className="text-sm text-base-100/70">
+                      <div className="text-xs">
                         <ReactTimeAgo date={time} />
                       </div>
                     </div>
@@ -112,17 +117,27 @@ const MyStatusPreview = () => {
 
             {/* Floating Action Buttons */}
             <div className="absolute bottom-6 right-6 flex flex-col items-center gap-4">
-              <button className="btn btn-circle bg-primary/6  0 text-primary-content hover:bg-primary h-12 w-12 shadow-lg transition-all duration-300 hover:scale-110">
+              <button className="btn btn-circle bg-primary/60  hover:bg-primary h-12 w-12 shadow-lg transition-all duration-300 hover:scale-110">
                 <MdModeEdit className="h-6 w-6" />
               </button>
-              <button className="btn btn-circle bg-primary-content/80 hover:bg-primary-content text-base-100 h-16 w-16 shadow-lg transition-all duration-300 hover:scale-110">
+              <label htmlFor="selectfile" className="btn btn-circle bg-primary-content/80 hover:bg-primary-content h-16 w-16 shadow-lg transition-all duration-300 hover:scale-110">
                 <MdOutlinePhotoCamera className="h-8 w-8" />
-              </button>
+
+            <SelectFile/>
+              </label>
             </div>
           </div>
         )}
         {currentStatusIndex != null && (
-          <div className="fixed sm:w-96 w-[40%] h-full flex items-center justify-center bg-black">
+          <div className="fixed w-full h-full sm:w-[40%] sm:h-full flex items-center justify-center bg-black">
+            <IoClose
+              size={30}
+              className="absolute top-6 z-10 right-5 cursor-pointer text-white"
+              onClick={() => {
+                setCurrentStatusIndex(null);
+                setIsProcess(0);
+              }}
+            />
             <StatusProgressBar
               isProcess={isProcess}
               currentRunningStatus={myStatus}
@@ -134,7 +149,18 @@ const MyStatusPreview = () => {
               currentStatusIndex={currentStatusIndex}
               onPrevious={onPrevious}
               onNext={onNext}
+              isMyStatus={true}
+              isStatusViewer={isStatusViewer}
             />
+            <div
+              onClick={() => setIsStatusViewer(true)}
+              className="bottom-0 w-full h-16 absolute flex items-start justify-center"
+            >
+              <IoIosArrowUp
+                size={30}
+                className="z-10 cursor-pointer text-white"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -155,6 +181,13 @@ const MyStatusPreview = () => {
           </div>
         </div>
       </dialog>
+
+      {isStatusViewer && (
+        <WhoSeenStatus
+          viewers={myStatus[currentStatusIndex].seen}
+          close={() => setIsStatusViewer(false)}
+        />
+      )}
     </>
   );
 };

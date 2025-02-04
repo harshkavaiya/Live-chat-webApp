@@ -26,7 +26,8 @@ const Home = () => {
     handleUserStatus,
     hanldeSeenStatus,
     findUserStatus,
-    hanldeRefreshStatus,handleDeleteStatus
+    hanldeRefreshStatus,
+    handleDeleteStatus,
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -64,7 +65,7 @@ const Home = () => {
       socket.on("newStatus", handleUserStatus);
       socket.on("seenStatus", hanldeSeenStatus);
       socket.on("refreshStatus", hanldeRefreshStatus);
-      socket.on("deleteStatus",handleDeleteStatus)
+      socket.on("deleteStatus", handleDeleteStatus);
       return () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
@@ -125,7 +126,7 @@ const Home = () => {
       </div>
 
       {!currentChatingUser && authUser && (
-        <div className="flex items-center sm:hidden w-full z-50 bottom-0 bg-primary-content h-20 fixed">
+        <div className="flex items-center sm:hidden w-full z-4  0 bottom-0 bg-primary-content h-20 fixed">
           <BottomBar />
         </div>
       )}

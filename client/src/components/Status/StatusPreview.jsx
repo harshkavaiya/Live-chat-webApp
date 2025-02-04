@@ -28,7 +28,7 @@ const StatusPreview = () => {
   };
 
   return (
-    <div className="h-[100%] w-[100%] px-2 md:px-40 lg:px-80 absolute top-0 left-0 mx-auto bg-base-100 text-base-content z-20 ">
+    <div className="h-full w-full px-2 md:px-40 lg:px-80 absolute top-0 left-0 mx-auto bg-base-100 text-base-content z-50 ">
       {/* Main Image */}
       <div className="relative w-full">
         {/* Top toolbar */}

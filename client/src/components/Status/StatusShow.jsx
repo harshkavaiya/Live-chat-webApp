@@ -28,7 +28,7 @@ const StatusShow = () => {
           className="absolute hidden sm:inline top-6 z-10 left-5 cursor-pointer"
           onClick={onCloseCurrentStatus}
         />
-        <div className="fixed sm:w-96 w-[40%] h-full flex items-center justify-center bg-black">
+        <div className="fixed sm:w-96 w-full h-full flex items-center justify-center bg-black">
           <StatusProgressBar
             isProcess={isProcess}
             currentRunningStatus={currentRunningStatus}
@@ -45,7 +45,7 @@ const StatusShow = () => {
           className="absolute sm:hidden top-6 p-1 bg-base-300 rounded-full right-5 cursor-pointer"
           onClick={onCloseCurrentStatus}
         >
-          <RxCross2 size={18} />
+          <RxCross2 size={30} />
         </span>
       </div>
     </dialog>
