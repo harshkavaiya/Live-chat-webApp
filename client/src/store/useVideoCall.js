@@ -81,7 +81,7 @@ const useVideoCall = create((set, get) => ({
 
   answerCall: () => {
     const { incomingCall, localStream, peer, socket, peerId } = get();
-    console.log("Incoming call:", incomingCall);
+    // console.log("Incoming call:", incomingCall);
     console.log("Local stream:", localStream);
 
     if (!incomingCall || !localStream) {
@@ -124,7 +124,6 @@ const useVideoCall = create((set, get) => ({
 
   GetLocalStream: async () => {
     const { callType } = get();
-    console.log(callType);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: callType === "video" ? true : false,
@@ -150,6 +149,7 @@ const useVideoCall = create((set, get) => ({
       get().GetLocalStream();
     }
     set({ incomingCall: CallerPeerId });
+    console.log("Incoming Call Set:", get().incomingCall);
   },
 
   startCall: (remotePeerId, callType) => {
@@ -169,19 +169,19 @@ const useVideoCall = create((set, get) => ({
 
     socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
     // Set a timeout to automatically reject the call after 15 seconds
-    if(get().incomingCall){
-    const callTimeout = setTimeout(() => {
-      console.log("Call timed out - no answer received");
-      socket.emit("callRejected", { to: remotePeerId });
-      set({ incomingCall: null });
-      get().endCall(); // End the call on both sides
-      document.getElementById("my_modal_1").close();
-      toast.error("Call timed out - No response received.");
-    }, 10000); // 15 seconds
-    
-    // Save the timeout ID so we can clear it if the call is answered before timeout
-    set({ callTimeout });
-  }
+    if (get().incomingCall) {
+      const callTimeout = setTimeout(() => {
+        console.log("Call timed out - no answer received");
+        socket.emit("callRejected", { to: remotePeerId });
+        set({ incomingCall: null });
+        get().endCall(); // End the call on both sides
+        document.getElementById("my_modal_1").close();
+        toast.error("Call timed out - No response received.");
+      }, 10000); // 15 seconds
+
+      // Save the timeout ID so we can clear it if the call is answered before timeout
+      set({ callTimeout });
+    }
   },
 
   // Reject a call
@@ -219,16 +219,16 @@ const useVideoCall = create((set, get) => ({
 
     set({ currentCall: null, incomingCall: null, isCallInProgress: false });
   },
-  setIncomming:(incomingCall)=>set({incomingCall}),
-  
+  setIncomming: (incomingCall) => set({ incomingCall }),
+
   endCallByPeer: () => {
     const { incomingCall, socket, remotePeerId, peerId, isCallInProgress } =
       get();
     // if (isCallInProgress) {
-      socket.emit("endCall", {
-        to: incomingCall == null ? remotePeerId : incomingCall,
-        from: peerId,
-      });
+    socket.emit("endCall", {
+      to: incomingCall == null ? remotePeerId : incomingCall,
+      from: peerId,
+    });
     // }
 
     get().endCall();

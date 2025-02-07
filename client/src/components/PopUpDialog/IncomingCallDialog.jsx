@@ -1,15 +1,33 @@
-import  { useState } from "react";
+//after chnages
+import { useEffect, useRef, useState } from "react";
 import useAuthStore from "../../store/useAuthStore";
 import useVideoCall from "../../store/useVideoCall";
 import VideoCall from "../call/VideoCall";
 import AudioCall from "../call/AudioCall";
 
-const IncomingCallDialog = ({ dialoghandler, open }) => {
-  const { answerCall, incomingCall, rejectCall, callType } =
-    useVideoCall.getState();
+const IncomingCallDialog = () => {
+  const { answerCall, rejectCall, callType } = useVideoCall.getState();
+
+  const incomingCall = useVideoCall((state) => state.incomingCall);
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    if (incomingCall) {
+      console.log("IncomingCallDialog: Opening dialog for", incomingCall);
+      if (dialogRef.current) {
+        dialogRef.current.showModal();
+      }
+    } else {
+      if (dialogRef.current) {
+        dialogRef.current.close();
+      }
+    }
+  }, [incomingCall]);
+
+  if (!incomingCall) return null;
 
   const AcceptAnswere = () => {
-    dialoghandler(false);
+    document.getElementById("incomingDialog").close();
     answerCall();
     if (callType === "video") {
       document.getElementById("my_modal_1").showModal();
@@ -18,7 +36,7 @@ const IncomingCallDialog = ({ dialoghandler, open }) => {
     }
   };
   const RejectCall = () => {
-    dialoghandler(false); // Close the dialog when rejected
+    document.getElementById("incomingDialog").close();
     rejectCall(); // Reject the call and notify the caller
   };
 
@@ -29,7 +47,7 @@ const IncomingCallDialog = ({ dialoghandler, open }) => {
       ) : (
         <AudioCall name={"hk"} />
       )}
-      <dialog id="incomingDialog" className={`modal ${open && "modal-open"}`}>
+      <dialog id="incomingDialog" ref={dialogRef} className={`modal `}>
         <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
           <p>call from : {incomingCall}</p>
           <button className="btn" onClick={AcceptAnswere}>
