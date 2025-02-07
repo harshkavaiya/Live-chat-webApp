@@ -169,6 +169,7 @@ const useVideoCall = create((set, get) => ({
 
     socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
     // Set a timeout to automatically reject the call after 15 seconds
+    if(get().incomingCall){
     const callTimeout = setTimeout(() => {
       console.log("Call timed out - no answer received");
       socket.emit("callRejected", { to: remotePeerId });
@@ -177,9 +178,10 @@ const useVideoCall = create((set, get) => ({
       document.getElementById("my_modal_1").close();
       toast.error("Call timed out - No response received.");
     }, 10000); // 15 seconds
-
+    
     // Save the timeout ID so we can clear it if the call is answered before timeout
     set({ callTimeout });
+  }
   },
 
   // Reject a call
@@ -217,16 +219,18 @@ const useVideoCall = create((set, get) => ({
 
     set({ currentCall: null, incomingCall: null, isCallInProgress: false });
   },
-
+  setIncomming:(incomingCall)=>set({incomingCall}),
+  
   endCallByPeer: () => {
     const { incomingCall, socket, remotePeerId, peerId, isCallInProgress } =
       get();
-    if (isCallInProgress) {
+    // if (isCallInProgress) {
       socket.emit("endCall", {
         to: incomingCall == null ? remotePeerId : incomingCall,
         from: peerId,
       });
-    }
+    // }
+
     get().endCall();
   },
 

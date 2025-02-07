@@ -38,13 +38,15 @@ const VideoCall = ({ name }) => {
       });
 
       // Handle ended calls
-      socket.on("callEnded", (data) => {
-        console.log("Call ended by:", data.from);
-        setRinging(false); // Stop ringing
-        document.getElementById("my_modal_1").close();
-        endCall();
-        console.log("cleaning resources");
-      });
+      if (isCallInProgress) {
+        socket.on("callEnded", (data) => {
+          console.log("Call ended by:", data.from);
+          setRinging(false); // Stop ringing
+          document.getElementById("my_modal_1").close();
+          endCall();
+          console.log("cleaning resources");
+        });
+      }
 
       // Clean up socket events on unmount
       return () => {

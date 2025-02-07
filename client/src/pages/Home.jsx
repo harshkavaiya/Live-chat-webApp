@@ -31,7 +31,7 @@ const Home = () => {
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
-  const { createPeerId, incomingCallAnswere } = useVideoCall();
+  const { createPeerId, incomingCallAnswere,setIncomming,endCall } = useVideoCall();
   const [open, setOpen] = useState(false);
   const [incomOpen, setIncomOpen] = useState(false);
   const { SetActivePage, activePage } = useHomePageNavi();
@@ -67,6 +67,13 @@ const Home = () => {
         );
         incomingCallAnswere(data.from, data.callType);
       });
+      socket.on("callEnded", (data) => {
+        console.log("Call ended by:", data.from);
+        setOpen(false);
+        endCall();
+        setIncomming(null);
+        console.log("cleaning resources");
+      });
       socket.on("newStatus", handleUserStatus);
       socket.on("seenStatus", hanldeSeenStatus);
       socket.on("refreshStatus", hanldeRefreshStatus);
@@ -75,6 +82,7 @@ const Home = () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
         socket.off("seenStatus");
+        socket.off("callEnded");
         socket.off("callOffer");
       };
     }
