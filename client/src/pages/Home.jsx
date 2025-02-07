@@ -31,7 +31,8 @@ const Home = () => {
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
-  const { createPeerId, incomingCallAnswere,setIncomming,endCall } = useVideoCall();
+  const { createPeerId, incomingCallAnswere, setIncomming, endCall } =
+    useVideoCall();
   const [open, setOpen] = useState(false);
   const [incomOpen, setIncomOpen] = useState(false);
   const { SetActivePage, activePage } = useHomePageNavi();
