@@ -78,6 +78,18 @@ const useMessageStore = create((set, get) => ({
 
     set({ messages });
   },
+  hanldeVote: (data) => {
+    const { pollId, optionIndex, from } = data;
+
+    const { messages } = get();
+    messages?.forEach((element) => {
+      if (element._id == pollId) {
+        element.data.options[optionIndex].vote++;
+        element.data.voted.push({ id: from, ans: optionIndex });
+      }
+    });
+    set({ messages });
+  },
 }));
 
 export default useMessageStore;

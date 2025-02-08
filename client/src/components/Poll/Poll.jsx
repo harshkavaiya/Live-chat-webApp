@@ -1,24 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { FiBarChart2 } from "react-icons/fi";
+import useMessageStore from "../../store/useMessageStore";
+import useAuthStore from "../../store/useAuthStore";
 
-const Poll = ({ data }) => {
-  const { options, pollTitle, votes } = data;
+const Poll = ({ data, id }) => {
+  const { options, pollTitle, voted } = data;
   const [selectedOption, setSelectedOption] = useState(null);
+  const { currentChatingUser, hanldeVote } = useMessageStore();
+  const { socket, authUser } = useAuthStore();
   const [isVoted, setIsVoted] = useState(false);
 
   const totalVotes = options.reduce((sum, option) => sum + option.vote, 0);
 
   const handleVote = () => {
-    if (selectedOption !== null) {
-      setIsVoted(true);
+    if (socket) {
+      if (selectedOption !== null) {
+        socket.emit("vote", {
+          pollId: id,
+          optionIndex: selectedOption,
+          to: currentChatingUser,
+          from: authUser._id,
+        });
+        hanldeVote({
+          pollId: id,
+          optionIndex: selectedOption,
+          from: authUser._id,
+        });
+        setIsVoted(true);
+      }
     }
   };
 
   const getPercentage = (vote) => {
-    if (totalVotes === 0) return 0;
-    return Math.round((vote / totalVotes) * 100);
+    return Math.round((vote / voted.length) * 100);
   };
+
+  useEffect(() => {
+    voted.forEach((element) => {
+      if (element.id == authUser._id) {
+        setIsVoted(true);
+        setSelectedOption(element.ans);
+      }
+    });
+  }, [voted]);
 
   return (
     <div className="w-48 sm:w-60 md:w-72 lg:w-80 bg-base-100 text-base-content rounded-lg outline-none border-none p-2">
@@ -73,17 +98,8 @@ const Poll = ({ data }) => {
           <div className="flex items-center justify-between text-sm ">
             <span>
               <FiBarChart2 size={20} className="inline-block mr-2 " />
-              Total votes: {votes}
+              Total votes: {voted?.length}
             </span>
-            <button
-              onClick={() => {
-                setIsVoted(false);
-                setSelectedOption(null);
-              }}
-              className="text-primary focus:outline-none"
-            >
-              Vote again
-            </button>
           </div>
         )}
       </div>

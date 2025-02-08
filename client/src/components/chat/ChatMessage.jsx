@@ -31,6 +31,7 @@ const ChatMessage = () => {
   const {
     onSelectionMessage,
     handleSelectMessage,
+    setSelectMessage,
     selectMessage,
     isSelectMessage,
     handleSelection,
@@ -63,7 +64,8 @@ const ChatMessage = () => {
     <>
       <div className="flex-1 p-1 space-y-1 overflow-y-scroll overflow-x-hidden h-full">
         {messages.map((message, i) => {
-          const { sender, type, data, read, createdAt } = message;
+          const { _id, sender, type, data, read, createdAt } = message;
+
           return (
             <div
               ref={messageEndRef}
@@ -101,7 +103,7 @@ const ChatMessage = () => {
                     >
                       <img
                         className="h-full w-full"
-                        src={reactions[message.reaction.id-1].emoji}
+                        src={reactions[message.reaction.id - 1].emoji}
                       />
                     </div>
                   )}
@@ -126,7 +128,7 @@ const ChatMessage = () => {
                       handleMediaPreview={handleMediaPreview}
                     />
                   )}
-                  {type == "poll" && <Poll data={data} />}
+                  {type == "poll" && <Poll id={_id} data={data} />}
                   {type == "location" && <LocationPreview message={message} />}
                   {type == "audio" && <Audio message={message} />}
                   <p
@@ -165,29 +167,34 @@ const ChatMessage = () => {
       </div>
 
       {isSelectMessage && (
-        <div className="absolute w-full h-[10%] bg-primary left-0 bottom-0 z-10 flex items-center text-base-content overflow-hidden">
-          <IoClose
-            onClick={() => handleSelection(false)}
-            size={30}
-            className="ml-4 cursor-pointer"
-          />
+        <div className=" absolute bg-base-100 w-full h-[10%] z-10 left-0 bottom-0">
+          <div className="w-full h-full bg-primary/80  flex items-center text-primary-content overflow-hidden">
+            <IoClose
+              onClick={() => handleSelection(false)}
+              className="ml-4 btn btn-ghost btn-circle btn-sm"
+            />
 
-          <p className="flex gap-x-2 items-center text-xl">
-            <span className="">{Object.keys(selectMessage).length}</span>{" "}
-            Selected
-          </p>
-          {Object.keys(selectMessage).length > 0 && (
-            <div className="flex justify-end w-full mr-3 gap-x-2 ">
-              <IoIosShareAlt
-                onClick={() => {
-                  handleSelectMessage(true);
-                }}
-                size={30}
-                className="cursor-pointer"
-              />
-              <LuTrash2 size={30} className="cursor-pointer" />
-            </div>
-          )}
+            <p className="flex gap-x-2 items-center text-lg md:text-xl">
+              <span className="">{Object.keys(selectMessage).length}</span>{" "}
+              Selected
+            </p>
+            {Object.keys(selectMessage).length > 0 && (
+              <div className="flex justify-end w-full mr-8 ">
+                <IoIosShareAlt
+                  onClick={() => {
+                    handleSelectMessage(true);
+                  }}
+                  className=" btn btn-ghost btn-circle btn-md p-2"
+                />
+                <LuTrash2
+                  onClick={() => {
+                    handleSelectMessage(false), setSelectMessage([]);
+                  }}
+                  className="btn btn-ghost btn-circle btn-md p-2"
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>

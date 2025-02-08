@@ -11,7 +11,8 @@ import axiosInstance from "../lib/axiosInstance";
 import Share from "../components/share/share";
 import useFunctionStore from "../store/useFuncationStore";
 import Location from "../components/Location";
-import SendFilePreview from "../components/SendDataPreview/SendFilePreview"
+import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
+import useAuthStore from "../store/useAuthStore";
 
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -21,9 +22,11 @@ const ChatPage = () => {
     isLocationLoading,
     location,
     locationClose,
-    locationShare,galleryData
+    locationShare,
+    galleryData
   } = useFunctionStore();
-  const { setMessages, currentChatingUser } = useMessageStore();
+  const { setMessages, currentChatingUser,hanldeVote } = useMessageStore();
+  const { socket } = useAuthStore();
   const { data, isLoading } = useQuery({
     queryKey: [`chat-${currentChatingUser}`],
     queryFn: async () => {
@@ -38,6 +41,16 @@ const ChatPage = () => {
       setMessages(data);
     }
   }, [setMessages, data, isLoading]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("vote", hanldeVote);
+
+      return () => {
+        socket.off("vote");
+      };
+    }
+  }, [socket]);
 
   return (
     <>

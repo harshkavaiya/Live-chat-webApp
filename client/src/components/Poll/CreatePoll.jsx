@@ -1,17 +1,26 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import useMessageStore from "../../store/useMessageStore";
 
-const CreatePoll = ({ close, handleCreatPoll }) => {
+const CreatePoll = () => {
   const [pollTitle, setPollTitle] = useState("");
+  const { sendMessage } = useMessageStore();
   const [options, setOptions] = useState([
     { id: "1", text: "", vote: 0 },
     { id: "2", text: "", vote: 0 },
   ]);
 
+  const handleCreatPoll = (data) => {
+    sendMessage({
+      type: "poll",
+      data,
+    });
+    document.getElementById("Create_poll_model").close();
+  };
+
   const addOption = () => {
-    setOptions([...options, { id: Date.now().toString(), text: "", vote: 0 }]);
+    setOptions([...options, { id: Date.now().toString(), text: "" }]);
   };
 
   const removeOption = (id) => {
@@ -27,15 +36,19 @@ const CreatePoll = ({ close, handleCreatPoll }) => {
   };
 
   return (
-    <div className="w-full h-full p-4 bg-transparent/55 absolute z-20 top-0 flex items-center overflow-hidden">
-      <IoClose
-        onClick={close}
-        size={40}
-        className="absolute right-4 top-4 text-primary cursor-pointer"
-      />
-      <div className="max-w-lg mx-auto bg-base-100 shadow-lg w-full h-fit rounded-xl">
-        <div className="px-6 py-4 bg-primary text-primary-content rounded-t-xl">
+    <dialog
+      id="Create_poll_model"
+      className="modal w-full h-full z-20 bg-transparent"
+    >
+      <div className="modal-box mx-auto bg-base-100 w-full rounded-xl p-0">
+        <div className="px-6 py-4 bg-primary text-primary-content rounded-t-xl relative">
           <h2 className="text-2xl font-bold  text-center">Create a New Poll</h2>
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-md text-lg btn-circle btn-ghost absolute right-4 top-2">
+              ✕
+            </button>
+          </form>
         </div>
         <form className="p-6 space-y-6">
           <label className="form-control w-full ">
@@ -89,14 +102,14 @@ const CreatePoll = ({ close, handleCreatPoll }) => {
         </form>
         <div className="px-6 py-4 bg-base-100 border-t border-base-300 rounded-b-xl">
           <button
-            onClick={() => handleCreatPoll({ pollTitle, options })}
+            onClick={() => handleCreatPoll({ pollTitle, options, voted: [] })}
             className="w-full rounded-md btn btn-primary shadow-sm text-lg font-medium hover:bg-primary/90"
           >
             Create Poll
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

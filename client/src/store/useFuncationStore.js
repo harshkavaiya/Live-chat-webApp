@@ -17,10 +17,15 @@ const useFunctionStore = create((set, get) => ({
   getLocation: async () => {
     set({ isLocationLoading: true });
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        set({ isLocationLoading: false, location: [latitude, longitude] });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          set({ isLocationLoading: false, location: [latitude, longitude] });
+        },
+        (e) => {
+          toast.error("Not get Location");
+        }
+      );
     } else {
       set({ isLocationLoading: false });
       return 0;
@@ -110,6 +115,9 @@ const useFunctionStore = create((set, get) => ({
   sendSelectionMessage: () => {
     set({ isMessageShare: false, selectContact: {} });
   },
+  setSelectMessage:(selectMessage)=>{
+set({selectMessage})
+  }
 }));
 
 export default useFunctionStore;

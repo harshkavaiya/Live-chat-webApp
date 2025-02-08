@@ -8,7 +8,6 @@ import { FaRegPauseCircle } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import { memo, useCallback, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
-import CreatePoll from "../Poll/CreatePoll";
 
 import AudioRecorder from "../Audio/AudioRecorder";
 import axiosInstance from "../../lib/axiosInstance";
@@ -18,7 +17,6 @@ import useAudioStore from "../../store/useAudioStore";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
-  const [isPollOpen, setIsPollOpen] = useState(false);
   const mediaRecorderRef = useRef(null);
   const { getLocation, handelGalleryData, onSelectContact } =
     useFunctionStore();
@@ -26,14 +24,6 @@ const ChatInput = () => {
     useAudioStore();
 
   const { sendMessage } = useMessageStore();
-
-  const handleCreatPoll = (data) => {
-    sendMessage({
-      type: "poll",
-      data,
-    });
-    setIsPollOpen(false);
-  };
 
   const handelUploadDocument = useCallback(async (e) => {
     let form = new FormData();
@@ -113,7 +103,9 @@ const ChatInput = () => {
                 <InputMenu
                   icon={<MdOutlinePoll size={20} />}
                   label="Poll"
-                  button={() => setIsPollOpen(!isPollOpen)}
+                  button={() => {
+                    document.getElementById("Create_poll_model").showModal();
+                  }}
                 />
                 <InputMenu
                   icon={<GrMapLocation size={20} />}
@@ -173,14 +165,6 @@ const ChatInput = () => {
           </div>
         )}
       </div>
-
-      {/* Create a Poll */}
-      {isPollOpen && (
-        <CreatePoll
-          close={() => setIsPollOpen(false)}
-          handleCreatPoll={handleCreatPoll}
-        />
-      )}
     </>
   );
 };

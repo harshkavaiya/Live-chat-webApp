@@ -43,7 +43,8 @@ const Share = () => {
       image: "/placeholder.svg?height=40&width=40",
     },
   ];
-  const { handleSelectMessage, sendSelectionMessage } = useFunctionStore();
+  const { handleSelectMessage, sendSelectionMessage, setSelectMessage } =
+    useFunctionStore();
   const [selectedChats, setSelectedChats] = useState([]);
 
   const toggleChat = (id) => {
@@ -53,18 +54,26 @@ const Share = () => {
   };
 
   return (
-    <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0">
-      <div className="w-[90%] md:w-[40%] md:h-fit text-primary-content bg-base-100 border border-base-300 rounded-xl shadow-xl overflow-hidden">
+    <dialog className="modal modal-open w-full h-full absolute top-0 left-0 z-20 bg-transparent text-base-content">
+      <div className="modal-box w-[90%] md:w-[40%] md:h-fit border border-base-300 p-0 bg-base-100">
         {/* Header */}
         <div className="bg-primary text-primary-content p-3 flex items-center justify-between ">
           <h1 className="text-lg font-medium">Forward message to</h1>
-          <button onClick={() => handleSelectMessage(false)} className="p-1">
-            <IoClose size={24} />
-          </button>
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button
+              onClick={() => {
+                handleSelectMessage(false), setSelectMessage([]);
+              }}
+              className="btn btn-sm text-lg btn-circle btn-ghost absolute right-4 top-3"
+            >
+              ✕
+            </button>
+          </form>
         </div>
 
         {/* Recent Chats Section */}
-        <div className="p-4 max-h-[75vh] overflow-y-scroll">
+        <div className="p-2 max-h-[75vh] overflow-y-scroll">
           <h2 className="text-primary font-medium mb-4">RECENT CHATS</h2>
 
           <div className="space-y-2 h-full ">
@@ -78,7 +87,7 @@ const Share = () => {
                   {selectedChats.includes(chat.id) ? (
                     <BsCheckSquare className="text-primary" size={20} />
                   ) : (
-                    <FiSquare className="text-primary-content" size={20} />
+                    <FiSquare className="" size={20} />
                   )}
                 </div>
 
@@ -94,12 +103,8 @@ const Share = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-primary-content truncate">
-                    {chat.name}
-                  </p>
-                  <p className="text-sm text-primary-content/70 truncate">
-                    {chat.description}
-                  </p>
+                  <p className="text-sm font-medium truncate">{chat.name}</p>
+                  <p className="text-sm truncate">{chat.description}</p>
                 </div>
               </div>
             ))}
@@ -107,7 +112,7 @@ const Share = () => {
         </div>
 
         {/*Receiver Names */}
-        <div className="border-t border-base-300 bg-base-100  text-primary-content ">
+        <div className="border-t border-base-300 ">
           <div className="flex items-center space-x-3 px-3 py-2">
             <div className="flex-1">
               <p className="text-sm t">
@@ -131,7 +136,7 @@ const Share = () => {
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

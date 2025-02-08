@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import Message from "../models/message.model.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -107,6 +108,17 @@ io.on("connection", (socket) => {
         break;
       }
     }
+  });
+
+  socket.on("vote", async (data) => {
+    const { pollId, to, optionIndex, from } = data;
+
+    await Message.findByIdAndUpdate(pollId, {
+      $inc: { [`data.options.${optionIndex}.vote`]: 1 },
+      $push: { "data.voted": { id: from, ans: optionIndex } },
+    });
+    console.log(getUserSocketId(to))
+    io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
   });
 });
 

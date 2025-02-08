@@ -16,9 +16,11 @@ import useHomePageNavi from "../store/useHomePageNavi";
 import useStatusStore from "../store/useStatusStore";
 import StatusPreview from "../components/Status/StatusPreview";
 import MyStatusPreview from "../components/Status/MyStatusPreview";
+import CreatePoll from "../components/Poll/CreatePoll";
+import useFunctionStore from "../store/useFuncationStore";
 
 const Home = () => {
-  const { currentChatingUser } = useMessageStore();
+  const { currentChatingUser, sendMessage } = useMessageStore();
   const { socket, authUser } = useAuthStore();
   const {
     status,
@@ -31,9 +33,11 @@ const Home = () => {
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
-  const { createPeerId, incomingCallAnswere,setIncomming,endCall } = useVideoCall();
+  const { createPeerId, incomingCallAnswere, setIncomming, endCall } =
+    useVideoCall();
   const [open, setOpen] = useState(false);
-  const [incomOpen, setIncomOpen] = useState(false);
+
+  const [incomOpen, setIncomOpen] = useState  (false);
   const { SetActivePage, activePage } = useHomePageNavi();
 
   const dialoghandler = (dilog) => {
@@ -146,6 +150,8 @@ const Home = () => {
 
       {status.length > 0 && <StatusPreview />}
       {isStatusPageOpen && <MyStatusPreview />}
+
+      <CreatePoll />
     </div>
   );
 };
