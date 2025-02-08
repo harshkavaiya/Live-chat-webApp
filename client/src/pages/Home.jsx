@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ChatPage from "./ChatPage";
 import NochatSelect from "../components/NochatSelect";
 import SideSetting from "../components/SideSetting";
@@ -17,7 +17,6 @@ import useStatusStore from "../store/useStatusStore";
 import StatusPreview from "../components/Status/StatusPreview";
 import MyStatusPreview from "../components/Status/MyStatusPreview";
 import CreatePoll from "../components/Poll/CreatePoll";
-import useFunctionStore from "../store/useFuncationStore";
 
 const Home = () => {
   const { currentChatingUser, sendMessage } = useMessageStore();
@@ -36,9 +35,7 @@ const Home = () => {
 
   const { createPeerId, incomingCallAnswere, setIncomming, endCall } =
     useVideoCall();
-  const [open, setOpen] = useState(false);
 
-  const [incomOpen, setIncomOpen] = useState  (false);
   const { SetActivePage, activePage } = useHomePageNavi();
  
   useEffect(() => {
