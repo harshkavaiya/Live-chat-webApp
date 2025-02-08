@@ -33,17 +33,14 @@ const Home = () => {
   } = useStatusStore();
 
   const hasRegisteredPeerId = useRef(false);
+
   const { createPeerId, incomingCallAnswere, setIncomming, endCall } =
     useVideoCall();
   const [open, setOpen] = useState(false);
 
   const [incomOpen, setIncomOpen] = useState  (false);
   const { SetActivePage, activePage } = useHomePageNavi();
-
-  const dialoghandler = (dilog) => {
-    setOpen(dilog);
-  };
-
+ 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
       console.log("Registering Peer ID:", authUser._id);
@@ -60,24 +57,25 @@ const Home = () => {
   useEffect(() => {
     // Handle incoming call offers
     if (socket) {
-      socket.on("callOffer", (data) => {
-        setIncomOpen(true);
-        dialoghandler(true);
+      const callofferHanlder = (data) => {
+        incomingCallAnswere(data.from, data.callType);
         console.log(
           "Incoming call offer from:",
           data.from,
-          "////// calltype : ",
+          "calltype : ",
           data.callType
         );
-        incomingCallAnswere(data.from, data.callType);
-      });
-      socket.on("callEnded", (data) => {
+      };
+
+      const endcallhandler = (data) => {
         console.log("Call ended by:", data.from);
-        setOpen(false);
         endCall();
         setIncomming(null);
         console.log("cleaning resources");
-      });
+      };
+
+      socket.on("callOffer", callofferHanlder);
+      socket.on("callEnded", endcallhandler);
       socket.on("newStatus", handleUserStatus);
       socket.on("seenStatus", hanldeSeenStatus);
       socket.on("refreshStatus", hanldeRefreshStatus);
@@ -90,7 +88,22 @@ const Home = () => {
         socket.off("callOffer");
       };
     }
-  }, []);
+  }, [socket]);
+
+  // useEffect(() => {
+  //   console.log("Home: incomingCall updated =>", incomingCall);
+
+  //   if (incomingCall) {
+  //     setTimeout(() => {
+  //       const dialog = document.getElementById("incomingDialog");
+  //       if (dialog) {
+  //         dialog.showModal();
+  //       } else {
+  //         console.error("Dialog element not found!");
+  //       }
+  //     }, 100); // Small delay to ensure re-render
+  //   }
+  // }, [incomingCall]);
 
   const renderActivePage = () => {
     switch (activePage) {
@@ -112,9 +125,7 @@ const Home = () => {
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
-      {incomOpen && (
-        <IncomingCallDialog dialoghandler={dialoghandler} open={open} />
-      )}
+      <IncomingCallDialog />
       {/* user setting */}
       <div className="w-[4rem] hidden sm:block bg-primary-content">
         <SideSetting />

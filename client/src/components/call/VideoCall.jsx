@@ -17,11 +17,7 @@ const VideoCall = ({ name }) => {
   useEffect(() => {
     if (myVideoRef.current) {
       initializeVideoCall(myVideoRef.current, peerVideoRef.current);
-      console.log(
-        "Initialized with video refs:",
-        myVideoRef.current,
-        peerVideoRef.current
-      );
+      console.log("Initialized with video refs");
     } else {
       console.error("myVideoRef is null during initialization");
     }
@@ -38,15 +34,15 @@ const VideoCall = ({ name }) => {
       });
 
       // Handle ended calls
-      if (isCallInProgress) {
-        socket.on("callEnded", (data) => {
-          console.log("Call ended by:", data.from);
-          setRinging(false); // Stop ringing
-          document.getElementById("my_modal_1").close();
-          endCall();
-          console.log("cleaning resources");
-        });
-      }
+      // if (isCallInProgress) {
+      socket.on("callEnded", (data) => {
+        console.log("Call ended by:", data.from);
+        setRinging(false); // Stop ringing
+        document.getElementById("my_modal_1").close();
+        endCall();
+        console.log("cleaning resources");
+      });
+      // }
 
       // Clean up socket events on unmount
       return () => {

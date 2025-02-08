@@ -13,37 +13,13 @@ const AudioCall = ({ name }) => {
   const myVideoRef = useRef(null); // Local video
   const peerVideoRef = useRef(null);
 
-  // const [peerId, setPeerId] = useState(null);
-  // const [remoteStream, setRemoteStream] = useState(null);
-
-  // const localAudioRef = useRef(null);
-  // const remoteAudioRef = useRef(null);
-
-  // const peerInstance = useRef(null);
-  // const callInstance = useRef(null);
-
-  // socket = io("http://localhost:4000");
-  // useEffect(() => {
-  //   if (isCallActive) {
-  //     socket.emit("join-room", "room1", 12);
-  //   }
-
-  //   socket.on("user-connected", (data) => {
-  //     console.log(data);
-  //   });
-  // }, [isCallActive]);
-
   const handleAudioActivity = (isActive) => {
     setIsAudioActive(isActive);
   };
   useEffect(() => {
     if (myVideoRef.current) {
       initializeVideoCall(myVideoRef.current, peerVideoRef.current);
-      console.log(
-        "Initialized with video refs:",
-        myVideoRef.current,
-        peerVideoRef.current
-      );
+      console.log("Initialized with audio refs");
     } else {
       console.error("myVideoRef is null during initialization");
     }
