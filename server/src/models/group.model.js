@@ -1,4 +1,4 @@
-import { mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const GroupSchema = new mongoose.Schema(
   {
@@ -16,5 +16,6 @@ const GroupSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-module.exports = mongoose.model("Group", GroupSchema);
+GroupSchema.index({ name: 1, admin: 1 }, { unique: true });
+const Group = mongoose.model("Group", GroupSchema);
+export default Group;
