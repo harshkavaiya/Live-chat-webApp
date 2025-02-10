@@ -1,11 +1,8 @@
 import cloudinary from "../lib/cloudinary.js";
 import Group from "../models/group.model.js";
 export const createGroup = async (req, res) => {
-  console.log("Received File:", req.file);
-  console.log("Request Body:", req.body);
-
   try {
-    const { name, description, type } = req.body;
+    const { name, description, type, photo, members } = req.body;
     const admin = req.user._id;
 
     if (!name) {
@@ -14,21 +11,21 @@ export const createGroup = async (req, res) => {
         .json({ success: false, message: "Group Name is required" });
     }
 
-    const membersArray = JSON.parse(req.body.members || "[]");
-
-    let photoUrl = null;
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "group_photos",
-      });
-      photoUrl = result.secure_url;
+    const membersArray = JSON.parse(members || "[]");
+    let cloudPic = null;
+    if (photo) {
+      cloudPic = await cloudinary.uploader.upload(photo);
+    } else {
+      cloudPic = {
+        secure_url: "",
+      };
     }
 
     const inviteLink = Math.random().toString(36).substr(2, 8);
     const newGroup = new Group({
       name,
       description,
-      photo: photoUrl,
+      photo: cloudPic.secure_url,
       admin,
       members: [admin, ...membersArray],
       type,
