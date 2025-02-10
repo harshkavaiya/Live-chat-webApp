@@ -1,31 +1,73 @@
-import  { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FiUsers, FiUpload } from "react-icons/fi";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import AddUserGroup from "./AddUserGroup";
+import axiosInstance from "../../lib/axiosInstance";
 
 const GroupDialog = () => {
+  const [formData, setFormData] = useState({
+    groupName: "",
+    description: "",
+    selectedUsers: [],
+  });
+
   const [image, setImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [isOpen, setIsOpenDialog] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const closeDialog = () => {
-    document.getElementById("my_modal_5").close();
-  };
-
+  const closeDialog = () => document.getElementById("my_modal_5").close();
   const userDialog = () => {
     setIsOpenDialog(true);
     document.getElementById("addUsers").showModal();
   };
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      reader.onloadend = () => setImage(reader.result);
+      reader.readAsDataURL(selectedFile);
+      setFile(selectedFile);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleCreateGroup = async () => {
+    if (!formData.groupName.trim()) {
+      alert("Group Name is required!");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("name", formData.groupName);
+    data.append("description", formData.description);
+    data.append(
+      "members",
+      JSON.stringify(formData.selectedUsers.map((u) => u.id))
+    );
+    if (file) data.append("photo", file);
+
+    try {
+      const response = await axiosInstance.post("/group/create", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Group created:", response.data);
+      alert("Group successfully created!");
+      closeDialog();
+    } catch (error) {
+      console.error(
+        "Error creating group:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Failed to create group: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
@@ -34,12 +76,14 @@ const GroupDialog = () => {
       <AddUserGroup
         isOpen={isOpen}
         setIsOpenDialog={setIsOpenDialog}
-        selectedUsers={selectedUsers}
-        setSelectedUsers={setSelectedUsers}
+        selectedUsers={formData.selectedUsers}
+        setSelectedUsers={(users) =>
+          setFormData({ ...formData, selectedUsers: users })
+        }
       />
 
       <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
-        {/* header */}
+        {/* Header */}
         <div className="flex justify-start gap-2 items-center">
           <FaArrowLeft
             size={18}
@@ -49,7 +93,8 @@ const GroupDialog = () => {
           <h3 className="font-bold text-lg">Create a new group</h3>
           <FiUsers size={20} className="text-primary" />
         </div>
-        {/* group detail*/}
+
+        {/* Group Details */}
         <div className="flex flex-col space-y-4">
           <div className="flex space-x-4 items-center">
             <div
@@ -67,16 +112,8 @@ const GroupDialog = () => {
                 <MdOutlineCloudUpload size={22} />
               )}
             </div>
-            <span className="flex w-[81.80%] items-center space-x-4">
-              <input
-                type="text"
-                placeholder="Group Avatar URL (optional)"
-                className="input input-bordered w-full"
-              />
-
-              <label htmlFor="file-input" className="btn">
-                <FiUpload size={15} />
-              </label>
+            <label htmlFor="file-input" className="btn">
+              <FiUpload size={15} />
               <input
                 type="file"
                 id="file-input"
@@ -84,34 +121,36 @@ const GroupDialog = () => {
                 onChange={handleFileChange}
                 className="hidden"
               />
-            </span>
+            </label>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label>Group Name</label>
-            <input
-              type="text"
-              placeholder="Enter group name"
-              className="input input-bordered"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label>Description</label>
-            <textarea
-              id="description"
-              className="w-full textarea textarea-bordered"
-              placeholder="What's this group about?"
-              rows={2}
-            />
-          </div>
+
+          <input
+            type="text"
+            name="groupName"
+            placeholder="Enter group name"
+            className="input input-bordered"
+            value={formData.groupName}
+            onChange={handleInputChange}
+          />
+          <textarea
+            name="description"
+            placeholder="What's this group about?"
+            className="w-full textarea textarea-bordered"
+            rows={2}
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+
           <div className="grid grid-cols-3 gap-2">
-            {selectedUsers.map((user) => (
+            {formData.selectedUsers.map((user) => (
               <p key={user.id} className="text-center">
                 {user.fullname}
               </p>
             ))}
           </div>
         </div>
-        {/* butttons */}
+
+        {/* Buttons */}
         <div className="flex items-center gap-5 fixed w-full left-0 p-5 bottom-0">
           <button className="btn btn-error flex-1" onClick={closeDialog}>
             Cancel
@@ -119,7 +158,12 @@ const GroupDialog = () => {
           <button className="btn btn-outline flex-1" onClick={userDialog}>
             Add Users
           </button>
-          <button className="btn btn-primary flex-1">Create Group</button>
+          <button
+            className="btn btn-primary flex-1"
+            onClick={handleCreateGroup}
+          >
+            Create Group
+          </button>
         </div>
       </div>
     </dialog>

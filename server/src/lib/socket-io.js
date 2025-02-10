@@ -117,7 +117,7 @@ io.on("connection", (socket) => {
       $inc: { [`data.options.${optionIndex}.vote`]: 1 },
       $push: { "data.voted": { id: from, ans: optionIndex } },
     });
-    console.log(getUserSocketId(to))
+    console.log(getUserSocketId(to));
     io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
   });
 });
