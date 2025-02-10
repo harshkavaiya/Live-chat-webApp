@@ -11,12 +11,14 @@ import { useRef, useState } from "react";
 import { OpenCloseMenu } from "../function/function";
 import { FaVideo } from "react-icons/fa";
 import useMediaStore from "../store/useMediaStore";
+import useMessageStore from "../store/useMessageStore";
 
 const Profile = ({ setIsProfileOpen }) => {
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const documentRef = useRef();
   const mediaRef = useRef();
+  const { clearChat ,handleExport} = useMessageStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
 
   return (
@@ -155,17 +157,21 @@ const Profile = ({ setIsProfileOpen }) => {
           label={"Get Notification"}
         />
         <ActionMenu icon={<FiShare2 />} label={"Share Contact"} />
-        <ActionMenu icon={<MdOutlineFileDownload />} label={"Export Chat"} />
+        <ActionMenu icon={<MdOutlineFileDownload />} onClick={handleExport} label={"Export Chat"} />
 
-        <ActionMenu icon={<LuTrash2 />} label={"Clear Chat"} />
+        <ActionMenu
+          icon={<LuTrash2 />}
+          label={"Clear Chat"}
+          onClick={clearChat}
+        />
       </div>
     </div>
   );
 };
 
-const ActionMenu = ({ icon, label }) => {
+const ActionMenu = ({ icon, label, onClick }) => {
   return (
-    <button className="flex items-center gap-2 w-full py-1">
+    <button onClick={onClick} className="flex items-center gap-2 w-full py-1">
       {icon}
       <span>{label}</span>
     </button>

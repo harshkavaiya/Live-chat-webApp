@@ -1,5 +1,5 @@
 import { BsThreeDots } from "react-icons/bs";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -19,12 +19,11 @@ import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 
-const ChatMessage = () => {
+const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage }) => {
   const {
     messages,
     suscribeToMessage,
     unsuscribeFromMessage,
-    isMessageLoading,
     currentChatingUser,
     handleMessageReaction,
   } = useMessageStore();
@@ -46,7 +45,7 @@ const ChatMessage = () => {
   }, [suscribeToMessage, unsuscribeFromMessage]);
 
   useEffect(() => {
-    if (messageEndRef.current && messages) {
+    if (messageEndRef.current && messages ) {
       messageEndRef.current.scrollIntoView();
     }
   }, [messages]);
@@ -59,10 +58,24 @@ const ChatMessage = () => {
     };
   }, [socket]);
 
-  if (isMessageLoading) return <MessageLoadingSkeleton />;
+  if (isLoading) return <MessageLoadingSkeleton />;
+
+  const handleScroll = (event) => {
+    if (event.target.scrollTop === 0 && !isFetchingNextPage &&hasNextPage) {
+      fetchNextPage();
+    }
+  };
   return (
     <>
-      <div className="flex-1 p-1 space-y-1 overflow-y-scroll overflow-x-hidden h-full">
+      <div
+        onScroll={handleScroll}
+        className="flex-1 p-1 space-y-1 overflow-y-auto overflow-x-hidden h-full"
+      >
+        {isFetchingNextPage && (
+          <div className="w-full flex justify-center">
+            <span className="text-center loading loading-dots loading-lg" />
+          </div>
+        )}
         {messages.map((message, i) => {
           const { _id, sender, type, data, read, createdAt } = message;
 

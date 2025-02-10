@@ -1,4 +1,4 @@
-import  { memo, useRef } from "react";
+import { memo, useRef } from "react";
 import { IoEllipsisVerticalSharp, IoVideocam } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { OpenCloseMenu } from "../../function/function";
@@ -9,7 +9,7 @@ import useMessageStore from "../../store/useMessageStore";
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const { handleSelection } = useFunctionStore();
-  const { closeChat } = useMessageStore();
+  const { closeChat,clearChat } = useMessageStore();
 
   return (
     <>
@@ -75,10 +75,10 @@ const ChatHeader = ({ setIsProfileOpen }) => {
                 <p>Select Messages</p>
               </li>
               <li>
-                <Link to={"/"}>Close Chat</Link>
+                <button onClick={closeChat}>Close Chat</button>
               </li>
               <li>
-                <p>Clear Chat</p>
+                <button onClick={clearChat}>Clear Chat</button>
               </li>
               <li>
                 <p>Report</p>

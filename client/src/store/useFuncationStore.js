@@ -35,11 +35,13 @@ const useFunctionStore = create((set, get) => ({
     set({ location: [] });
   },
   locationShare: () => {
-    useMessageStore.getState().sendMessage({
-      type: "location",
-      data: { latitude: get().location[0], longitude: get().location[1] },
-      receiver: get().currentChatingUser,
-    });
+    useMessageStore.getState().sendMessage(
+      {
+        type: "location",
+        data: { latitude: get().location[0], longitude: get().location[1] },
+      },
+      get().currentChatingUser
+    );
     get().locationClose();
   },
   handelGalleryData: (e) => {
@@ -62,11 +64,13 @@ const useFunctionStore = create((set, get) => ({
         dataUrl.push({ url: res.data.secure_url, type: check, read: false });
       }
 
-      useMessageStore.getState().sendMessage({
-        type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
-        data: dataUrl,
-        receiver: get().currentChatingUser,
-      });
+      useMessageStore.getState().sendMessage(
+        {
+          type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
+          data: dataUrl,
+        },
+        get().currentChatingUser
+      );
 
       set({ isGalleryDataUpload: false, galleryData: [] });
     } catch (err) {
@@ -112,12 +116,25 @@ const useFunctionStore = create((set, get) => ({
     set({ isSelectMessage: false });
     set({ isMessageShare });
   },
-  sendSelectionMessage: () => {
-    set({ isMessageShare: false, selectContact: {} });
+  sendSelectionMessage: (receiver) => {
+    const { selectMessage } = get();
+    receiver.forEach((user) => {
+      Object.keys(selectMessage).forEach((element) => {
+        useMessageStore.getState().sendMessage(
+          {
+            type: selectMessage[element].type,
+            data: selectMessage[element].data,
+          },
+          user.id
+        );
+      });
+    });
+
+    set({ isMessageShare: false, selectMessage: [] });
   },
-  setSelectMessage:(selectMessage)=>{
-set({selectMessage})
-  }
+  setSelectMessage: (selectMessage) => {
+    set({ selectMessage });
+  },
 }));
 
 export default useFunctionStore;

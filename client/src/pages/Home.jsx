@@ -19,8 +19,8 @@ import MyStatusPreview from "../components/Status/MyStatusPreview";
 import CreatePoll from "../components/Poll/CreatePoll";
 
 const Home = () => {
-  const { currentChatingUser, sendMessage } = useMessageStore();
-  const { socket, authUser } = useAuthStore();
+  const { currentChatingUser } = useMessageStore();
+  const { socket, authUser,checkAuth } = useAuthStore();
   const {
     status,
     isStatusPageOpen,
@@ -37,7 +37,7 @@ const Home = () => {
     useVideoCall();
 
   const { SetActivePage, activePage } = useHomePageNavi();
- 
+
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
       console.log("Registering Peer ID:", authUser._id);
@@ -118,7 +118,10 @@ const Home = () => {
         return <Sidebar />;
     }
   };
-
+ useEffect(() => {
+  checkAuth()
+ }, [])
+ 
   return (
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}

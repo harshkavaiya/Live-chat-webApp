@@ -70,7 +70,7 @@ const useAudioStore = create((set, get) => ({
         name: res.data.name,
         size: res.data.size,
       },
-    });
+    },useMessageStore.getState().currentChatingUser);
 
     get().deleteRecording();
   },

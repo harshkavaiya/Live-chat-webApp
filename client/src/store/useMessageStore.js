@@ -3,6 +3,7 @@ import axiosInstance from "../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
+import notification from "../assets/audio/notification.mp3";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
@@ -14,11 +15,9 @@ const useMessageStore = create((set, get) => ({
     set({ messages });
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
-  sendMessage: async (data) => {
-    let res = await axiosInstance.post(
-      `/message/send/${get().currentChatingUser}`,
-      data
-    );
+  sendMessage: async (data, receiver) => {
+    let res = await axiosInstance.post(`/message/send/${receiver}`, data);
+    get().notificationSound();
     set({ messages: [...get().messages, res.data] });
   },
   selectUsertoChat: (data) => {
@@ -26,6 +25,76 @@ const useMessageStore = create((set, get) => ({
   },
   closeChat: () => {
     set({ currentChatingUser: false });
+  },
+  clearChat: async () => {
+    const { currentChatingUser } = get();
+
+    await axiosInstance.delete(`/message/clearChat/${currentChatingUser}`);
+    set({ messages: [] });
+  },
+  handleExport: async () => {
+    const { messages } = get();
+    const formatMessage = (msg) => {
+      const date = new Date(msg.createdAt);
+      const formattedDate = `${
+        date.getMonth() + 1
+      }/${date.getDate()}/${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} ${
+        date.getHours() >= 12 ? "PM" : "AM"
+      }`;
+
+      // Handle different types of messages
+      if (msg.type === "location") {
+        const { latitude, longitude } = msg.data;
+        return `${formattedDate} - ${msg.sender}: Location - Latitude: ${latitude}, Longitude: ${longitude}`;
+      }
+
+      if (msg.type === "poll") {
+        const optionsText = msg.data.options
+          .map((option) => `${option.text} (${option.vote} votes)`)
+          .join(", ");
+        return `${formattedDate} - ${msg.sender}: Poll - ${msg.data.pollTitle} | Options: ${optionsText}`;
+      }
+
+      if (msg.type === "image") {
+        const imageUrl = msg.data[0].url;
+        return `${formattedDate} - ${msg.sender}: [Image: ${imageUrl}]`;
+      }
+
+      if (msg.type === "text") {
+        return `${formattedDate} - ${msg.sender}: ${msg.data}`;
+      }
+      if (msg.type === "multiple-file") {
+        const filesList = msg.data
+          .map((file) => `${file.type.toUpperCase()} - ${file.url}`)
+          .join(", ");
+        return `${formattedDate} - ${msg.sender}: Multiple files - ${filesList}`;
+      }
+
+      if (msg.type === "audio") {
+        const { name, size } = msg.data;
+        const formattedSize = `${(size / 1024).toFixed(2)} KB`; // Convert bytes to KB
+        return `${formattedDate} - ${msg.sender}: Audio - ${name} (${formattedSize})`;
+      }
+
+      // Default for unknown types
+      return "";
+    };
+
+    try {
+      let fileContent = "";
+      // Format each message and join with newline for text export
+      fileContent = messages.map(formatMessage).join("\n");
+
+      // Create a Blob for export
+      const blob = new Blob([fileContent], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `chat_history.txt`; // Filename based on the format
+      link.click(); // Trigger the download
+    } catch (error) {
+      console.error("Error exporting chat history:", error);
+      alert("Failed to export chat history");
+    }
   },
   getMessagerUser: async () => {
     try {
@@ -48,6 +117,7 @@ const useMessageStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.on("newMessage", (data) => {
+      get().notificationSound();
       set({ messages: [...get().messages, data] });
     });
   },
@@ -65,6 +135,7 @@ const useMessageStore = create((set, get) => ({
       to: messages[index].sender,
     });
     messages[index].reaction = reaction;
+    get().notificationSound();
     set({ messages });
   },
   handleMessageReaction: async (data) => {
@@ -75,7 +146,7 @@ const useMessageStore = create((set, get) => ({
         element.reaction = reaction;
       }
     });
-
+    get().notificationSound();
     set({ messages });
   },
   hanldeVote: (data) => {
@@ -89,6 +160,10 @@ const useMessageStore = create((set, get) => ({
       }
     });
     set({ messages });
+  },
+  notificationSound: () => {
+    const sound = new Audio(notification);
+    sound.play();
   },
 }));
 

@@ -6,7 +6,7 @@ import Profile from "./Profile";
 import ImagePreview from "../components/ImagePreview/ImagePreview";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axiosInstance from "../lib/axiosInstance";
 import Share from "../components/share/share";
 import useFunctionStore from "../store/useFuncationStore";
@@ -23,24 +23,37 @@ const ChatPage = () => {
     location,
     locationClose,
     locationShare,
-    galleryData
+    galleryData,
   } = useFunctionStore();
-  const { setMessages, currentChatingUser,hanldeVote } = useMessageStore();
+  const { setMessages, messages, currentChatingUser, hanldeVote } =
+    useMessageStore();
   const { socket } = useAuthStore();
-  const { data, isLoading } = useQuery({
-    queryKey: [`chat-${currentChatingUser}`],
-    queryFn: async () => {
-      let res = await axiosInstance.get(`/message/chat/${currentChatingUser}`);
-      return res.data;
-    },
-    staleTime: Infinity,
-  });
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [`chat-${currentChatingUser}`],
+      queryFn: async ({ pageParam = false }) => {
+        let res = await axiosInstance.get(
+          `/message/chat/${currentChatingUser}?lastMessageId=${pageParam}&Datalength=${messages.length}`
+        );
+
+        return res.data;
+      },
+      staleTime: Infinity,
+      getNextPageParam: (lastPage) => {
+        if (lastPage.length > 0) {
+          return lastPage[0]._id; // Use the last message ID
+        }
+        return undefined;
+      },
+    });
 
   useEffect(() => {
     if (data) {
-      setMessages(data);
+      const newMessages = data.pages[data.pages.length - 1];
+      setMessages([...newMessages, ...messages]);
     }
-  }, [setMessages, data, isLoading]);
+    console.log(data);
+  }, [data]);
 
   useEffect(() => {
     if (socket) {
@@ -67,7 +80,12 @@ const ChatPage = () => {
             </div>
             {/* Chat Messages */}
             <div className="w-full h-[80%]">
-              <ChatMessage />
+              <ChatMessage
+                isLoading={isLoading}
+                isFetchingNextPage={isFetchingNextPage}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage}
+              />
             </div>
             {/* Input Area */}
             <div className="w-full h-[10%]">

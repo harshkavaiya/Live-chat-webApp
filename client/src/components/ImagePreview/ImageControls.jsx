@@ -2,8 +2,6 @@ import {
   MdClose,
   MdDownload,
   MdStar,
-  MdReply,
-  MdDelete,
   MdMoreVert,
 } from "react-icons/md";
 import useMediaStore from "../../store/useMediaStore";
