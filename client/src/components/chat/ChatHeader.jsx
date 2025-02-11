@@ -9,7 +9,7 @@ import useMessageStore from "../../store/useMessageStore";
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const { handleSelection } = useFunctionStore();
-  const { closeChat,clearChat } = useMessageStore();
+  const { closeChat, clearChat, currentChatingUser } = useMessageStore();
 
   return (
     <>
@@ -25,7 +25,10 @@ const ChatHeader = ({ setIsProfileOpen }) => {
               <span className="indicator-item rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
               <div className="bg-base-300 grid w-12 h-12 place-items-center rounded-full overflow-hidden">
                 <img
-                  src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                  src={
+                    currentChatingUser.profilePic ||
+                    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                  }
                   alt="user"
                   className="object-cover"
                 />
