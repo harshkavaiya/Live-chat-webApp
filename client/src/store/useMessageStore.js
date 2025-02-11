@@ -16,7 +16,10 @@ const useMessageStore = create((set, get) => ({
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   sendMessage: async (data, receiver) => {
-    let res = await axiosInstance.post(`/message/send/${receiver}`, data);
+    let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
+      data,
+      receiver,
+    });
     get().notificationSound();
     set({ messages: [...get().messages, res.data] });
   },
@@ -29,7 +32,7 @@ const useMessageStore = create((set, get) => ({
   clearChat: async () => {
     const { currentChatingUser } = get();
 
-    await axiosInstance.delete(`/message/clearChat/${currentChatingUser}`);
+    await axiosInstance.delete(`/message/clearChat/${currentChatingUser._id}`);
     set({ messages: [] });
   },
   handleExport: async () => {
@@ -116,11 +119,14 @@ const useMessageStore = create((set, get) => ({
   suscribeToMessage: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
+
     socket.on("newMessage", (data) => {
+      const { newMessage } = data;
       get().notificationSound();
-      set({ messages: [...get().messages, data] });
+      set({ messages: [...get().messages, newMessage] });
     });
   },
+
   unsuscribeFromMessage: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;

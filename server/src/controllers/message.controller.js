@@ -228,7 +228,8 @@ export const getMessages = async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .skip(Datalength)
-      .limit(10).sort({createdAt:1});
+      .limit(10)
+      .sort({ createdAt: 1 });
 
     const message = await find;
     res.status(200).json(message);
@@ -239,16 +240,11 @@ export const getMessages = async (req, res) => {
 };
 
 export const sendMessage = async (req, res) => {
-  const { data, type } = req.body;
-  const myId = req.user._id;
+  const { data, type } = req.body.data;
+  const myId=req.user._id
+  const {fullname,profilePic}=req.body.receiver
   const { id: receiver } = req.params;
   try {
-    // let imageUrl;
-    // if (image) {
-    //   const uploadCloudinary = await Cloudinary.uploader.upload(image);
-    //   imageUrl = uploadCloudinary.secure_url;
-    // }
-
     const newMessage = new Message({
       sender: myId,
       receiver,
@@ -259,8 +255,9 @@ export const sendMessage = async (req, res) => {
     let receiverSoket = getUserSocketId(receiver);
 
     if (receiverSoket) {
-      io.to(receiverSoket).emit("newMessage", newMessage);
+      io.to(receiverSoket).emit("newMessage", {newMessage,profilePic:profilePic,name:fullname});
     }
+
     res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controller: ", error.message);

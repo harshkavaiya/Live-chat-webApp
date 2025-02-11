@@ -19,7 +19,12 @@ import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 
-const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage }) => {
+const ChatMessage = ({
+  isLoading,
+  fetchNextPage,
+  isFetchingNextPage,
+  hasNextPage,
+}) => {
   const {
     messages,
     suscribeToMessage,
@@ -45,7 +50,7 @@ const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage 
   }, [suscribeToMessage, unsuscribeFromMessage]);
 
   useEffect(() => {
-    if (messageEndRef.current && messages ) {
+    if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView();
     }
   }, [messages]);
@@ -61,7 +66,7 @@ const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage 
   if (isLoading) return <MessageLoadingSkeleton />;
 
   const handleScroll = (event) => {
-    if (event.target.scrollTop === 0 && !isFetchingNextPage &&hasNextPage) {
+    if (event.target.scrollTop === 0 && !isFetchingNextPage && hasNextPage) {
       fetchNextPage();
     }
   };
@@ -95,14 +100,14 @@ const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage 
 
               <div
                 className={`relative h-full chat w-full px-2 flex items-center  ${
-                  sender != currentChatingUser
+                  sender != currentChatingUser._id
                     ? "justify-end chat-end"
                     : "justify-start chat-start group"
                 } `}
               >
                 <div
                   className={`chat-bubble relative rounded-xl max-w-[70%] px-2 my-1 py-1 ${
-                    sender != currentChatingUser
+                    sender != currentChatingUser._id
                       ? "bg-primary/70 text-primary-content"
                       : "bg-base-300 text-base-content "
                   }`}
@@ -111,7 +116,7 @@ const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage 
                   {message.reaction && (
                     <div
                       className={`badge bg-transparent border-none absolute -bottom-4 p-0.5 w-6 h-6 ${
-                        sender == currentChatingUser ? "left-1" : "right-1 "
+                        sender == currentChatingUser._id ? "left-1" : "right-1 "
                       }`}
                     >
                       <img
@@ -146,13 +151,13 @@ const ChatMessage = ({ isLoading, fetchNextPage, isFetchingNextPage,hasNextPage 
                   {type == "audio" && <Audio message={message} />}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
-                      sender != currentChatingUser
+                      sender != currentChatingUser._id
                         ? "text-primary-content/70"
                         : "text-base-content/70"
                     }`}
                   >
                     {formatMessageTime(createdAt)}
-                    {sender != currentChatingUser && (
+                    {sender != currentChatingUser._id && (
                       <BsThreeDots
                         size={16}
                         className={`${

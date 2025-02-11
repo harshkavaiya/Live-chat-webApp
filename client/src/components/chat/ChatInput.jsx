@@ -24,7 +24,6 @@ const ChatInput = () => {
     useAudioStore();
 
   const { sendMessage, currentChatingUser } = useMessageStore();
-
   const handelUploadDocument = useCallback(async (e) => {
     let form = new FormData();
 
@@ -140,7 +139,10 @@ const ChatInput = () => {
             {text.length > 0 ? (
               <button
                 onClick={() => {
-                  sendMessage({ data: text, type: "text" }, currentChatingUser);
+                  sendMessage(
+                    { data: text, type: "text" },
+                    currentChatingUser
+                  );
                   setText("");
                 }}
                 className="btn btn-primary rounded-full w-12 p-1 outline-none"

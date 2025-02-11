@@ -30,10 +30,10 @@ const ChatPage = () => {
   const { socket } = useAuthStore();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [`chat-${currentChatingUser}`],
+      queryKey: [`chat-${currentChatingUser._id}`],
       queryFn: async ({ pageParam = false }) => {
         let res = await axiosInstance.get(
-          `/message/chat/${currentChatingUser}?lastMessageId=${pageParam}&Datalength=${messages.length}`
+          `/message/chat/${currentChatingUser._id}?lastMessageId=${pageParam}&Datalength=${messages.length}`
         );
 
         return res.data;
@@ -52,7 +52,6 @@ const ChatPage = () => {
       const newMessages = data.pages[data.pages.length - 1];
       setMessages([...newMessages, ...messages]);
     }
-    console.log(data);
   }, [data]);
 
   useEffect(() => {

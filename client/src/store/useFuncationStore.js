@@ -35,12 +35,13 @@ const useFunctionStore = create((set, get) => ({
     set({ location: [] });
   },
   locationShare: () => {
-    useMessageStore.getState().sendMessage(
+     const {sendMessage,currentChatingUser}=useMessageStore.getState()
+    sendMessage(
       {
         type: "location",
         data: { latitude: get().location[0], longitude: get().location[1] },
       },
-      get().currentChatingUser
+      currentChatingUser
     );
     get().locationClose();
   },
@@ -63,13 +64,14 @@ const useFunctionStore = create((set, get) => ({
         );
         dataUrl.push({ url: res.data.secure_url, type: check, read: false });
       }
-
-      useMessageStore.getState().sendMessage(
+  const {sendMessage,currentChatingUser}=useMessageStore.getState()
+      sendMessage(
         {
           type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
           data: dataUrl,
         },
-        get().currentChatingUser
+       
+       currentChatingUser
       );
 
       set({ isGalleryDataUpload: false, galleryData: [] });
@@ -125,7 +127,7 @@ const useFunctionStore = create((set, get) => ({
             type: selectMessage[element].type,
             data: selectMessage[element].data,
           },
-          user.id
+          user
         );
       });
     });
