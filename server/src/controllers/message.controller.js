@@ -1,6 +1,7 @@
 import Users from "../models/users.model.js";
 import Message from "../models/message.model.js";
 import { getUserSocketId, io } from "../lib/socket-io.js";
+import mongoose from "mongoose";
 
 export const sidebarUser = async (req, res) => {
   try {
@@ -212,18 +213,25 @@ export const deleteContact = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   const myId = req.user._id;
+  const { Datalength } = req.query;
 
   if (!myId)
     return res.status(400).json({ message: "Server error", success: 0 });
   const { id: userToChatId } = req.params;
   try {
-    const message = await Message.find({
+    let find = Message.find({
       $or: [
         { sender: myId, receiver: userToChatId },
         { sender: userToChatId, receiver: myId },
       ],
-    });
+      deletedByUsers: { $ne: myId },
+    })
+      .sort({ createdAt: -1 })
+      .skip(Datalength)
+      .limit(10)
+      .sort({ createdAt: 1 });
 
+    const message = await find;
     res.status(200).json(message);
   } catch (error) {
     console.log("error in getMessage controller: ", error.message);
@@ -232,16 +240,11 @@ export const getMessages = async (req, res) => {
 };
 
 export const sendMessage = async (req, res) => {
-  const { data, type } = req.body;
+  const { data, type } = req.body.data;
   const myId = req.user._id;
+  const { fullname, profilePic } = req.body.receiver;
   const { id: receiver } = req.params;
   try {
-    // let imageUrl;
-    // if (image) {
-    //   const uploadCloudinary = await Cloudinary.uploader.upload(image);
-    //   imageUrl = uploadCloudinary.secure_url;
-    // }
-
     const newMessage = new Message({
       sender: myId,
       receiver,
@@ -252,8 +255,13 @@ export const sendMessage = async (req, res) => {
     let receiverSoket = getUserSocketId(receiver);
 
     if (receiverSoket) {
-      io.to(receiverSoket).emit("newMessage", newMessage);
+      io.to(receiverSoket).emit("newMessage", {
+        newMessage,
+        profilePic: profilePic,
+        name: fullname,
+      });
     }
+
     res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controller: ", error.message);
@@ -261,12 +269,30 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const clearChat = async (req, res) => {
+  const { id: receiverId } = req.params;
+  const myId = req.user._id;
+
+  await Message.updateMany(
+    {
+      $or: [
+        { sender: myId, receiver: receiverId },
+        { sender: receiverId, receiver: myId },
+      ],
+    },
+    {
+      $addToSet: { deletedByUsers: myId }, // Add userId to the deletedByUsers array (if not already present)
+    }
+  );
+
+  res.status(200).json({ success: 1 });
+};
 export const MessageReaction = async (req, res) => {
   const { reaction, id, to } = req.body;
 
   await Message.findByIdAndUpdate(id, { reaction: reaction });
   let receiverSoket = getUserSocketId(to);
-  
+
   io.to(receiverSoket).emit("message_reaction", { id, reaction });
 
   res.status(200).json({ success: 1 });

@@ -12,7 +12,6 @@ const useAuthStore = create((set, get) => ({
   group: [],
   favFriends: [],
   onlineUsers: [],
-
   loadAuthFromStorage: () => {
     const storedUser = sessionStorage.getItem("authUser");
 
@@ -75,22 +74,22 @@ const useAuthStore = create((set, get) => ({
     try {
       set({ isCheckingAuth: true });
 
-      if (get().authUser) return; // Skip if already logged in
+      // if (get().authUser) return; // Skip if already logged in
 
       const res = await axiosInstance.get("/auth/check");
       if (res.data.success) {
         const user = res.data.user;
-        set({ authUser: user, isLogin: true });
+        set({ authUser: user, isLogin: true, friends: user?.contacts });
         sessionStorage.setItem("authUser", JSON.stringify(user));
         console.log("User authenticated:", user);
         get().connectSocket(); // Connect socket
       } else {
-        set({ authUser: null, isLogin: false });
+        set({ authUser: null, isLogin: false, friends: [] });
         sessionStorage.removeItem("authUser");
       }
     } catch (error) {
       console.error("Error in checkAuth:", error);
-      set({ authUser: null, isLogin: false });
+      set({ authUser: null, isLogin: false, friends: [] });
       sessionStorage.removeItem("authUser");
     } finally {
       set({ isCheckingAuth: false });

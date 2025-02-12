@@ -19,7 +19,7 @@ const Poll = ({ data, id }) => {
         socket.emit("vote", {
           pollId: id,
           optionIndex: selectedOption,
-          to: currentChatingUser,
+          to: currentChatingUser._id,
           from: authUser._id,
         });
         hanldeVote({

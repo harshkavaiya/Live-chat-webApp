@@ -11,12 +11,14 @@ import { useRef, useState } from "react";
 import { OpenCloseMenu } from "../function/function";
 import { FaVideo } from "react-icons/fa";
 import useMediaStore from "../store/useMediaStore";
+import useMessageStore from "../store/useMessageStore";
 
 const Profile = ({ setIsProfileOpen }) => {
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const documentRef = useRef();
   const mediaRef = useRef();
+  const { clearChat, handleExport, currentChatingUser } = useMessageStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
 
   return (
@@ -31,14 +33,20 @@ const Profile = ({ setIsProfileOpen }) => {
 
       {/* Profile Section */}
       <div className="p-6 flex flex-col items-center border-b border-base-300 ">
-        <div className="avatar">
-          <div className="w-24 rounded-full">
-            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-          </div>
+        <div className="avatar w-20">
+          <img
+            src={
+              currentChatingUser.profilePic ||
+              "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+            }
+            className="object-cover rounded-full"
+          />
         </div>
 
-        <h1 className="mt-4 text-2xl font-semibold">Josephin water</h1>
-        <p className="text-sm ">91+ 9191919191</p>
+        <h1 className="mt-4 text-2xl font-semibold">
+          {currentChatingUser.fullname}
+        </h1>
+        <p className="text-sm ">91+ {currentChatingUser.phone}</p>
       </div>
 
       {/* Shared Documents */}
@@ -155,17 +163,25 @@ const Profile = ({ setIsProfileOpen }) => {
           label={"Get Notification"}
         />
         <ActionMenu icon={<FiShare2 />} label={"Share Contact"} />
-        <ActionMenu icon={<MdOutlineFileDownload />} label={"Export Chat"} />
+        <ActionMenu
+          icon={<MdOutlineFileDownload />}
+          onClick={handleExport}
+          label={"Export Chat"}
+        />
 
-        <ActionMenu icon={<LuTrash2 />} label={"Clear Chat"} />
+        <ActionMenu
+          icon={<LuTrash2 />}
+          label={"Clear Chat"}
+          onClick={clearChat}
+        />
       </div>
     </div>
   );
 };
 
-const ActionMenu = ({ icon, label }) => {
+const ActionMenu = ({ icon, label, onClick }) => {
   return (
-    <button className="flex items-center gap-2 w-full py-1">
+    <button onClick={onClick} className="flex items-center gap-2 w-full py-1">
       {icon}
       <span>{label}</span>
     </button>

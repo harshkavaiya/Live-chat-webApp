@@ -5,17 +5,20 @@ import useMessageStore from "../../store/useMessageStore";
 
 const CreatePoll = () => {
   const [pollTitle, setPollTitle] = useState("");
-  const { sendMessage } = useMessageStore();
+  const { sendMessage, currentChatingUser } = useMessageStore();
   const [options, setOptions] = useState([
     { id: "1", text: "", vote: 0 },
     { id: "2", text: "", vote: 0 },
   ]);
 
   const handleCreatPoll = (data) => {
-    sendMessage({
-      type: "poll",
-      data,
-    });
+    sendMessage(
+      {
+        type: "poll",
+        data,
+      },
+      currentChatingUser
+    );
     document.getElementById("Create_poll_model").close();
   };
 
