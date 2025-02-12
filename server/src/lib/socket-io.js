@@ -9,7 +9,7 @@ app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: "https://1szcr99d-5173.inc1.devtunnels.ms",
+    origin: "http://localhost:5173",
     credentials: true,
   },
 });

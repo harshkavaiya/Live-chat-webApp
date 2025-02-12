@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 app.use(
   cors({
-    origin: "https://1szcr99d-5173.inc1.devtunnels.ms",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
