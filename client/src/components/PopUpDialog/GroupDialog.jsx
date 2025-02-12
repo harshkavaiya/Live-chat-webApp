@@ -1,15 +1,25 @@
-import  { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FiUsers, FiUpload } from "react-icons/fi";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import AddUserGroup from "./AddUserGroup";
+import axiosInstance from "../../lib/axiosInstance";
 
 const GroupDialog = () => {
-  const [image, setImage] = useState(null);
+  const [formData, setFormData] = useState({
+    groupName: "",
+    description: "",
+    selectedUsers: [],
+  });
+  const fileInputRef = useRef(null);
+  const [photo, setPhoto] = useState(null);
+  const [groupType, setGroupType] = useState("");
   const [isOpen, setIsOpenDialog] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState([]);
 
   const closeDialog = () => {
+    setFormData({ groupName: "", description: "", selectedUsers: [] });
+    setPhoto(null);
+    setGroupType("");
     document.getElementById("my_modal_5").close();
   };
 
@@ -20,12 +30,57 @@ const GroupDialog = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+
     if (file) {
       const reader = new FileReader();
+
       reader.onloadend = () => {
-        setImage(reader.result);
+        setPhoto(reader.result);
       };
+
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCreateGroup = async () => {
+    if (!formData.groupName) {
+      alert("Group name is required!");
+      return;
+    }
+
+    const data = {
+      name: formData.groupName,
+      description: formData.description,
+      type: groupType,
+      photo,
+      members: JSON.stringify(formData.selectedUsers.map((user) => user.id)),
+    };
+
+    try {
+      const response = await axiosInstance.post("/group/create", data, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.data.success) {
+        alert(response.data.message);
+        return;
+      }
+
+      console.log("Group created:", response.data);
+      closeDialog();
+    } catch (error) {
+      console.error(
+        "Error creating group:",
+        error.response?.data || error.message
+      );
+      alert(
+        "Failed to create group: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
@@ -34,12 +89,14 @@ const GroupDialog = () => {
       <AddUserGroup
         isOpen={isOpen}
         setIsOpenDialog={setIsOpenDialog}
-        selectedUsers={selectedUsers}
-        setSelectedUsers={setSelectedUsers}
+        selectedUsers={formData.selectedUsers}
+        setSelectedUsers={(users) =>
+          setFormData({ ...formData, selectedUsers: users })
+        }
       />
 
       <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
-        {/* header */}
+        {/* Header */}
         <div className="flex justify-start gap-2 items-center">
           <FaArrowLeft
             size={18}
@@ -49,77 +106,93 @@ const GroupDialog = () => {
           <h3 className="font-bold text-lg">Create a new group</h3>
           <FiUsers size={20} className="text-primary" />
         </div>
-        {/* group detail*/}
+
+        {/* Group Details */}
         <div className="flex flex-col space-y-4">
-          <div className="flex space-x-4 items-center">
+          <div className="flex justify-center items-center">
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center overflow-hidden ${
-                !image && "border"
-              }`}
+              onClick={() => fileInputRef.current.click()}
+              className={`w-20 h-20 rounded-full flex items-center cursor-pointer justify-center overflow-hidden border`}
             >
-              {image ? (
+              {photo ? (
                 <img
-                  src={image}
+                  src={photo}
                   alt="Group Avatar"
                   className="object-cover w-full h-full"
                 />
               ) : (
                 <MdOutlineCloudUpload size={22} />
               )}
-            </div>
-            <span className="flex w-[81.80%] items-center space-x-4">
-              <input
-                type="text"
-                placeholder="Group Avatar URL (optional)"
-                className="input input-bordered w-full"
-              />
-
-              <label htmlFor="file-input" className="btn">
-                <FiUpload size={15} />
-              </label>
               <input
                 type="file"
-                id="file-input"
+                ref={fileInputRef}
                 accept="image/*"
                 onChange={handleFileChange}
                 className="hidden"
               />
-            </span>
+            </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label>Group Name</label>
-            <input
-              type="text"
-              placeholder="Enter group name"
-              className="input input-bordered"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <label>Description</label>
-            <textarea
-              id="description"
-              className="w-full textarea textarea-bordered"
-              placeholder="What's this group about?"
-              rows={2}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {selectedUsers.map((user) => (
-              <p key={user.id} className="text-center">
-                {user.fullname}
-              </p>
-            ))}
+
+          <input
+            type="text"
+            name="groupName"
+            placeholder="Enter group name"
+            className="input input-bordered focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition"
+            value={formData.groupName}
+            onChange={handleInputChange}
+          />
+          <textarea
+            name="description"
+            placeholder="What's this group about?"
+            className="w-full textarea textarea-bordered focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition"
+            rows={2}
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+          <div className="flex gap-4 w-full">
+            <div className="flex-1">
+              <label htmlFor="groupType" className="text-sm">
+                Select group type
+              </label>
+              <select
+                className="select select-bordered w-full border py-2 px-3 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition"
+                id="groupType"
+                value={groupType}
+                onChange={(e) => setGroupType(e.target.value)}
+              >
+                <option value="" disabled>
+                  Choose Type
+                </option>
+                <option value="private">🔒 Private</option>
+                <option value="public">🌍 Public</option>
+              </select>
+            </div>
+            <div className="w-1/4">
+              <label className="text-sm">Selected Users</label>
+              <input
+                type="text"
+                value={formData.selectedUsers.length}
+                className="input input-bordered text-center w-full"
+                disabled
+              />
+            </div>
           </div>
         </div>
-        {/* butttons */}
-        <div className="flex items-center gap-5 fixed w-full left-0 p-5 bottom-0">
+
+        {/* Buttons */}
+        <div className="flex bg-base-100 items-center gap-5 fixed w-full left-0 px-5 pb-5 pt-1 bottom-0">
           <button className="btn btn-error flex-1" onClick={closeDialog}>
             Cancel
           </button>
           <button className="btn btn-outline flex-1" onClick={userDialog}>
             Add Users
           </button>
-          <button className="btn btn-primary flex-1">Create Group</button>
+          <button
+            className="btn btn-primary flex-1"
+            onClick={handleCreateGroup}
+          >
+            Create Group
+          </button>
         </div>
       </div>
     </dialog>

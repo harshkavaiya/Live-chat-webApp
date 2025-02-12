@@ -1,5 +1,5 @@
 import { BsThreeDots } from "react-icons/bs";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -19,12 +19,16 @@ import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 
-const ChatMessage = () => {
+const ChatMessage = ({
+  isLoading,
+  fetchNextPage,
+  isFetchingNextPage,
+  hasNextPage,
+}) => {
   const {
     messages,
     suscribeToMessage,
     unsuscribeFromMessage,
-    isMessageLoading,
     currentChatingUser,
     handleMessageReaction,
   } = useMessageStore();
@@ -59,10 +63,24 @@ const ChatMessage = () => {
     };
   }, [socket]);
 
-  if (isMessageLoading) return <MessageLoadingSkeleton />;
+  if (isLoading) return <MessageLoadingSkeleton />;
+
+  const handleScroll = (event) => {
+    if (event.target.scrollTop === 0 && !isFetchingNextPage && hasNextPage) {
+      fetchNextPage();
+    }
+  };
   return (
     <>
-      <div className="flex-1 p-1 space-y-1 overflow-y-scroll overflow-x-hidden h-full">
+      <div
+        onScroll={handleScroll}
+        className="flex-1 p-1 space-y-1 overflow-y-auto overflow-x-hidden h-full"
+      >
+        {isFetchingNextPage && (
+          <div className="w-full flex justify-center">
+            <span className="text-center loading loading-dots loading-lg" />
+          </div>
+        )}
         {messages.map((message, i) => {
           const { _id, sender, type, data, read, createdAt } = message;
 
@@ -82,14 +100,14 @@ const ChatMessage = () => {
 
               <div
                 className={`relative h-full chat w-full px-2 flex items-center  ${
-                  sender != currentChatingUser
+                  sender != currentChatingUser._id
                     ? "justify-end chat-end"
                     : "justify-start chat-start group"
                 } `}
               >
                 <div
                   className={`chat-bubble relative rounded-xl max-w-[70%] px-2 my-1 py-1 ${
-                    sender != currentChatingUser
+                    sender != currentChatingUser._id
                       ? "bg-primary/70 text-primary-content"
                       : "bg-base-300 text-base-content "
                   }`}
@@ -98,7 +116,7 @@ const ChatMessage = () => {
                   {message.reaction && (
                     <div
                       className={`badge bg-transparent border-none absolute -bottom-4 p-0.5 w-6 h-6 ${
-                        sender == currentChatingUser ? "left-1" : "right-1 "
+                        sender == currentChatingUser._id ? "left-1" : "right-1 "
                       }`}
                     >
                       <img
@@ -133,13 +151,13 @@ const ChatMessage = () => {
                   {type == "audio" && <Audio message={message} />}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
-                      sender != currentChatingUser
+                      sender != currentChatingUser._id
                         ? "text-primary-content/70"
                         : "text-base-content/70"
                     }`}
                   >
                     {formatMessageTime(createdAt)}
-                    {sender != currentChatingUser && (
+                    {sender != currentChatingUser._id && (
                       <BsThreeDots
                         size={16}
                         className={`${

@@ -112,18 +112,22 @@ const Sidebar = () => {
             </p>
           ) : (
             filteredData.map((i, idx) => {
-              const { lastMessageTime, fullname, lastMessage } = i;
+              const { lastMessageTime, fullname, lastMessage, profilePic } = i; 
+            
               return (
                 <div
                   key={idx}
-                  onClick={() => selectUsertoChat(i._id)}
+                  onClick={() => selectUsertoChat(i)}
                   className={`flex justify-between pl-4 md:border-b w-full pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
                 ${idx == filteredData.length - 1 && "border-b"}`}
                 >
                   <div className="flex items-center w-full">
                     <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                       <img
-                        src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                        src={
+                          profilePic ||
+                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                        }
                         alt="user"
                         className="object-cover"
                       />

@@ -5,7 +5,7 @@ const File = ({ message }) => {
   return (
     <div
       className={`flex items-start gap-2 ${
-        message.sender != currentChatingUser
+        message.sender != currentChatingUser._id
           ? "bg-base-100/25 text-primary-content "
           : "bg-base-100 text-base-content"
       } p-1 rounded-lg w-[55vw]  md:w-60`}
