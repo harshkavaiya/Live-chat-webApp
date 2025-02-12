@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: "https://1szcr99d-4000.inc1.devtunnels.ms",
   withCredentials: true,
 });
 

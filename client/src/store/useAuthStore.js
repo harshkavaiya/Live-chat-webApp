@@ -125,7 +125,7 @@ const useAuthStore = create((set, get) => ({
   },
   connectSocket: () => {
     if (get().socket?.connected) return;
-    const socket = io("http://localhost:4000", {
+    const socket = io("https://1szcr99d-4000.inc1.devtunnels.ms", {
       query: {
         userId: get().authUser?._id,
       },

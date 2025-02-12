@@ -169,7 +169,7 @@ const useVideoCall = create((set, get) => ({
 
     socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
     // Set a timeout to automatically reject the call after 15 seconds
-    if (get().incomingCall) {
+    // if (get().incomingCall) {
       const callTimeout = setTimeout(() => {
         console.log("Call timed out - no answer received");
         socket.emit("callRejected", { to: remotePeerId });
@@ -181,7 +181,7 @@ const useVideoCall = create((set, get) => ({
 
       // Save the timeout ID so we can clear it if the call is answered before timeout
       set({ callTimeout });
-    }
+    // }
   },
 
   // Reject a call
