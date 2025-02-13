@@ -15,6 +15,7 @@ import useHomePageNavi from "../store/useHomePageNavi";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
+  const [activeTab, setActiveTab] = useState("individual");
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -82,7 +83,7 @@ const Sidebar = () => {
 
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
-        <div className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">
+        <div className="text-lg flex flex-col gap-1 justify-between font-bold px-2 py-2 cursor-default">
           <span className="text-lg flex items-center font-bold gap-px cursor-default">
             Messages
             <div className="badge p-0 ml-1 w-5 h-5 badge-primary">
@@ -90,8 +91,8 @@ const Sidebar = () => {
             </div>
           </span>
           {/* search */}
-          <div className="relative w-full px-4">
-            <span className="absolute inset-y-0 left-7 flex items-center text-gray-500">
+          <div className="relative w-full">
+            <span className="absolute inset-y-0 left-4 flex items-center">
               <CiSearch size={20} />
             </span>
             <input
@@ -101,6 +102,31 @@ const Sidebar = () => {
               onChange={handleSearchChange}
               placeholder="Search name or number"
             />
+          </div>
+          <div className="w-full flex flex-col gap-1 group">
+            <div className="w-full flex gap-1 text-center">
+              <button
+                className={`w-1/2 p-1 ${
+                  activeTab === "individual" ? "text-primary" : ""
+                }`}
+                onClick={() => setActiveTab("individual")}
+              >
+                <p className="text-base font-medium">Individual</p>
+              </button>
+              <button
+                className={`w-1/2 p-1 ${
+                  activeTab === "groups" ? "text-primary" : ""
+                }`}
+                onClick={() => setActiveTab("groups")}
+              >
+                <p className="text-base font-medium">Groups</p>
+              </button>
+            </div>{" "}
+            <span
+              className={`border-primary border-b-2 w-1/2 transition-transform duration-500 transform ${
+                activeTab === "groups" ? "translate-x-full" : ""
+              }`}
+            ></span>
           </div>
         </div>
 
@@ -112,8 +138,8 @@ const Sidebar = () => {
             </p>
           ) : (
             filteredData.map((i, idx) => {
-              const { lastMessageTime, fullname, lastMessage, profilePic } = i; 
-            
+              const { lastMessageTime, fullname, lastMessage, profilePic } = i;
+
               return (
                 <div
                   key={idx}
