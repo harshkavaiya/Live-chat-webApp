@@ -73,7 +73,7 @@ const AddUserGroup = ({
                 <div className="flex items-center gap-2">
                   <div className="bg-base-300 grid w-12 h-12 place-items-center rounded-full overflow-hidden">
                     <img
-                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                       alt="user"
                       className="object-cover"
                     />

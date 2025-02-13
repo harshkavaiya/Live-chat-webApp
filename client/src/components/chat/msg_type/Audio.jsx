@@ -2,7 +2,7 @@ import WavesurferPlayer from "@wavesurfer/react";
 import { useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 
-const Audio = ({ message }) => {
+const Audio = ({ data }) => {
   const [wavesurfer, setWavesurfer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -33,7 +33,7 @@ const Audio = ({ message }) => {
         height={40}
         progressColor={"red"}
         url={`${import.meta.env.VITE_SERVER_HOST}/upload/audio/${
-          message.data.name
+          data.name
         }`}
         onReady={onReady}
         barWidth={3}

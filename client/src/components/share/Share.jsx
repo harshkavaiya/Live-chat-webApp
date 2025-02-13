@@ -1,4 +1,4 @@
-import {  IoSend } from "react-icons/io5";
+import { IoSend } from "react-icons/io5";
 import { BsCheckSquare } from "react-icons/bs";
 import { FiSquare } from "react-icons/fi";
 import { useState } from "react";
@@ -23,8 +23,6 @@ const Share = () => {
       setSelectedUser((prev) => [...prev, { id, name }]);
     }
   };
-  console.log(friends);
-
   return (
     <dialog className="modal modal-open w-full h-full absolute top-0 left-0 z-20 bg-transparent text-base-content">
       <div className="modal-box w-[90%] md:w-[40%] md:h-fit border border-base-300 p-0 bg-base-100">
@@ -67,7 +65,7 @@ const Share = () => {
                   <span className="indicator-item rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
                   <div className="bg-base-300 grid w-12 h-12 place-items-center rounded-full overflow-hidden">
                     <img
-                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                       alt="user"
                       className="object-cover"
                     />

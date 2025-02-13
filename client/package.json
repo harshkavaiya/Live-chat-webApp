@@ -13,6 +13,7 @@
     "@tanstack/react-query": "^5.62.11",
     "@wavesurfer/react": "^1.0.8",
     "axios": "^1.7.9",
+    "crypto-js": "^4.2.0",
     "framer-motion": "^12.0.6",
     "javascript-time-ago": "^2.5.11",
     "leaflet": "^1.9.4",

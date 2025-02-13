@@ -2,6 +2,7 @@ import { create } from "zustand";
 import useMessageStore from "./useMessageStore";
 import axios from "axios";
 import toast from "react-hot-toast";
+import CryptoJS from "crypto-js";
 
 const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
@@ -139,6 +140,14 @@ const useFunctionStore = create((set, get) => ({
   },
   setSelectMessage: (selectMessage) => {
     set({ selectMessage });
+  },
+  generateUniqueId: (senderId, receiverId) => {
+    const sortedIds = [senderId, receiverId].sort().join("_");
+    return CryptoJS.SHA256(sortedIds).toString(CryptoJS.enc.Hex);
+  },
+  decryptData: (ciphertext, secretKey) => {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
   },
 }));
 

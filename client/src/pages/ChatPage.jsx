@@ -14,6 +14,7 @@ import ImagePreview from "../components/ImagePreview/ImagePreview";
 import Share from "../components/share/share";
 import Location from "../components/Location";
 import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
+import CryptoJS from "crypto-js";
 
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);

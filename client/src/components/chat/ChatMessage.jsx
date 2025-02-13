@@ -19,6 +19,7 @@ import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 import { useQueryClient } from "@tanstack/react-query";
+import CryptoJS from "crypto-js";
 
 const ChatMessage = ({
   isLoading,
@@ -40,9 +41,12 @@ const ChatMessage = ({
     selectMessage,
     isSelectMessage,
     handleSelection,
+    decryptData,
+    generateUniqueId,
   } = useFunctionStore();
   const { socket } = useAuthStore();
   const { handleMediaPreview } = useMediaStore();
+
   const messageEndRef = useRef();
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -83,8 +87,9 @@ const ChatMessage = ({
           </div>
         )}
         {messages.map((message, i) => {
-          const { _id, sender, type, data, read, createdAt } = message;
-
+          const { _id, sender, receiver, type, read, createdAt } = message;
+          let secretKey = generateUniqueId(sender, receiver);
+          const data = decryptData(message.data, secretKey);
           return (
             <div
               ref={messageEndRef}
@@ -130,7 +135,6 @@ const ChatMessage = ({
                   {type == "image" && (
                     <Image
                       src={data[0].url}
-                      message={message}
                       handleMediaPreview={handleMediaPreview}
                     />
                   )}
@@ -140,16 +144,16 @@ const ChatMessage = ({
                       handleMediaPreview={handleMediaPreview}
                     />
                   )}
-                  {type == "file" && <File message={message} />}
+                  {type == "file" && <File sender={sender} data={data} />}
                   {type == "multiple-file" && (
                     <Multiplefile
-                      message={message}
+                      data={data}
                       handleMediaPreview={handleMediaPreview}
                     />
                   )}
                   {type == "poll" && <Poll id={_id} data={data} />}
-                  {type == "location" && <LocationPreview message={message} />}
-                  {type == "audio" && <Audio message={message} />}
+                  {type == "location" && <LocationPreview data={data} />}
+                  {type == "audio" && <Audio data={data} />}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
                       sender != currentChatingUser._id
