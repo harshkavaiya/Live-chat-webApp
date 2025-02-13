@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
 import notification from "../assets/audio/notification.mp3";
-
+import NotificationToast from "../components/NotificationToast";
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
@@ -15,15 +15,26 @@ const useMessageStore = create((set, get) => ({
     set({ messages });
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
-  sendMessage: async (data, receiver) => {
+  sendMessage: async (data, receiver, queryClient) => {
     let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
       data,
       receiver,
     });
     get().notificationSound();
+    queryClient.setQueryData([`chat-${receiver._id}`], (oldData) => {
+      if (!oldData) return { pages: [[res.data]] };
+      return {
+        ...oldData,
+        pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
+      };
+    });
+
     set({ messages: [...get().messages, res.data] });
   },
   selectUsertoChat: (data) => {
+    const { currentChatingUser } = get();
+    if (data._id == currentChatingUser?._id) return;
+    set({ messages: [] });
     set({ currentChatingUser: data });
   },
   closeChat: () => {
@@ -116,17 +127,34 @@ const useMessageStore = create((set, get) => ({
     }
   },
 
-  suscribeToMessage: () => {
+  suscribeToMessage: (queryClient) => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
 
     socket.on("newMessage", (data) => {
       const { newMessage } = data;
+      socket.emit("messagesRead", newMessage.sender);
       get().notificationSound();
       set({ messages: [...get().messages, newMessage] });
+      queryClient.setQueryData([`chat-${newMessage.sender}`], (oldData) => {
+        if (!oldData) return { pages: [[newMessage]] };
+        return {
+          ...oldData,
+          pages: [[newMessage, ...oldData.pages[0]], ...oldData.pages.slice(1)],
+        };
+      });
     });
   },
+  handleNewMessage: (data) => {
+    const { newMessage, name, profilePic } = data;
+    const { type, data: message, sender } = newMessage;
+    const { currentChatingUser, notificationSound } = get();
 
+    console.log(sender == currentChatingUser._id);
+    if (currentChatingUser || currentChatingUser?._id == sender) return;
+    notificationSound();
+    NotificationToast(message, type, name, profilePic);
+  },
   unsuscribeFromMessage: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
@@ -167,9 +195,22 @@ const useMessageStore = create((set, get) => ({
     });
     set({ messages });
   },
-  notificationSound: () => {
-    const sound = new Audio(notification);
-    sound.play();
+  notificationSound: async () => {
+    try {
+      const sound = new Audio(notification);
+      await sound.play();
+    } catch (error) {
+      console.error("Playback failed:", error);
+    }
+  },
+  handleMessageRead: () => {
+    const { messages } = get();
+    messages.forEach((element) => {
+      if (!element.read) {
+        element.read = true;
+      }
+    });
+    set({ messages });
   },
 }));
 

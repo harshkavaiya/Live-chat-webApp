@@ -14,10 +14,13 @@ import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMessageStore from "../../store/useMessageStore";
 import useAudioStore from "../../store/useAudioStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
   const mediaRecorderRef = useRef(null);
+  
+const queryClient = useQueryClient();
   const { getLocation, handelGalleryData, onSelectContact } =
     useFunctionStore();
   const { startRecording, isRecording, stopRecording, audioUrl } =
@@ -141,7 +144,7 @@ const ChatInput = () => {
                 onClick={() => {
                   sendMessage(
                     { data: text, type: "text" },
-                    currentChatingUser
+                    currentChatingUser,queryClient
                   );
                   setText("");
                 }}

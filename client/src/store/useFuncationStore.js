@@ -34,21 +34,22 @@ const useFunctionStore = create((set, get) => ({
   locationClose: () => {
     set({ location: [] });
   },
-  locationShare: () => {
-     const {sendMessage,currentChatingUser}=useMessageStore.getState()
+  locationShare: (queryClient) => {
+    const { sendMessage, currentChatingUser } = useMessageStore.getState();
     sendMessage(
       {
         type: "location",
         data: { latitude: get().location[0], longitude: get().location[1] },
       },
-      currentChatingUser
+      currentChatingUser,
+      queryClient
     );
     get().locationClose();
   },
   handelGalleryData: (e) => {
     set({ galleryData: [...get().galleryData, ...e.target.files] });
   },
-  sendGalleryData: async (data) => {
+  sendGalleryData: async (data, queryClient) => {
     let dataUrl = [];
     try {
       set({ isGalleryDataUpload: true });
@@ -64,14 +65,15 @@ const useFunctionStore = create((set, get) => ({
         );
         dataUrl.push({ url: res.data.secure_url, type: check, read: false });
       }
-  const {sendMessage,currentChatingUser}=useMessageStore.getState()
+      const { sendMessage, currentChatingUser } = useMessageStore.getState();
       sendMessage(
         {
           type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
           data: dataUrl,
         },
-       
-       currentChatingUser
+
+        currentChatingUser,
+        queryClient
       );
 
       set({ isGalleryDataUpload: false, galleryData: [] });
@@ -118,7 +120,7 @@ const useFunctionStore = create((set, get) => ({
     set({ isSelectMessage: false });
     set({ isMessageShare });
   },
-  sendSelectionMessage: (receiver) => {
+  sendSelectionMessage: (receiver, queryClient) => {
     const { selectMessage } = get();
     receiver.forEach((user) => {
       Object.keys(selectMessage).forEach((element) => {
@@ -127,7 +129,8 @@ const useFunctionStore = create((set, get) => ({
             type: selectMessage[element].type,
             data: selectMessage[element].data,
           },
-          user
+          user,
+          queryClient
         );
       });
     });

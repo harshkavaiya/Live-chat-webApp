@@ -2,9 +2,12 @@ import { useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import { FaRegTrashAlt } from "react-icons/fa";
 import useMessageStore from "../../store/useMessageStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreatePoll = () => {
   const [pollTitle, setPollTitle] = useState("");
+  const queryClient = useQueryClient();
+
   const { sendMessage, currentChatingUser } = useMessageStore();
   const [options, setOptions] = useState([
     { id: "1", text: "", vote: 0 },
@@ -17,7 +20,8 @@ const CreatePoll = () => {
         type: "poll",
         data,
       },
-      currentChatingUser
+      currentChatingUser,
+      queryClient
     );
     document.getElementById("Create_poll_model").close();
   };

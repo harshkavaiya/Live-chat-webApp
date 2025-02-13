@@ -13,9 +13,11 @@ import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
 import useFunctionStore from "../../store/useFuncationStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SendFilePreview = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const queryClient = useQueryClient();
   const {
     galleryData,
     sendGalleryData,
@@ -25,12 +27,6 @@ const SendFilePreview = () => {
     handleDeleteGalleryImage,
   } = useFunctionStore();
 
-  if (isGalleryDataUpload)
-    return (
-      <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
-        <span className="loading loading-infinity loading-lg">Loading</span>
-      </div>
-    );
   return (
     <div className="h-full w-full absolute top-0 left-0 mx-auto bg-base-100 text-base-content z-20">
       {/* Main Image */}
@@ -144,7 +140,7 @@ const SendFilePreview = () => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData)}
+              onClick={() => sendGalleryData(galleryData, queryClient)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />
@@ -156,6 +152,11 @@ const SendFilePreview = () => {
             <span className="font-semibold">{"Hardik"}</span>
           </div>
         </div>
+        {isGalleryDataUpload && (
+          <div className="absolute z-30 top-0 w-full h-full flex items-center justify-center">
+            <span className="loading loading-infinity loading-lg" />
+          </div>
+        )}
       </div>
     </div>
   );

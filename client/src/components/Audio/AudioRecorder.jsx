@@ -5,6 +5,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import WavesurferPlayer from "@wavesurfer/react";
 import { FaPlay, FaPause } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AudioRecorder = () => {
   const [wavesurfer, setWavesurfer] = useState(null);
@@ -20,6 +21,7 @@ const AudioRecorder = () => {
     deleteRecording,
     sendRecording,
   } = useAudioStore();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let interval;
@@ -86,7 +88,7 @@ const AudioRecorder = () => {
             <FaRegTrashAlt size={20} className="cursor-pointer" />
           </button>
           <button
-            onClick={sendRecording}
+            onClick={() => sendRecording(queryClient)}
             className="btn btn-primary text-primary-content rounded-full  p-1 outline-none w-12"
           >
             <IoSend className="cursor-pointer" size={20} />
