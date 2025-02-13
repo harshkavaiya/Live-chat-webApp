@@ -98,7 +98,11 @@ export const addMember = async (req, res) => {
         .json({ success: false, message: "Group not found" });
     }
 
-    if (group.type === "private" && !group.admins.includes(req.user._id)) {
+    if (
+      group.type === "private" &&
+      !group.admins.includes(req.user._id) &&
+      group.admin.toString() !== req.user._id.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to add members in this private group",
@@ -139,6 +143,12 @@ export const assignAdmin = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to assign admin",
+      });
+    }
+    if (!group.members.includes(newAdminId)) {
+      return res.status(403).json({
+        success: false,
+        message: "User is not a member of the group",
       });
     }
 
