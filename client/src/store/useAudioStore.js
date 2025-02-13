@@ -52,7 +52,7 @@ const useAudioStore = create((set, get) => ({
     get().resetAudio();
     set({ recordingDuration: 0 });
   },
-  sendRecording: async () => {
+  sendRecording: async (queryClient) => {
     const { audioBlob } = get();
     let date = new Date();
     let formData = new FormData();
@@ -64,13 +64,17 @@ const useAudioStore = create((set, get) => ({
       },
     });
 
-    useMessageStore.getState().sendMessage({
-      type: "audio",
-      data: {
-        name: res.data.name,
-        size: res.data.size,
+    useMessageStore.getState().sendMessage(
+      {
+        type: "audio",
+        data: {
+          name: res.data.name,
+          size: res.data.size,
+        },
       },
-    },useMessageStore.getState().currentChatingUser);
+      useMessageStore.getState().currentChatingUser,
+      queryClient
+    );
 
     get().deleteRecording();
   },

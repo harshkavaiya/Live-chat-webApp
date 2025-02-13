@@ -2,14 +2,15 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import Message from "../models/message.model.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 const server = http.createServer(app);
 app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.VITE_CLIENT_HOST,
     credentials: true,
   },
 });
@@ -119,6 +120,11 @@ io.on("connection", (socket) => {
     });
     console.log(getUserSocketId(to));
     io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
+  });
+
+  socket.on("messagesRead", (data) => {
+    console.log(data);
+    io.to(getUserSocketId(data)).emit("messagesRead");
   });
 });
 

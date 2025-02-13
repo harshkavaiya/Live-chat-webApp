@@ -1,13 +1,16 @@
-import { IoClose, IoSend } from "react-icons/io5";
+import {  IoSend } from "react-icons/io5";
 import { BsCheckSquare } from "react-icons/bs";
 import { FiSquare } from "react-icons/fi";
 import { useState } from "react";
 import useFunctionStore from "../../store/useFuncationStore";
 import useAuthStore from "../../store/useAuthStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Share = () => {
   const { handleSelectMessage, sendSelectionMessage, setSelectMessage } =
     useFunctionStore();
+  const queryClient = useQueryClient();
+
   const { friends } = useAuthStore();
   const [selectedUser, setSelectedUser] = useState([]);
 
@@ -19,8 +22,8 @@ const Share = () => {
     } else {
       setSelectedUser((prev) => [...prev, { id, name }]);
     }
-  }; 
-  console.log(friends)
+  };
+  console.log(friends);
 
   return (
     <dialog className="modal modal-open w-full h-full absolute top-0 left-0 z-20 bg-transparent text-base-content">
@@ -52,7 +55,8 @@ const Share = () => {
                 onClick={() => toggleChat(user.userId, user.savedName)}
               >
                 <div className="flex-shrink-0">
-                  {selectedUser.filter((item) => item.id == user.userId).length ? (
+                  {selectedUser.filter((item) => item.id == user.userId)
+                    .length ? (
                     <BsCheckSquare className="text-primary" size={20} />
                   ) : (
                     <FiSquare className="" size={20} />
@@ -95,7 +99,7 @@ const Share = () => {
             </div>
             {selectedUser.length > 0 && (
               <button
-                onClick={() => sendSelectionMessage(selectedUser)}
+                onClick={() => sendSelectionMessage(selectedUser, queryClient)}
                 className="bg-primary p-3 rounded-full"
               >
                 <IoSend size={25} />

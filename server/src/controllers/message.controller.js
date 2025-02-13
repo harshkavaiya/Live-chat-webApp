@@ -1,7 +1,7 @@
 import Users from "../models/users.model.js";
 import Message from "../models/message.model.js";
 import { getUserSocketId, io } from "../lib/socket-io.js";
-import mongoose from "mongoose";
+import { decryptData, encryptData, generateUniqueId } from "../lib/crypto.js";
 
 export const sidebarUser = async (req, res) => {
   try {
@@ -228,10 +228,23 @@ export const getMessages = async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .skip(Datalength)
-      .limit(10)
-      .sort({ createdAt: 1 });
+      .limit(10);
 
+    await Message.updateMany(
+      {
+        sender: userToChatId,
+        receiver: myId,
+        read: false, // Only update unread messages
+      },
+      { $set: { read: true } }
+    );
+
+    io.to(getUserSocketId(userToChatId)).emit("messagesRead", {
+      receiver: myId,
+      sender: userToChatId,
+    });
     const message = await find;
+
     res.status(200).json(message);
   } catch (error) {
     console.log("error in getMessage controller: ", error.message);
@@ -244,7 +257,11 @@ export const sendMessage = async (req, res) => {
   const myId = req.user._id;
   const { fullname, profilePic } = req.body.receiver;
   const { id: receiver } = req.params;
+
   try {
+    // let secretkey = generateUniqueId(myId, receiver);
+    // let enrData = encryptData(data, secretkey);
+
     const newMessage = new Message({
       sender: myId,
       receiver,

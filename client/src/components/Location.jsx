@@ -1,8 +1,11 @@
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { IoClose, IoLocationOutline } from "react-icons/io5";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Location = ({ latitude, longitude, close, shareLocation }) => {
+  const queryClient = useQueryClient();
+
   return (
     <div className="w-full mx-auto absolute z-10 overflow-hidden top-0 h-full flex items-center justify-center left-0">
       <div className="w-[90%] md:w-[40%] h-[90%] md:h-[70%] text-primary-content bg-base-100 border border-base-300 rounded-xl shadow-xl overflow-hidden">
@@ -44,7 +47,7 @@ const Location = ({ latitude, longitude, close, shareLocation }) => {
         {/*Bottom */}
         <div className="bg-base-100 h-[25%] text-primary-content flex items-center justify-center">
           <button
-            onClick={shareLocation}
+            onClick={()=>shareLocation(queryClient)}
             className="btn btn-primary rounded-lg gap-2 hover:bg-primary/80 border-none"
           >
             <IoLocationOutline size={24} />

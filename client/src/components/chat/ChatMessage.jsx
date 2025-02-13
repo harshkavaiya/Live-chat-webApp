@@ -1,5 +1,5 @@
-import { BsThreeDots } from "react-icons/bs";
-import { memo, useEffect, useRef, useState } from "react";
+import { PiChecksBold } from "react-icons/pi";
+import { memo, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
@@ -18,6 +18,7 @@ import LocationPreview from "./msg_type/LocationPreview";
 import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatMessage = ({
   isLoading,
@@ -43,9 +44,9 @@ const ChatMessage = ({
   const { socket } = useAuthStore();
   const { handleMediaPreview } = useMediaStore();
   const messageEndRef = useRef();
-
+  const queryClient = useQueryClient();
   useEffect(() => {
-    suscribeToMessage();
+    suscribeToMessage(queryClient);
     return () => unsuscribeFromMessage();
   }, [suscribeToMessage, unsuscribeFromMessage]);
 
@@ -158,11 +159,11 @@ const ChatMessage = ({
                   >
                     {formatMessageTime(createdAt)}
                     {sender != currentChatingUser._id && (
-                      <BsThreeDots
-                        size={16}
+                      <PiChecksBold
+                        size={13}
                         className={`${
-                          read ? "text-blue-500" : "text-base-100"
-                        } `}
+                          read ? "text-sky-500" : "text-base-100"
+                        }  ml-1`}
                       />
                     )}
                   </p>
@@ -172,7 +173,7 @@ const ChatMessage = ({
                     tabIndex={0}
                     className="cursor-pointer rounded-full bg-base-300 w-7 h-7 hidden group-hover:flex items-center justify-center active:block"
                   >
-                    <BsEmojiLaughing className="text-primary-content" />
+                    <BsEmojiLaughing className="text-base-content/80" />
                   </button>
                   <div className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box p-2 shadow-lg gap-1">
                     <ReactionEmoji index={i} />

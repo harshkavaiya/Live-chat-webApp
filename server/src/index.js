@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 import expressFileupload from "express-fileupload";
+dotenv.config();
 import { app, server } from "./lib/socket-io.js";
 
 import path from "path";
@@ -10,11 +11,9 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
-
-dotenv.config();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.VITE_CLIENT_HOST,
     credentials: true,
   })
 );

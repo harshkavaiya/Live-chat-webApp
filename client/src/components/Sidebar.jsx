@@ -34,6 +34,7 @@ const Sidebar = () => {
 
     document.getElementById(`my_modal_${dialog}`).showModal();
   };
+  
 
   useEffect(() => {
     getMessagerUser();
