@@ -106,22 +106,22 @@ const Sidebar = () => {
           </div>
           <div className="w-full flex flex-col gap-1 group">
             <div className="w-full flex gap-1 text-center">
-              <button
-                className={`w-1/2 p-1 ${
+              <div
+                className={`badge badge-success rounded-full badge-primary p-1 ${
                   activeTab === "individual" ? "text-primary" : ""
                 }`}
                 onClick={() => setActiveTab("individual")}
               >
-                <p className="text-base font-medium">Individual</p>
-              </button>
-              <button
+                <p className="text-sm font-medium">Individual</p>
+              </div>
+              <div
                 className={`w-1/2 p-1 ${
                   activeTab === "groups" ? "text-primary" : ""
                 }`}
                 onClick={() => setActiveTab("groups")}
               >
                 <p className="text-base font-medium">Groups</p>
-              </button>
+              </div>
             </div>{" "}
             <span
               className={`border-primary border-b-2 w-1/2 transition-transform duration-500 transform ${
@@ -129,6 +129,7 @@ const Sidebar = () => {
               }`}
             ></span>
           </div>
+          
         </div>
 
         {/* messeages list */}
