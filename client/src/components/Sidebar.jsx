@@ -15,7 +15,7 @@ import useHomePageNavi from "../store/useHomePageNavi";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
-  const [activeTab, setActiveTab] = useState("individual");
+  const [activeTab, setActiveTab] = useState("all");
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -34,7 +34,6 @@ const Sidebar = () => {
 
     document.getElementById(`my_modal_${dialog}`).showModal();
   };
-  
 
   useEffect(() => {
     getMessagerUser();
@@ -104,30 +103,47 @@ const Sidebar = () => {
               placeholder="Search name or number"
             />
           </div>
-          <div className="w-full flex flex-col gap-1 group">
-            <div className="w-full flex gap-1 text-center">
-              <button
-                className={`w-1/2 p-1 ${
-                  activeTab === "individual" ? "text-primary" : ""
-                }`}
-                onClick={() => setActiveTab("individual")}
-              >
-                <p className="text-base font-medium">Individual</p>
-              </button>
-              <button
-                className={`w-1/2 p-1 ${
-                  activeTab === "groups" ? "text-primary" : ""
-                }`}
-                onClick={() => setActiveTab("groups")}
-              >
-                <p className="text-base font-medium">Groups</p>
-              </button>
-            </div>{" "}
-            <span
-              className={`border-primary border-b-2 w-1/2 transition-transform duration-500 transform ${
-                activeTab === "groups" ? "translate-x-full" : ""
+          <div className="flex w-full gap-2 p-2 select-none">
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "all"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
               }`}
-            ></span>
+              onClick={() => setActiveTab("all")}
+            >
+              All
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "private"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("private")}
+            >
+              Privates
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "group"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("group")}
+            >
+              Groups
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "unread"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("unread")}
+            >
+              Unread
+            </div>
           </div>
         </div>
 
