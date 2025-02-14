@@ -7,6 +7,7 @@ import {
   deleteGroup,
   joinGroup,
   leaveGroup,
+  getGroup,
   removeMember,
   toggleMessagePermission,
 } from "../controllers/group.controller.js";
@@ -33,5 +34,6 @@ router.post("/messagePermission", AuthRoute, toggleMessagePermission);
 router.post("/delete", AuthRoute, validateGroupId, deleteGroup);
 router.post("/removeMember", AuthRoute, validateGroupId, removeMember); ///not properly implemented
 router.post("/leave", AuthRoute, validateGroupId, leaveGroup); ///not properly implemented
+router.get("/getGroup", AuthRoute, getGroup);
 
 export default router;

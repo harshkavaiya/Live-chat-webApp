@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import cloudinary from "../lib/cloudinary.js";
 import Group from "../models/group.model.js";
+import Users from "../models/users.model.js";
 export const createGroup = async (req, res) => {
   try {
     const { name, description, type, photo, members } = req.body;
@@ -408,6 +409,34 @@ export const leaveGroup = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in leaveGroup:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getGroup = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Find the groups where the user is a member or an admin
+    const groups = await Group.find({ members: userId }).populate(
+      "members",
+      "phone profilePic"
+    );
+
+    if (groups.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No groups found for this user.",
+      });
+    }
+
+    // Return the found groups
+    res.status(200).json({
+      success: true,
+      groups,
+    });
+  } catch (error) {
+    console.log("Error in getGroup:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
