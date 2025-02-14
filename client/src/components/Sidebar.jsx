@@ -70,7 +70,7 @@ const Sidebar = () => {
                 <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
                 <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
                   <img
-                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                     alt="user"
                     className="object-cover"
                   />
@@ -169,7 +169,7 @@ const Sidebar = () => {
                       <img
                         src={
                           profilePic ||
-                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
                         className="object-cover"

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import useFunctionStore from "./useFuncationStore";
 
 const useMediaStore = create((set, get) => ({
   mediaPreview: false,
@@ -10,7 +11,10 @@ const useMediaStore = create((set, get) => ({
     set({ ischatmediaLoading: true });
     let media = [];
     messages.forEach((element) => {
-      const { type, data } = element;
+      const { type, sender, receiver } = element;
+      const { generateUniqueId, decryptData } = useFunctionStore.getState();
+      let secretKey = generateUniqueId(sender, receiver);
+      const data = decryptData(element.data, secretKey);
       if (type == "multiple-file") {
         data.forEach((e) => {
           media.push(e);
@@ -23,9 +27,9 @@ const useMediaStore = create((set, get) => ({
     let linkedMedia = [];
 
     media.forEach((element, i) => {
-      if(i==0 && media.length==1){
+      if (i == 0 && media.length == 1) {
         linkedMedia.push({ prev: null, current: element, next: null });
-      }else if (i == media.length - 1) {
+      } else if (i == media.length - 1) {
         linkedMedia.push({ prev: i - 1, current: element, next: null });
       } else {
         linkedMedia.push({

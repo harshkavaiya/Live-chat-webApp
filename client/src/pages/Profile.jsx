@@ -12,10 +12,12 @@ import { OpenCloseMenu } from "../function/function";
 import { FaVideo } from "react-icons/fa";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Profile = ({ setIsProfileOpen }) => {
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
   const [ismediaRotate, setIsmediaRotate] = useState(false);
+  const queryClient = useQueryClient();
   const documentRef = useRef();
   const mediaRef = useRef();
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
@@ -33,13 +35,13 @@ const Profile = ({ setIsProfileOpen }) => {
 
       {/* Profile Section */}
       <div className="p-6 flex flex-col items-center border-b border-base-300 ">
-        <div className="avatar w-20">
+        <div className="avatar w-36 h-36">
           <img
             src={
               currentChatingUser.profilePic ||
-              "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+              "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
             }
-            className="object-cover rounded-full"
+            className="object-contain rounded-full"
           />
         </div>
 
@@ -49,8 +51,9 @@ const Profile = ({ setIsProfileOpen }) => {
         <p className="text-sm ">91+ {currentChatingUser.phone}</p>
       </div>
 
-      {/* Shared Documents */}
-      <div className="border-b border-base-300">
+      {/* Shared Documents ..pending */}
+
+      {/* <div className="border-b border-base-300">
         <button
           onClick={() => {
             OpenCloseMenu(documentRef);
@@ -100,7 +103,7 @@ const Profile = ({ setIsProfileOpen }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Shared Media */}
       <div className="border-b border-base-300  ">
@@ -172,7 +175,7 @@ const Profile = ({ setIsProfileOpen }) => {
         <ActionMenu
           icon={<LuTrash2 />}
           label={"Clear Chat"}
-          onClick={clearChat}
+          onClick={() => clearChat(queryClient)}
         />
       </div>
     </div>

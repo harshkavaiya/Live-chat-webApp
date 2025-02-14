@@ -40,10 +40,12 @@ const useMessageStore = create((set, get) => ({
   closeChat: () => {
     set({ currentChatingUser: false });
   },
-  clearChat: async () => {
+  clearChat: async (queryClient) => {
     const { currentChatingUser } = get();
-
+ 
     await axiosInstance.delete(`/message/clearChat/${currentChatingUser._id}`);
+    queryClient.setQueryData([`chat-${currentChatingUser._id}`], { pages: [] });
+
     set({ messages: [] });
   },
   handleExport: async () => {

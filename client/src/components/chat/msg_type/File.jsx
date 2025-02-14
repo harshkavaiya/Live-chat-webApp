@@ -1,11 +1,11 @@
 import useMessageStore from "../../../store/useMessageStore";
 
-const File = ({ message }) => {
+const File = ({ sender,data }) => {
   const { currentChatingUser } = useMessageStore();
   return (
     <div
       className={`flex items-start gap-2 ${
-        message.sender != currentChatingUser._id
+        sender != currentChatingUser._id
           ? "bg-base-100/25 text-primary-content "
           : "bg-base-100 text-base-content"
       } p-1 rounded-lg w-[55vw]  md:w-60`}
@@ -17,8 +17,8 @@ const File = ({ message }) => {
 
       {/* File Info */}
       <div className="flex-1">
-        <div className="font-medium text-sm truncate">{message.data.name}</div>
-        <div className="text-xs ">{message.data.size}</div>
+        <div className="font-medium text-sm truncate">{data.name}</div>
+        <div className="text-xs ">{data.size}</div>
       </div>
 
       {/* Download Icon */}

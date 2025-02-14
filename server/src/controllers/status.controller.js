@@ -76,7 +76,7 @@ export const handleStatusSeen = async (req, res) => {
       _id: userId,
       name: userName,
       profile:
-        "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid",
+        "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg",
       time,
     };
 
