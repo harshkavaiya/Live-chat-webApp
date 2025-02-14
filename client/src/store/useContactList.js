@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 const useContactList = create((set, get) => ({
   contacts: [],
+  groups: [],
   isloading: false,
   isOpenDialog: false,
   isAddLoading: false,
@@ -19,6 +20,25 @@ const useContactList = create((set, get) => ({
 
   clearInputFields: () => {
     set({ savedName: "", phone: "" });
+  },
+
+  getGroupMessages: async () => {
+    try {
+      let res = await axiosInstance.get("/group/getGroup");
+     if(!res.data.success)
+      {
+        toast.error(res.data.message);
+        console.log("responce",res.data.message);
+        return;
+      }
+
+      set({ groups: res.data.groups });
+      console.log("responce",res.data.groups);
+      
+    } catch (error) {
+      console.error("Error fetching messager users:", error);
+      toast.error(error);
+    } 
   },
 
   getContactsList: async () => {

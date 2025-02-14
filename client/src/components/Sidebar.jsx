@@ -25,7 +25,7 @@ const Sidebar = () => {
     FetchOnlineUsers();
   }, []);
 
-  const { setDialogOpen } = useContactList();
+  const { setDialogOpen ,getGroupMessages,groups} = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
     useSearch(messagerUser);
 
@@ -37,6 +37,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
+    getGroupMessages();
   }, [getMessagerUser]);
 
   if (isLoading) return <SidebarUser />;
@@ -103,37 +104,12 @@ const Sidebar = () => {
               placeholder="Search name or number"
             />
           </div>
-<<<<<<< HEAD
-          <div className="w-full flex flex-col gap-1 group">
-            <div className="w-full flex gap-1 text-center">
-              <div
-                className={`badge badge-success rounded-full badge-primary p-1 ${
-                  activeTab === "individual" ? "text-primary" : ""
-                }`}
-                onClick={() => setActiveTab("individual")}
-              >
-                <p className="text-sm font-medium">Individual</p>
-              </div>
-              <div
-                className={`w-1/2 p-1 ${
-                  activeTab === "groups" ? "text-primary" : ""
-                }`}
-                onClick={() => setActiveTab("groups")}
-              >
-                <p className="text-base font-medium">Groups</p>
-              </div>
-            </div>{" "}
-            <span
-              className={`border-primary border-b-2 w-1/2 transition-transform duration-500 transform ${
-                activeTab === "groups" ? "translate-x-full" : ""
-=======
           <div className="flex w-full gap-2 p-2 select-none">
             <div
               className={`badge badge-lg cursor-pointer border-none ${
                 activeTab == "all"
                   ? "badge-primary"
                   : "bg-base-100/40 text-opacity-70"
->>>>>>> 8e19a70b5ac46570a9a64f807d078a23ba8c29e8
               }`}
               onClick={() => setActiveTab("all")}
             >
@@ -174,7 +150,7 @@ const Sidebar = () => {
         </div>
 
         {/* messeages list */}
-        <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
+        {/* <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
           {filteredData.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
@@ -218,6 +194,77 @@ const Sidebar = () => {
                     <div className="flex flex-col gap-2 items-center">
                       <p className="text-xs">
                         {formatMessageTime(lastMessageTime)}
+                      </p>
+
+                      <div
+                        className={`flex items-center gap-3 group-hover:translate-x-0  transition-transform duration-75
+                    ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
+                      >
+                        {receiveMessage ? (
+                          <>
+                            <div className="badge badge-primary w-6 h-6">4</div>
+                            <FaAngleDown className="cursor-pointer" size={20} />
+                          </>
+                        ) : (
+                          <FaAngleDown className="cursor-pointer" size={20} />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+          {filteredData.length != 0 && (
+            <div className="mb-36 md:mb-5">
+              <div className="divider text-xs">end-to-end encrypted</div>
+            </div>
+          )}
+        </div> */}
+        <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
+          {groups.length === 0 ? (
+            <p className="text-center inset-x-0 inset-y-1/2 absolute">
+              No contacts found
+            </p>
+          ) : (
+            groups.map((i, idx) => {
+              const { name } = i;
+
+              return (
+                <div
+                  key={idx}
+                  onClick={() => selectUsertoChat(i)}
+                  className={`flex justify-between pl-4 md:border-b w-full pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
+                ${idx == groups.length - 1 && "border-b"}`}
+                >
+                  <div className="flex items-center w-full">
+                    <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
+                      <img
+                        src={
+                          
+                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                        }
+                        alt="user"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col w-2/3 ml-3 gap-1">
+                      <p className="text-lg font-semibold">{name}</p>
+                      <p className="text-sm truncate text-primary-content">
+                       lastMessages...
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    {!receiveMessage && (
+                      <div className="flex justify-start">
+                        <GoDotFill size={20} className="text-blue-500" />
+                        <GoDotFill size={20} className="text-blue-500" />
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-2 items-center">
+                      <p className="text-xs">
+                        10/20/20
                       </p>
 
                       <div
