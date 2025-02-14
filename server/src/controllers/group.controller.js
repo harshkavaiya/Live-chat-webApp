@@ -418,10 +418,7 @@ export const getGroup = async (req, res) => {
     const userId = req.user._id;
 
     // Find the groups where the user is a member or an admin
-    const groups = await Group.find({ members: userId }).populate(
-      "members",
-      "phone profilePic"
-    );
+    const groups = await Group.find({ members: userId }).populate("members");
 
     if (groups.length === 0) {
       return res.status(404).json({
@@ -430,7 +427,35 @@ export const getGroup = async (req, res) => {
       });
     }
 
-    // Return the found groups
+    // Loop through each group
+    for (let group of groups) {
+      // Loop through each member of the group
+      for (let i = 0; i < group.members.length; i++) {
+        const member = group.members[i];
+
+        // Get the contact list of the logged-in user
+        const userContacts = await Users.findById(userId).select("contacts");
+
+        // Find the saved name from the contacts list
+        const contact = userContacts.contacts.find(
+          (contact) => contact.userId.toString() === member._id.toString()
+        );
+
+        // Set the displayName to the savedName if found, otherwise use fullname
+        const displayName = contact ? contact.savedName : member.fullname;
+
+        console.log(displayName);
+        // Update the member object with only necessary fields
+        group.members[i] = {
+          _id: member._id,
+          phone: member.phone,
+          profilePic: member.profilePic,
+          displayName: displayName,
+        };
+      }
+    }
+
+    // Return the groups with members' display names and limited fields
     res.status(200).json({
       success: true,
       groups,
