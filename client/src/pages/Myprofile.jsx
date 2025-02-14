@@ -42,7 +42,7 @@ const Myprofile = () => {
             </p>
           </span>
           <img
-            src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+            src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
             alt="myprofile"
             className="object-cover"
           />

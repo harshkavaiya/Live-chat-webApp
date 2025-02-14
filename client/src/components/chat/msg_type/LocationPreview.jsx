@@ -1,11 +1,11 @@
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-const Location = ({ message }) => {
+const Location = ({ data }) => {
   return (
     <div className="w-48 sm:w-60 md:w-72 md:h-64 h-48 p-0.5 z-0 overflow-hidden">
       <MapContainer
-        center={[message.data.latitude, message.data.longitude]}
+        center={[data.latitude, data.longitude]}
         zoom={15}
         scrollWheelZoom={false}
         dragging={false}
@@ -19,7 +19,7 @@ const Location = ({ message }) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <Marker position={[message.data.latitude, message.data.longitude]} />
+        <Marker position={[data.latitude, data.longitude]} />
       </MapContainer>
     </div>
   );

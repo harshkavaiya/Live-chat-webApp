@@ -15,7 +15,7 @@ import useHomePageNavi from "../store/useHomePageNavi";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
-  const [activeTab, setActiveTab] = useState("individual");
+  const [activeTab, setActiveTab] = useState("all");
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -34,7 +34,6 @@ const Sidebar = () => {
 
     document.getElementById(`my_modal_${dialog}`).showModal();
   };
-  
 
   useEffect(() => {
     getMessagerUser();
@@ -71,7 +70,7 @@ const Sidebar = () => {
                 <span className="indicator-item badge badge-success rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
                 <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
                   <img
-                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                     alt="user"
                     className="object-cover"
                   />
@@ -104,6 +103,7 @@ const Sidebar = () => {
               placeholder="Search name or number"
             />
           </div>
+<<<<<<< HEAD
           <div className="w-full flex flex-col gap-1 group">
             <div className="w-full flex gap-1 text-center">
               <div
@@ -126,8 +126,49 @@ const Sidebar = () => {
             <span
               className={`border-primary border-b-2 w-1/2 transition-transform duration-500 transform ${
                 activeTab === "groups" ? "translate-x-full" : ""
+=======
+          <div className="flex w-full gap-2 p-2 select-none">
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "all"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+>>>>>>> 8e19a70b5ac46570a9a64f807d078a23ba8c29e8
               }`}
-            ></span>
+              onClick={() => setActiveTab("all")}
+            >
+              All
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "private"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("private")}
+            >
+              Privates
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "group"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("group")}
+            >
+              Groups
+            </div>
+            <div
+              className={`badge badge-lg cursor-pointer border-none ${
+                activeTab == "unread"
+                  ? "badge-primary"
+                  : "bg-base-100/40 text-opacity-70"
+              }`}
+              onClick={() => setActiveTab("unread")}
+            >
+              Unread
+            </div>
           </div>
           
         </div>
@@ -154,7 +195,7 @@ const Sidebar = () => {
                       <img
                         src={
                           profilePic ||
-                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
                         className="object-cover"

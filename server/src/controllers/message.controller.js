@@ -259,14 +259,14 @@ export const sendMessage = async (req, res) => {
   const { id: receiver } = req.params;
 
   try {
-    // let secretkey = generateUniqueId(myId, receiver);
-    // let enrData = encryptData(data, secretkey);
+    let secretkey = generateUniqueId(myId, receiver);
+    let enrData = encryptData(data, secretkey);
 
     const newMessage = new Message({
       sender: myId,
       receiver,
       type,
-      data,
+      data: enrData,
     });
     await newMessage.save();
     let receiverSoket = getUserSocketId(receiver);

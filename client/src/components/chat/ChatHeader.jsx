@@ -5,9 +5,11 @@ import { OpenCloseMenu } from "../../function/function";
 import useFunctionStore from "../../store/useFuncationStore";
 import { IoChevronBackOutline } from "react-icons/io5";
 import useMessageStore from "../../store/useMessageStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
+  const queryClient=useQueryClient()
   const { handleSelection } = useFunctionStore();
   const { closeChat, clearChat, currentChatingUser } = useMessageStore();
 
@@ -27,7 +29,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
                 <img
                   src={
                     currentChatingUser.profilePic ||
-                    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                   }
                   alt="user"
                   className="object-cover"
@@ -81,7 +83,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
                 <button onClick={closeChat}>Close Chat</button>
               </li>
               <li>
-                <button onClick={clearChat}>Clear Chat</button>
+                <button onClick={()=>clearChat(queryClient)}>Clear Chat</button>
               </li>
               <li>
                 <p>Report</p>

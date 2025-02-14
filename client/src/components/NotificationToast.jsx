@@ -16,7 +16,7 @@ const NotificationToast = (message, type, name, profilePic) => {
                 className="h-10 w-10 rounded-full"
                 src={
                   profilePic ||
-                  "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                  "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                 }
                 alt=""
               />

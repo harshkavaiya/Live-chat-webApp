@@ -61,7 +61,7 @@ const Status = () => {
           >
             {myStatus.length > 0 ? (
               <StatusRing
-                imageSrc="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                imageSrc="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                 totalStatuses={myStatus.length}
                 viewedStatuses={myStatus.length}
               />
@@ -72,7 +72,7 @@ const Status = () => {
                 </div>
                 <div className="bg-base-300 grid w-14 h-14 place-items-center rounded-full overflow-hidden">
                   <img
-                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg?ga=GA1.1.384129796.1719158699&semt=ais_hybrid"
+                    src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                     alt="user"
                     className="object-cover"
                   />
