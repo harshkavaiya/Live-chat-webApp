@@ -418,43 +418,45 @@ export const getGroup = async (req, res) => {
     const userId = req.user._id;
 
     // Find the groups where the user is a member or an admin
-    let groups = await Group.find({ members: userId }).populate("members", "fullname profilePic _id");
-    
+    let groups = await Group.find({ members: userId }).populate(
+      "members",
+      "fullname profilePic _id"
+    );
+
     if (groups.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No groups found for this user.",
       });
     }
-    
+
     // Loop through each group
     for (const group of groups) {
-        // Loop through each member in the group
-        for (const member of group.members) {
-            // Get the contact list of the logged-in user
-            const userContacts = await Users.findById(userId).select("contacts");
-    
-            // Find the saved name from the contacts list
-            const contact = userContacts.contacts.find(
-                (contact) => contact.userId.toString() === member._id.toString()
-            );
-    
-            // Set the displayName to the savedName if found, otherwise use fullname
-            const displayName = contact ? contact.savedName : member.fullname;
-            
-            // Update the member object with only necessary fields
-            member.fullname = displayName;
-    
-            console.log(displayName, member._id);
-        }
+      // Loop through each member in the group
+      for (const member of group.members) {
+        // Get the contact list of the logged-in user
+        const userContacts = await Users.findById(userId).select("contacts");
+
+        // Find the saved name from the contacts list
+        const contact = userContacts.contacts.find(
+          (contact) => contact.userId.toString() === member._id.toString()
+        );
+
+        // Set the displayName to the savedName if found, otherwise use fullname
+        const displayName = contact ? contact.savedName : member.fullname;
+
+        // Update the member object with only necessary fields
+        member.fullname = displayName;
+
+        //console.log(displayName, member._id);
+      }
     }
-    
+
     // Return the groups with members' display names and limited fields
     res.status(200).json({
       success: true,
       groups,
     });
-    
   } catch (error) {
     console.log("Error in getGroup:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
