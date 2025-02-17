@@ -30,12 +30,10 @@ const Sidebar = () => {
   useEffect(() => {
     FetchOnlineUsers();
   }, []);
-  
+
   const openQRscanner = () => {
-   
-document.getElementById("Qr_scanner").showModal();
-    
-  }
+    document.getElementById("Qr_scanner").showModal();
+  };
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
@@ -57,7 +55,7 @@ document.getElementById("Qr_scanner").showModal();
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
       <GroupDialog />
-      <QRScanner/>
+      <QRScanner />
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">

@@ -28,7 +28,7 @@ const useMessageStore = create((set, get) => ({
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   sendMessage: async (data, notification, queryClient) => {
-    const { currentChatingUser, notificationSound } = get();
+    const { currentChatingUser, messagerUser, notificationSound } = get();
     const { _id } = useAuthStore.getState().authUser;
     let res = await axiosInstance.post(
       `/message/send/${currentChatingUser._id}`,
@@ -37,11 +37,24 @@ const useMessageStore = create((set, get) => ({
         notification,
         type: currentChatingUser.type,
         members:
-          currentChatingUser?.members?.filter((item) => item._id != _id) || [],
+          currentChatingUser?.members?.filter(
+            (item) => item._id.toString() != _id.toString()
+          ) || [],
       }
     );
     notificationSound();
-
+    messagerUser.forEach((user) => {
+      if (user._id == currentChatingUser._id) {
+        if (data.type == "text") {
+          user.lastMessage = res.data.data;
+        } else {
+          user.lastMessage = data.type;
+        }
+        user.lastMessageType = data.type;
+        user.lastMessageTime = new Date().toISOString();
+      }
+    });
+    set({ messagerUser });
     queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
       if (!oldData) return { pages: [[res.data]] };
       return {
@@ -49,6 +62,58 @@ const useMessageStore = create((set, get) => ({
         pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
       };
     });
+  },
+  handleNewMessage: (data, queryClient) => {
+    const { newMessage, name, profilePic, ChatType } = data;
+    const { type, data: message, sender } = newMessage;
+    const { currentChatingUser, notificationSound, messagerUser } = get();
+
+    if (currentChatingUser?._id == sender) return;
+    if (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver)
+      return;
+    const qdata = queryClient.getQueryData([
+      `chat-${ChatType == "Group" ? newMessage.receiver : sender}`,
+    ]);
+    if (qdata) {
+      queryClient.setQueryData(
+        [
+          `chat-${
+            ChatType == "Group" ? newMessage.receiver : newMessage.sender
+          }`,
+        ],
+        (oldData) => {
+          if (!oldData) return { pages: [[newMessage]] };
+          return {
+            ...oldData,
+            pages: [
+              [newMessage, ...oldData.pages[0]],
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+      );
+    }
+    notificationSound();
+
+    let dData = message;
+    if (type == "text") {
+      const secretkey = generateUniqueId(
+        newMessage.sender,
+        newMessage.receiver
+      );
+      dData = decryptData(message, secretkey);
+    }
+    messagerUser.forEach((user) => {
+      let id = ChatType == "Group" ? newMessage.receiver : sender;
+      if (user._id == id) {
+        user.lastMessage =
+          newMessage.type == "text" ? newMessage.data : newMessage.type;
+        user.lastMessageType = newMessage.type;
+        user.lastMessageTime = new Date().toISOString();
+      }
+    });
+    set({ messagerUser });
+    NotificationToast(dData, type, name, profilePic);
   },
   selectUsertoChat: (data) => {
     const { currentChatingUser } = get();
@@ -179,48 +244,6 @@ const useMessageStore = create((set, get) => ({
       notificationSound();
       set({ messages: [...get().messages, newMessage] });
     });
-  },
-  handleNewMessage: (data, queryClient) => {
-    const { newMessage, name, profilePic, ChatType } = data;
-    const { type, data: message, sender } = newMessage;
-    const { currentChatingUser, notificationSound } = get();
-    if (currentChatingUser?._id == sender) return;
-    if (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver)
-      return;
-    const qdata = queryClient.getQueryData([
-      `chat-${ChatType == "Group" ? newMessage.receiver : sender}`,
-    ]);
-    if (qdata) {
-      queryClient.setQueryData(
-        [
-          `chat-${
-            ChatType == "Group" ? newMessage.receiver : newMessage.sender
-          }`,
-        ],
-        (oldData) => {
-          if (!oldData) return { pages: [[newMessage]] };
-          return {
-            ...oldData,
-            pages: [
-              [newMessage, ...oldData.pages[0]],
-              ...oldData.pages.slice(1),
-            ],
-          };
-        }
-      );
-    }
-    notificationSound();
-
-    let dData = message;
-    if (type == "text") {
-      const secretkey = generateUniqueId(
-        newMessage.sender,
-        newMessage.receiver
-      );
-      dData = decryptData(message, secretkey);
-    }
-
-    NotificationToast(dData, type, name, profilePic);
   },
   unsuscribeFromMessage: () => {
     const socket = useAuthStore.getState().socket;
