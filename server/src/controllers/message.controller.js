@@ -32,7 +32,7 @@ export const sidebarUser = async (req, res) => {
 
     const groupsWithLastMessage = await Promise.all(
       groups.map(async (group) => {
-        const lastMessage = await Message.findOne({ groupId: group._id })
+        const lastMessage = await Message.findOne({ receiver: group._id })
           .sort({ createdAt: -1 })
           .limit(1)
           .select("data type createdAt sender receiver");

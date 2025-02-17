@@ -40,8 +40,39 @@ export const createGroup = async (req, res) => {
     });
 
     await newGroup.save();
-    // await Group.deleteMany({});
-    res.status(200).json({ success: true, newGroup });
+    let groupMember = await newGroup.populate(
+      "members",
+      "fullname profilePic _id"
+    );
+    
+
+    const groupInfo = {
+      _id:newGroup._id,
+      fullname: name,
+      profilePic: photo,
+      members: groupMember.members,
+      admins:admin,
+      admin,
+      inviteLink,
+      messagePermission:true,
+      sender: null,
+      receiver: newGroup._id,
+      type: "Group",
+      lastMessage: null,
+      lastMessageType: null,
+      lastMessageTime: new Date().toISOString(),
+    };
+ 
+    groupMember.members.map((user) => {
+      if (user._id != admin) {
+        let receiverId = getUserSocketId(user._id);
+        if (receiverId) {
+          io.to(receiverId).emit("newGroup", groupInfo);
+        }
+      }
+    });
+
+    res.status(200).json({ success: true, groupInfo });
   } catch (error) {
     if (error.code === 11000) {
       return res
@@ -243,6 +274,60 @@ export const assignAdmin = async (req, res) => {
   }
 };
 
+export const RemoveAdmin = async (req, res) => {
+  try {
+    const { groupId, adminId } = req.body;
+    const myId = req.user._id;
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Group not found" });
+    }
+
+    // Only admin can remove another admin
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to remove admin",
+      });
+    }
+
+    if (group.admins.length === 1) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot remove the last admin from the group",
+      });
+    }
+
+    if (group.admins.includes(adminId)) {
+      group.admins.pull(adminId);
+
+      group.members.forEach((element) => {
+        if (element._id != myId) {
+          if (getUserSocketId(element._id)) {
+            io.to(getUserSocketId(element._id)).emit(
+              "removeAdmin",
+              group._id,
+              adminId
+            );
+          }
+        }
+      });
+      await group.save();
+      res
+        .status(200)
+        .json({ success: true, message: "Admin removed successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "User is not an admin" });
+    }
+  } catch (error) {
+    console.log("Error in removeAdmin:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const toggleMessagePermission = async (req, res) => {
   try {
     const { groupId } = req.body;
@@ -440,71 +525,76 @@ export const removeMember = async (req, res) => {
 };
 
 export const leaveGroup = async (req, res) => {
-  const {groupId}=req.body
-  const myId=req.user._id
-    try {
-      const group = await Group.findById(groupId);
-      if (!group) {
-        return res.status(404).json({
-          success: false,
-          message: "Group not found",
-        });
-      }
-    
-      // Check if the user is part of the group
-      const isAdmin = group.admins.includes(myId);
-      const isMember = group.members.some((member) => member._id.toString() === myId.toString());
-    
-      if (!isAdmin && !isMember) {
-        return res.status(403).json({
-          success: false,
-          message: "You are not a member of this group",
-        });
-      }
-    
-      // Handle main admin leaving
-      if (group.admin.toString() === myId.toString()) {
-        if (group.admins.length === 1) {
-          return res.status(200).json({
-            success: false,
-            message: "You cannot leave the group without assigning a new admin",
-          });
-        }
-    
-        // Select a new admin (excluding the leaving admin)
-        const remainingAdmins = group.admins.filter((admin) => admin.toString() !== myId.toString());
-        group.admin = remainingAdmins[0]; // Assign the first remaining admin
-        group.admins = remainingAdmins;
-      } else if (isAdmin) {
-        // If user is an admin but not the main admin, just remove them from admins
-        group.admins = group.admins.filter((admin) => admin.toString() !== myId.toString());
-      }
-    
-      // Remove from members
-      group.members = group.members.filter((member) => member._id.toString() !== myId.toString());
-    
-      // Save the updated group
-      await group.save();
-    
-      // Emit socket event to notify remaining members
-      group.members.forEach((member) => {
-        const socketId = getUserSocketId(member._id);
-        if (socketId) {
-          io.to(socketId).emit("leaveGroup", myId, groupId);
-        }
+  const { groupId } = req.body;
+  const myId = req.user._id;
+  try {
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({
+        success: false,
+        message: "Group not found",
       });
-    
-      res.status(200).json({
-        success: true,
-        message: "You have successfully left the group",
-      });
-    
-    } catch (error) {
-      console.error("Error in leaveGroup:", error.message);
-      res.status(500).json({ success: false, message: "Server error" });
     }
-  
-    
+
+    // Check if the user is part of the group
+    const isAdmin = group.admins.includes(myId);
+    const isMember = group.members.some(
+      (member) => member._id.toString() === myId.toString()
+    );
+
+    if (!isAdmin && !isMember) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not a member of this group",
+      });
+    }
+
+    // Handle main admin leaving
+    if (group.admin.toString() === myId.toString()) {
+      if (group.admins.length === 1) {
+        return res.status(200).json({
+          success: false,
+          message: "You cannot leave the group without assigning a new admin",
+        });
+      }
+
+      // Select a new admin (excluding the leaving admin)
+      const remainingAdmins = group.admins.filter(
+        (admin) => admin.toString() !== myId.toString()
+      );
+      group.admin = remainingAdmins[0]; // Assign the first remaining admin
+      group.admins = remainingAdmins;
+    } else if (isAdmin) {
+      // If user is an admin but not the main admin, just remove them from admins
+      group.admins = group.admins.filter(
+        (admin) => admin.toString() !== myId.toString()
+      );
+    }
+
+    // Remove from members
+    group.members = group.members.filter(
+      (member) => member._id.toString() !== myId.toString()
+    );
+
+    // Save the updated group
+    await group.save();
+
+    // Emit socket event to notify remaining members
+    group.members.forEach((member) => {
+      const socketId = getUserSocketId(member._id);
+      if (socketId) {
+        io.to(socketId).emit("leaveGroup", myId, groupId);
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "You have successfully left the group",
+    });
+  } catch (error) {
+    console.error("Error in leaveGroup:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
 
 export const getGroup = async (req, res) => {

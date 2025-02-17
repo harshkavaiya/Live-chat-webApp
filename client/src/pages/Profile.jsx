@@ -24,7 +24,7 @@ import toast from "react-hot-toast";
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
-  const { removeMember, assignAdmin, addMember, leaveGroup } = useGroupStore();
+  const { removeMember, assignAdmin, addMember, leaveGroup ,removeAdmin} = useGroupStore();
   const mediaRef = useRef();
   const { authUser } = useAuthStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
@@ -240,7 +240,7 @@ const Profile = ({ setIsProfileOpen }) => {
                             >
                               {isAdmin && (
                                 <li>
-                                  <button>Dismiss As Admin</button>
+                                  <button onClick={()=>removeAdmin(currentChatingUser._id, item._id)}>Dismiss As Admin</button>
                                 </li>
                               )}
                               {!isAdmin && (
@@ -396,7 +396,7 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
               <button
                 key={idx}
                 disabled={
-                  members.find((user) => user._id === contact._id) || false
+                  members?.find((user) => user._id === contact._id) || false
                 }
                 onClick={() => handleUserClick(contact._id, contact.fullname)}
                 className="flex items-center border border-base-100  disabled:bg-primary/50 disabled:hover:bg-primary/50 disabled:cursor-not-allowed w-full justify-between cursor-pointer sm:hover:bg-primary/5 sm:rounded-lg p-1 sm:p-2 pr-4"
@@ -414,7 +414,7 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
                     <p className="text-sm">bio</p>
                   </div>
                 </div>
-                {members.find((user) => user._id === contact._id) ? (
+                {members?.find((user) => user._id === contact._id) ? (
                   <input
                     type="checkbox"
                     className="checkbox checkbox-primary text-primary-content"
@@ -427,7 +427,7 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
                     type="checkbox"
                     className="checkbox checkbox-primary text-primary-content"
                     disabled={
-                      members.find((user) => user._id === contact._id) || false
+                      members?.find((user) => user._id === contact._id) || false
                     }
                     checked={selectedUsers.some(
                       (user) => user._id === contact._id

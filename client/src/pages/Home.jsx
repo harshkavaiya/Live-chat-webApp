@@ -39,7 +39,7 @@ const Home = () => {
     handleNewGroup,
     handleNewAdmin,
     handleremoveMember,
-    handleLeaveGroup,
+    handleLeaveGroup,handleRemoveAdmin
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -101,6 +101,7 @@ const Home = () => {
       socket.on("newAdmin", handleNewAdmin);
       socket.on("removeMember", handleremoveMember);
       socket.on("leaveGroup", handleLeaveGroup);
+      socket.on("removeAdmin",handleRemoveAdmin)
       return () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
@@ -115,6 +116,7 @@ const Home = () => {
         socket.off("newAdmin");
         socket.off("removeMember");
         socket.off("leaveGroup");
+        socket.off("removeAdmin");
       };
     }
   }, [

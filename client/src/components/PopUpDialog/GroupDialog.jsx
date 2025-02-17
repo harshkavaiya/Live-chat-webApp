@@ -4,6 +4,7 @@ import { FiUsers, FiUpload } from "react-icons/fi";
 import { MdOutlineCloudUpload } from "react-icons/md";
 import AddUserGroup from "./AddUserGroup";
 import axiosInstance from "../../lib/axiosInstance";
+import useMessageStore from "../../store/useMessageStore";
 
 const GroupDialog = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,9 @@ const GroupDialog = () => {
     description: "",
     selectedUsers: [],
   });
+  const {messagerUser,setMessagerUser}=useMessageStore(
+
+  )
   const fileInputRef = useRef(null);
   const [photo, setPhoto] = useState(null);
   const [groupType, setGroupType] = useState("");
@@ -70,7 +74,7 @@ const GroupDialog = () => {
         return;
       }
 
-      console.log("Group created:", response.data);
+      setMessagerUser([response.data.groupInfo, ...messagerUser]);
       closeDialog();
     } catch (error) {
       console.error(
