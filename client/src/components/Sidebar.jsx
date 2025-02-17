@@ -10,12 +10,16 @@ import ContactDialog from "./PopUpDialog/ContactDialog";
 import useContactList from "../store/useContactList";
 import GroupDialog from "./PopUpDialog/GroupDialog";
 import useSearch from "../function/SearchFunc";
+import { MdMenuOpen } from "react-icons/md";
 import useAuthStore from "../store/useAuthStore";
+import { IoQrCodeOutline } from "react-icons/io5";
 import useHomePageNavi from "../store/useHomePageNavi";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const [activeTab, setActiveTab] = useState("all");
+  const navigation = useNavigate();
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -25,7 +29,7 @@ const Sidebar = () => {
     FetchOnlineUsers();
   }, []);
 
-  const { setDialogOpen ,getGroupMessages,groups} = useContactList();
+  const { setDialogOpen, getGroupMessages, groups } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
     useSearch(messagerUser);
 
@@ -56,9 +60,28 @@ const Sidebar = () => {
               {onlineUsers.length}
             </div>
           </div>
-          <p className="flex items-center text-sm gap-2 cursor-pointer">
-            More <FaAngleRight className="text-primary" />
-          </p>
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="m-1">
+              <MdMenuOpen size={23} className="text-primary cursor-pointer" />
+            </div>
+            <ul
+              tabIndex={0}
+              className="dropdown-content menu bg-primary-content/95 rounded-box z-[1] w-52 p-2 shadow"
+            >
+              <li>
+                <a>Item 1</a>
+              </li>
+              <li>
+                <div
+                  className="flex items-center justify-evenly"
+                  onClick={() => navigation("/qrgroup")}
+                >
+                  <IoQrCodeOutline size={20} />
+                  <p className="text-sm">Scan to join group</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
         <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pl-2 cursor-pointer">
           {onlineUsers.length === 0 ? (
@@ -146,7 +169,6 @@ const Sidebar = () => {
               Unread
             </div>
           </div>
-          
         </div>
 
         {/* messeages list */}
@@ -241,7 +263,6 @@ const Sidebar = () => {
                     <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                       <img
                         src={
-                          
                           "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
@@ -251,7 +272,7 @@ const Sidebar = () => {
                     <div className="flex flex-col w-2/3 ml-3 gap-1">
                       <p className="text-lg font-semibold">{name}</p>
                       <p className="text-sm truncate text-primary-content">
-                       lastMessages...
+                        lastMessages...
                       </p>
                     </div>
                   </div>
@@ -263,9 +284,7 @@ const Sidebar = () => {
                       </div>
                     )}
                     <div className="flex flex-col gap-2 items-center">
-                      <p className="text-xs">
-                        10/20/20
-                      </p>
+                      <p className="text-xs">10/20/20</p>
 
                       <div
                         className={`flex items-center gap-3 group-hover:translate-x-0  transition-transform duration-75

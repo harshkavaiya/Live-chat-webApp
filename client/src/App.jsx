@@ -9,6 +9,8 @@ import TimeAgo from "javascript-time-ago";
 
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
+import { Route, Routes } from "react-router-dom";
+import ShowQR from "./components/Group/ShowQR";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -42,11 +44,12 @@ function App() {
       <Toaster />
       {/* {authUser && authUser._id} */}
       {authUser != null ? <Home /> : <LoginPage />}
-      {/* <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<LoginPage />} />
 
-      </Routes> */}
+      {/* <Routes> */}
+      {/* <Route path="/" element={<Home />} />
+        <Route path="/Login" element={<LoginPage />} /> */}
+      {/* <Route path="/qrgroup" element={<ShowQR />} /> */}
+      {/* </Routes> */}
       {/* <Route path="/Register" element={<Register />} /> */}
       {/* {authUser && <NewVideoCall />} */}
     </div>
