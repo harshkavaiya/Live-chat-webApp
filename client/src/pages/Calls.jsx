@@ -55,11 +55,11 @@ const Calls = () => {
       callNature: "voice",
     },
     {
-      name: "Sophia Wilson",
+      name: "60 wali id",
       profilePhoto: "https://example.com/profiles/sophia_wilson.jpg",
       callType: "outgoing",
       time: "2024-12-26T19:00:00Z",
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "676ccfe346ccd0eedd02d060",
       callNature: "video",
     },
     {

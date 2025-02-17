@@ -541,8 +541,6 @@ export const getGroup = async (req, res) => {
 
         // Update the member object with only necessary fields
         member.fullname = displayName;
-
-        console.log(displayName, member._id);
       }
     }
 

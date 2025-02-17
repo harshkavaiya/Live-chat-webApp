@@ -65,15 +65,19 @@ const Home = () => {
   useEffect(() => {
     // Handle incoming call offers
     if (socket) {
+      console.log("Setting up socket listeners for Home page");
       const callofferHanlder = (data) => {
-        incomingCallAnswere(data.from, data.callType);
         console.log(
           "Incoming call offer from:",
           data.from,
           "calltype : ",
           data.callType
         );
+        incomingCallAnswere(data.from, data.callType);
       };
+      // const test = () => {
+      //   console.log("test");
+      // };
 
       const endcallhandler = (data) => {
         console.log("Call ended by:", data.from);
