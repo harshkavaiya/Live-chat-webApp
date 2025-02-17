@@ -37,6 +37,36 @@ const useGroupStore = create((set, get) => ({
       toast.error(res.data.message);
     }
   },
+  removeAdmin: async (groupId, adminId) => {
+    const { currentChatingUser, setCurrentChatingUser } =
+      useMessageStore.getState();
+    let res = await axiosInstance.post("/group/removeAdmin", {  
+      groupId,
+      adminId,
+    });
+
+    if (res.data.success) {
+      currentChatingUser.admins = currentChatingUser.admins.filter(
+        (user) => user != adminId
+      );
+      setCurrentChatingUser(currentChatingUser);
+    } else {
+      toast.error(res.data.message);
+    }
+  },
+  handleRemoveAdmin: (id, adminId) => {
+    const { messagerUser, setMessagerUser,currentChatingUser,setCurrentChatingUser } = useMessageStore.getState();
+    messagerUser.forEach((element) => {
+      if (element._id == id) {
+        element.admins = element.admins.filter((user) => user != adminId);
+      }
+    }); 
+    if(currentChatingUser._id == id){
+      currentChatingUser.admins = currentChatingUser.admins.filter((user) => user != adminId);
+      setCurrentChatingUser(currentChatingUser);
+    }
+    setMessagerUser(messagerUser);
+  },
   deleteGroup: () => {},
   removeMember: async (groupId, memberId) => {
     const { currentChatingUser, setCurrentChatingUser } =
@@ -79,6 +109,7 @@ const useGroupStore = create((set, get) => ({
     }
   },
   handleNewGroup: async (data) => {
+    console.log(data)
     const {
       messagerUser,
       setMessagerUser,

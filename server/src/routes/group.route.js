@@ -9,7 +9,7 @@ import {
   leaveGroup,
   getGroup,
   removeMember,
-  toggleMessagePermission,
+  toggleMessagePermission,RemoveAdmin
 } from "../controllers/group.controller.js";
 import mongoose from "mongoose";
 
@@ -30,6 +30,7 @@ router.post("/create", AuthRoute, createGroup);
 router.post("/join/:invite", AuthRoute, joinGroup);
 router.post("/addMember", AuthRoute, addMember);
 router.post("/assignAdmin", AuthRoute, assignAdmin);
+router.post("/removeAdmin", AuthRoute, validateGroupId, RemoveAdmin);
 router.post("/messagePermission", AuthRoute, toggleMessagePermission);
 router.post("/delete", AuthRoute, validateGroupId, deleteGroup);
 router.post("/removeMember", AuthRoute, validateGroupId, removeMember); ///not properly implemented
