@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { create } from "zustand";
 import useMessageStore from "./useMessageStore";
 import axiosInstance from "../lib/axiosInstance";
+import useAuthStore from "./useAuthStore";
 
 const useAudioStore = create((set, get) => ({
   isRecording: false,
@@ -63,6 +64,7 @@ const useAudioStore = create((set, get) => ({
         "Content-Type": "multipart/form-data",
       },
     });
+    const { profilePic, fullname } = useAuthStore.getState().authUser;
 
     useMessageStore.getState().sendMessage(
       {
@@ -72,7 +74,10 @@ const useAudioStore = create((set, get) => ({
           size: res.data.size,
         },
       },
-      useMessageStore.getState().currentChatingUser,
+      {
+        profilePic,
+        fullname,
+      },
       queryClient
     );
 

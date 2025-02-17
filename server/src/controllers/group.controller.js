@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import cloudinary from "../lib/cloudinary.js";
 import Group from "../models/group.model.js";
 import Users from "../models/users.model.js";
+import { getUserSocketId, io } from "../lib/socket-io.js";
 export const createGroup = async (req, res) => {
   try {
     const { name, description, type, photo, members } = req.body;
@@ -90,9 +91,9 @@ export const joinGroup = async (req, res) => {
 
 export const addMember = async (req, res) => {
   try {
-    const { groupId, newMemberId } = req.body;
-    const group = await Group.findById(groupId);
+    const { groupId, newMemberId, myId } = req.body;
 
+    const group = await Group.findById(groupId);
     if (!group) {
       return res
         .status(404)
@@ -110,18 +111,77 @@ export const addMember = async (req, res) => {
       });
     }
 
+    const uniqueMembers = newMemberId
+      .filter((element) => !group.members.includes(element._id)) // Keep only new members
+      .map((element) => element._id); // Extract only the IDs
     // Add member to group
-    if (!group.members.includes(newMemberId)) {
-      group.members.push(newMemberId);
-      await group.save();
-      res
+    if (uniqueMembers.length === 0) {
+      return res
         .status(200)
-        .json({ success: true, message: "Member added successfully" });
-    } else {
-      res
-        .status(400)
-        .json({ success: false, message: "Member is already in the group" });
+        .json({ success: false, message: "Member not added" });
     }
+    group.members.map((user) => {
+      console.log(user, myId, "124");
+      if (user != myId) {
+        let receiverId = getUserSocketId(user);
+
+        if (receiverId) {
+          io.to(receiverId).emit("newMember", newMemberId, group._id);
+        }
+      }
+    });
+
+    group.members.push(...uniqueMembers);
+    await group.save();
+
+    const groupMembers = await Group.findById(groupId)
+      .select("members")
+      .populate("members", "fullname profilePic _id");
+
+    await Promise.all(
+      uniqueMembers.map(async (user) => {
+        let receiverId = getUserSocketId(user);
+        if (receiverId) {
+          const userContacts = await Users.findById(user).select("contacts");
+          for (const member of groupMembers.members) {
+            const contact = userContacts.contacts.find(
+              (contact) => contact.userId.toString() === member._id.toString()
+            );
+            const displayName = contact ? contact.savedName : member.fullname;
+            member.fullname = displayName;
+          }
+          const {
+            name,
+            photo,
+            admins,
+            admin,
+            inviteLink,
+            messagePermission,
+            _id,
+          } = group;
+          io.to(receiverId).emit("newGroup", {
+            _id,
+            fullname: name,
+            profilePic: photo,
+            members: groupMembers.members,
+            admins,
+            admin,
+            inviteLink,
+            messagePermission,
+            sender: null,
+            receiver: group._id,
+            type: "Group",
+            lastMessage: null,
+            lastMessageType: null,
+            lastMessageTime: new Date().toISOString(),
+          });
+        }
+      })
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Member added successfully" });
   } catch (error) {
     console.log("Error in addMember:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
@@ -131,6 +191,7 @@ export const addMember = async (req, res) => {
 export const assignAdmin = async (req, res) => {
   try {
     const { groupId, newAdminId } = req.body;
+    const myId = req.user._id;
     const group = await Group.findById(groupId);
 
     if (!group) {
@@ -152,6 +213,18 @@ export const assignAdmin = async (req, res) => {
         message: "User is not a member of the group",
       });
     }
+
+    group.members.forEach((element) => {
+      if (element._id != myId) {
+        if (getUserSocketId(element._id)) {
+          io.to(getUserSocketId(element._id)).emit(
+            "newAdmin",
+            group._id,
+            newAdminId
+          );
+        }
+      }
+    });
 
     if (!group.admins.includes(newAdminId)) {
       group.admins.push(newAdminId);
@@ -244,6 +317,7 @@ export const deleteGroup = async (req, res) => {
 export const removeMember = async (req, res) => {
   try {
     const { groupId, memberId } = req.body;
+    const myId = req.user._id;
 
     if (
       !groupId ||
@@ -337,6 +411,25 @@ export const removeMember = async (req, res) => {
 
     await group.save();
 
+    group.members.forEach((element) => {
+      if (element._id != myId) {
+        if (getUserSocketId(element._id)) {
+          io.to(getUserSocketId(element._id)).emit(
+            "removeMember",
+            group._id,
+            memberId
+          );
+        }
+      }
+    });
+    // delete user id
+    if (getUserSocketId(memberId)) {
+      io.to(getUserSocketId(memberId)).emit(
+        "removeMember",
+        group._id,
+        memberId
+      );
+    }
     res
       .status(200)
       .json({ success: true, message: "Member removed successfully" });
@@ -347,70 +440,71 @@ export const removeMember = async (req, res) => {
 };
 
 export const leaveGroup = async (req, res) => {
-  try {
-    const { groupId } = req.body;
-
-    const group = await Group.findById(groupId);
-    if (!group) {
-      return res.status(404).json({
-        success: false,
-        message: "Group not found",
-      });
-    }
-
-    // Check if the user is part of the group (either admin or member)
-    if (
-      !group.admins.includes(req.user._id) &&
-      !group.members.includes(req.user._id)
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: "You are not a member of this group",
-      });
-    }
-
-    // If the user is the main admin (and the only admin), they can't leave without assigning a new admin
-    if (group.admin.toString() === req.user._id.toString()) {
-      // If there are no other admins, the main admin cannot leave
-      if (group.admins.length === 1) {
-        return res.status(400).json({
+  const {groupId}=req.body
+  const myId=req.user._id
+    try {
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({
           success: false,
-          message: "You cannot leave the group without assigning a new admin",
+          message: "Group not found",
         });
       }
-
-      // Optionally, you can assign a new admin here (e.g. the first member in the member list)
-      // Assign the first member in the list as the new admin
-      const newAdmin = group.members[0]; // You can add your logic to choose a new admin
-
-      group.admin = newAdmin; // Assign new admin
-
-      // Remove the user from the admins and members
-      group.admins.pull(req.user._id);
-      group.members.pull(req.user._id);
-    } else {
-      // If the user is an admin, remove them from the admin list
-      if (group.admins.includes(req.user._id)) {
-        group.admins.pull(req.user._id);
+    
+      // Check if the user is part of the group
+      const isAdmin = group.admins.includes(myId);
+      const isMember = group.members.some((member) => member._id.toString() === myId.toString());
+    
+      if (!isAdmin && !isMember) {
+        return res.status(403).json({
+          success: false,
+          message: "You are not a member of this group",
+        });
       }
-
-      // If the user is a member, remove them from the members list
-      if (group.members.includes(req.user._id)) {
-        group.members.pull(req.user._id);
+    
+      // Handle main admin leaving
+      if (group.admin.toString() === myId.toString()) {
+        if (group.admins.length === 1) {
+          return res.status(200).json({
+            success: false,
+            message: "You cannot leave the group without assigning a new admin",
+          });
+        }
+    
+        // Select a new admin (excluding the leaving admin)
+        const remainingAdmins = group.admins.filter((admin) => admin.toString() !== myId.toString());
+        group.admin = remainingAdmins[0]; // Assign the first remaining admin
+        group.admins = remainingAdmins;
+      } else if (isAdmin) {
+        // If user is an admin but not the main admin, just remove them from admins
+        group.admins = group.admins.filter((admin) => admin.toString() !== myId.toString());
       }
+    
+      // Remove from members
+      group.members = group.members.filter((member) => member._id.toString() !== myId.toString());
+    
+      // Save the updated group
+      await group.save();
+    
+      // Emit socket event to notify remaining members
+      group.members.forEach((member) => {
+        const socketId = getUserSocketId(member._id);
+        if (socketId) {
+          io.to(socketId).emit("leaveGroup", myId, groupId);
+        }
+      });
+    
+      res.status(200).json({
+        success: true,
+        message: "You have successfully left the group",
+      });
+    
+    } catch (error) {
+      console.error("Error in leaveGroup:", error.message);
+      res.status(500).json({ success: false, message: "Server error" });
     }
-
-    // Save the updated group
-    await group.save();
-
-    res.status(200).json({
-      success: true,
-      message: "You have successfully left the group",
-    });
-  } catch (error) {
-    console.log("Error in leaveGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+  
+    
 };
 
 export const getGroup = async (req, res) => {
@@ -418,43 +512,45 @@ export const getGroup = async (req, res) => {
     const userId = req.user._id;
 
     // Find the groups where the user is a member or an admin
-    let groups = await Group.find({ members: userId }).populate("members", "fullname profilePic _id");
-    
+    let groups = await Group.find({ members: userId }).populate(
+      "members",
+      "fullname profilePic _id"
+    );
+
     if (groups.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No groups found for this user.",
       });
     }
-    
+
     // Loop through each group
     for (const group of groups) {
-        // Loop through each member in the group
-        for (const member of group.members) {
-            // Get the contact list of the logged-in user
-            const userContacts = await Users.findById(userId).select("contacts");
-    
-            // Find the saved name from the contacts list
-            const contact = userContacts.contacts.find(
-                (contact) => contact.userId.toString() === member._id.toString()
-            );
-    
-            // Set the displayName to the savedName if found, otherwise use fullname
-            const displayName = contact ? contact.savedName : member.fullname;
-            
-            // Update the member object with only necessary fields
-            member.fullname = displayName;
-    
-            console.log(displayName, member._id);
-        }
+      // Loop through each member in the group
+      for (const member of group.members) {
+        // Get the contact list of the logged-in user
+        const userContacts = await Users.findById(userId).select("contacts");
+
+        // Find the saved name from the contacts list
+        const contact = userContacts.contacts.find(
+          (contact) => contact.userId.toString() === member._id.toString()
+        );
+
+        // Set the displayName to the savedName if found, otherwise use fullname
+        const displayName = contact ? contact.savedName : member.fullname;
+
+        // Update the member object with only necessary fields
+        member.fullname = displayName;
+
+        console.log(displayName, member._id);
+      }
     }
-    
+
     // Return the groups with members' display names and limited fields
     res.status(200).json({
       success: true,
       groups,
     });
-    
   } catch (error) {
     console.log("Error in getGroup:", error.message);
     res.status(500).json({ success: false, message: "Server error" });

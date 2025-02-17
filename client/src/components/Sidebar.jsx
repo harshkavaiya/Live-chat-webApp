@@ -12,6 +12,7 @@ import GroupDialog from "./PopUpDialog/GroupDialog";
 import useSearch from "../function/SearchFunc";
 import useAuthStore from "../store/useAuthStore";
 import useHomePageNavi from "../store/useHomePageNavi";
+import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -24,8 +25,8 @@ const Sidebar = () => {
   useEffect(() => {
     FetchOnlineUsers();
   }, []);
-
-  const { setDialogOpen ,getGroupMessages,groups} = useContactList();
+  
+  const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
     useSearch(messagerUser);
 
@@ -37,7 +38,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
-    getGroupMessages();
   }, [getMessagerUser]);
 
   if (isLoading) return <SidebarUser />;
@@ -146,25 +146,38 @@ const Sidebar = () => {
               Unread
             </div>
           </div>
-          
         </div>
 
         {/* messeages list */}
-        {/* <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
-          {filteredData.length === 0 ? (
+        <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
+          {messagerUser.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
             </p>
           ) : (
-            filteredData.map((i, idx) => {
-              const { lastMessageTime, fullname, lastMessage, profilePic } = i;
+            messagerUser.map((i, idx) => {
+              const {
+                lastMessageTime,
+                fullname,
+                profilePic,
+                sender,
+                receiver,
+                lastMessageType,
+              } = i;
 
+              const secretKey = generateUniqueId(sender, receiver);
+
+              const data =
+                lastMessageType == "text"
+                  ? decryptData(i.lastMessage, secretKey)
+                  : i.lastMessage;
+              const lastMessage = data || i.lastMessage;
               return (
                 <div
                   key={idx}
                   onClick={() => selectUsertoChat(i)}
                   className={`flex justify-between pl-4 md:border-b w-full pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
-                ${idx == filteredData.length - 1 && "border-b"}`}
+                ${idx == messagerUser.length - 1 && "border-b"}`}
                 >
                   <div className="flex items-center w-full">
                     <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
@@ -215,78 +228,7 @@ const Sidebar = () => {
               );
             })
           )}
-          {filteredData.length != 0 && (
-            <div className="mb-36 md:mb-5">
-              <div className="divider text-xs">end-to-end encrypted</div>
-            </div>
-          )}
-        </div> */}
-        <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
-          {groups.length === 0 ? (
-            <p className="text-center inset-x-0 inset-y-1/2 absolute">
-              No contacts found
-            </p>
-          ) : (
-            groups.map((i, idx) => {
-              const { name } = i;
-
-              return (
-                <div
-                  key={idx}
-                  onClick={() => selectUsertoChat(i)}
-                  className={`flex justify-between pl-4 md:border-b w-full pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
-                ${idx == groups.length - 1 && "border-b"}`}
-                >
-                  <div className="flex items-center w-full">
-                    <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
-                      <img
-                        src={
-                          
-                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
-                        }
-                        alt="user"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col w-2/3 ml-3 gap-1">
-                      <p className="text-lg font-semibold">{name}</p>
-                      <p className="text-sm truncate text-primary-content">
-                       lastMessages...
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    {!receiveMessage && (
-                      <div className="flex justify-start">
-                        <GoDotFill size={20} className="text-blue-500" />
-                        <GoDotFill size={20} className="text-blue-500" />
-                      </div>
-                    )}
-                    <div className="flex flex-col gap-2 items-center">
-                      <p className="text-xs">
-                        10/20/20
-                      </p>
-
-                      <div
-                        className={`flex items-center gap-3 group-hover:translate-x-0  transition-transform duration-75
-                    ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
-                      >
-                        {receiveMessage ? (
-                          <>
-                            <div className="badge badge-primary w-6 h-6">4</div>
-                            <FaAngleDown className="cursor-pointer" size={20} />
-                          </>
-                        ) : (
-                          <FaAngleDown className="cursor-pointer" size={20} />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
-          {filteredData.length != 0 && (
+          {messagerUser.length != 0 && (
             <div className="mb-36 md:mb-5">
               <div className="divider text-xs">end-to-end encrypted</div>
             </div>

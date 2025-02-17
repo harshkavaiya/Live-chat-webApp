@@ -5,7 +5,6 @@ import useMessageStore from "../store/useMessageStore";
 import useFunctionStore from "../store/useFuncationStore";
 import useAuthStore from "../store/useAuthStore";
 import axiosInstance from "../lib/axiosInstance";
-
 import ChatInput from "../components/chat/ChatInput";
 import ChatHeader from "../components/chat/ChatHeader";
 import ChatMessage from "../components/chat/ChatMessage";
@@ -14,7 +13,6 @@ import ImagePreview from "../components/ImagePreview/ImagePreview";
 import Share from "../components/share/share";
 import Location from "../components/Location";
 import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
-import CryptoJS from "crypto-js";
 
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -31,19 +29,19 @@ const ChatPage = () => {
     setMessages,
     messages,
     currentChatingUser,
-    hanldeVote,
+    handleVote,
     handleMessageRead,
   } = useMessageStore();
   const { socket } = useAuthStore();
 
-  // Fetch chat messages
+  // Fetch chat message
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: [`chat-${currentChatingUser?._id}`],
       queryFn: async ({ pageParam = false }) => {
         if (!currentChatingUser?._id) return [];
         const res = await axiosInstance.get(
-          `/message/chat/${currentChatingUser._id}?lastMessageId=${pageParam}&Datalength=${messages.length}`
+          `/message/chat/${currentChatingUser._id}?lastMessageId=${pageParam}&Datalength=${messages.length}&type=${currentChatingUser.type}`
         );
         return res.data || [];
       },
@@ -57,20 +55,23 @@ const ChatPage = () => {
   // Update messages when data changes
   useEffect(() => {
     if (data?.pages) {
-      setMessages(data.pages.flat().reverse());
+      const uniqueMessages = [
+        ...new Map(data.pages.flat().map((msg) => [msg._id, msg])).values(),
+      ];
+      setMessages(uniqueMessages.reverse());
     }
-  }, [data, setMessages]);
+  }, [data]);
 
   // Handle socket events
   useEffect(() => {
     if (!socket) return;
-    socket.on("vote", hanldeVote);
+    socket.on("vote", handleVote);
     socket.on("messagesRead", handleMessageRead);
     return () => {
       socket.off("vote");
       socket.off("messagesRead");
     };
-  }, [socket, hanldeVote, handleMessageRead]);
+  }, [socket, handleVote, handleMessageRead]);
 
   return (
     <>
@@ -96,6 +97,8 @@ const ChatPage = () => {
               />
             </div>
             {/* Input Area */}
+            {/* pending */}
+
             <div className="w-full h-[10%]">
               <ChatInput />
             </div>

@@ -122,9 +122,8 @@ io.on("connection", (socket) => {
     io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
   });
 
-  socket.on("messagesRead", (data) => {
-    console.log(data);
-    io.to(getUserSocketId(data)).emit("messagesRead");
+  socket.on("messagesRead", (data,myId) => {
+    io.to(getUserSocketId(data)).emit("messagesRead",myId);
   });
 });
 

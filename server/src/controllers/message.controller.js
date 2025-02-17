@@ -1,15 +1,72 @@
 import Users from "../models/users.model.js";
 import Message from "../models/message.model.js";
 import { getUserSocketId, io } from "../lib/socket-io.js";
-import { decryptData, encryptData, generateUniqueId } from "../lib/crypto.js";
+import { encryptData, generateUniqueId } from "../lib/crypto.js";
+import Group from "../models/group.model.js";
 
 export const sidebarUser = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
 
+    // Find the groups where the user is a member or an admin
+    let groups = await Group.find({ members: loggedUserId }).populate(
+      "members",
+      "fullname profilePic _id messagePermission"
+    );
+
+    const userContacts = await Users.findById(loggedUserId).select("contacts");
+
+    for (const group of groups) {
+      for (const member of group.members) {
+        const contact = userContacts.contacts.find(
+          (contact) => contact.userId.toString() === member._id.toString()
+        );
+        const displayName = contact ? contact.savedName : member.fullname;
+        member.fullname = displayName;
+      }
+    }
+
     const messages = await Message.find({
       $or: [{ sender: loggedUserId }, { receiver: loggedUserId }],
     });
+
+    const groupsWithLastMessage = await Promise.all(
+      groups.map(async (group) => {
+        const lastMessage = await Message.findOne({ groupId: group._id })
+          .sort({ createdAt: -1 })
+          .limit(1)
+          .select("data type createdAt sender receiver");
+        const {
+          _id,
+          name,
+          photo,
+          members,
+          admins,
+          admin,
+          inviteLink,
+          messagePermission,
+        } = group;
+        return {
+          _id,
+          fullname: name,
+          profilePic: photo,
+          members,
+          admins,
+          admin,
+          inviteLink,
+          messagePermission,
+          sender: lastMessage?.sender,
+          receiver: group._id,
+          type: "Group",
+          lastMessage:
+            lastMessage?.type == "text"
+              ? lastMessage.data
+              : lastMessage?.type || null,
+          lastMessageType: lastMessage?.type || null,
+          lastMessageTime: lastMessage?.createdAt || null,
+        };
+      })
+    );
 
     const userIds = [
       ...new Set(
@@ -34,10 +91,10 @@ export const sidebarUser = async (req, res) => {
           ],
         })
           .sort({ createdAt: -1 })
-          .select("data type createdAt");
+          .limit(1)
+          .select("data type createdAt sender receiver");
 
         let lastMessageData;
-        // Some type data have return array and object so to change into text message
         if (lastMessage?.type == "text") {
           lastMessageData = lastMessage.data;
         } else {
@@ -49,14 +106,21 @@ export const sidebarUser = async (req, res) => {
           fullname: user.fullname,
           profilePic: user.profilePic,
           phone: user.phone,
-          lastMessage: lastMessageData,
+          sender: lastMessage?.sender,
+          receiver: lastMessage?.receiver,
+          type: "Single",
+          lastMessage: lastMessageData || null,
           lastMessageType: lastMessage ? lastMessage.type : null,
           lastMessageTime: lastMessage ? lastMessage.createdAt : null,
         };
       })
     );
 
-    res.status(200).json({ success: true, usersWithLastMessage });
+    const merge = [...usersWithLastMessage, ...groupsWithLastMessage].sort(
+      (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
+    );
+
+    res.status(200).json({ success: true, usersWithLastMessage: merge });
   } catch (error) {
     console.log("error in sidebarUser controller: ", error.message);
     res.status(500).json({ message: "Server error" });
@@ -213,31 +277,51 @@ export const deleteContact = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   const myId = req.user._id;
-  const { Datalength } = req.query;
-
+  const { Datalength, type } = req.query;
   if (!myId)
     return res.status(400).json({ message: "Server error", success: 0 });
+
   const { id: userToChatId } = req.params;
   try {
-    let find = Message.find({
-      $or: [
-        { sender: myId, receiver: userToChatId },
-        { sender: userToChatId, receiver: myId },
-      ],
-      deletedByUsers: { $ne: myId },
-    })
-      .sort({ createdAt: -1 })
-      .skip(Datalength)
-      .limit(10);
+    let find;
+    if (type == "Group") {
+      find = Message.find({
+        receiver: userToChatId,
+        deletedByUsers: { $ne: myId },
+      })
+        .sort({ createdAt: -1 })
+        .skip(Datalength)
+        .limit(10);
 
-    await Message.updateMany(
-      {
-        sender: userToChatId,
-        receiver: myId,
-        read: false, // Only update unread messages
-      },
-      { $set: { read: true } }
-    );
+      await Message.updateMany(
+        {
+          sender: { $ne: myId },
+          receiver: userToChatId,
+          read: { $ne: myId }, // Only update unread messages
+        },
+        { $addToSet: { read: myId } }
+      );
+    } else {
+      find = Message.find({
+        $or: [
+          { sender: myId, receiver: userToChatId },
+          { sender: userToChatId, receiver: myId },
+        ],
+        deletedByUsers: { $ne: myId },
+      })
+        .sort({ createdAt: -1 })
+        .skip(Datalength)
+        .limit(10);
+
+      await Message.updateMany(
+        {
+          sender: userToChatId,
+          receiver: myId,
+          read: { $ne: myId }, // Only update unread messages
+        },
+        { $addToSet: { read: myId } }
+      );
+    }
 
     io.to(getUserSocketId(userToChatId)).emit("messagesRead", {
       receiver: myId,
@@ -255,9 +339,9 @@ export const getMessages = async (req, res) => {
 export const sendMessage = async (req, res) => {
   const { data, type } = req.body.data;
   const myId = req.user._id;
-  const { fullname, profilePic } = req.body.receiver;
+  const ChatType = req.body.type;
+  const { fullname, profilePic } = req.body.notification;
   const { id: receiver } = req.params;
-
   try {
     let secretkey = generateUniqueId(myId, receiver);
     let enrData = encryptData(data, secretkey);
@@ -269,14 +353,31 @@ export const sendMessage = async (req, res) => {
       data: enrData,
     });
     await newMessage.save();
-    let receiverSoket = getUserSocketId(receiver);
+    if (ChatType == "Group") {
+      const { members } = req.body;
 
-    if (receiverSoket) {
-      io.to(receiverSoket).emit("newMessage", {
-        newMessage,
-        profilePic: profilePic,
-        name: fullname,
+      members.forEach((element) => {
+        let receiverSoket = getUserSocketId(element._id);
+        if (receiverSoket) {
+          io.to(receiverSoket).emit("newMessage", {
+            newMessage,
+            profilePic,
+            name: fullname,
+            ChatType,
+          });
+        }
       });
+    } else {
+      let receiverSoket = getUserSocketId(receiver);
+
+      if (receiverSoket) {
+        io.to(receiverSoket).emit("newMessage", {
+          newMessage,
+          profilePic,
+          name: fullname,
+          ChatType,
+        });
+      }
     }
 
     res.status(200).json(newMessage);
@@ -288,30 +389,96 @@ export const sendMessage = async (req, res) => {
 
 export const clearChat = async (req, res) => {
   const { id: receiverId } = req.params;
+  const { type } = req.query;
   const myId = req.user._id;
 
-  await Message.updateMany(
-    {
-      $or: [
-        { sender: myId, receiver: receiverId },
-        { sender: receiverId, receiver: myId },
-      ],
-    },
-    {
-      $addToSet: { deletedByUsers: myId }, // Add userId to the deletedByUsers array (if not already present)
-    }
-  );
+  if (type == "Group") {
+    await Message.updateMany(
+      {
+        receiver: receiverId,
+      },
+      {
+        $addToSet: { deletedByUsers: myId }, // Add userId to the deletedByUsers array (if not already present)
+      }
+    );
+  } else {
+    await Message.updateMany(
+      {
+        $or: [
+          { sender: myId, receiver: receiverId },
+          { sender: receiverId, receiver: myId },
+        ],
+      },
+      {
+        $addToSet: { deletedByUsers: myId }, // Add userId to the deletedByUsers array (if not already present)
+      }
+    );
+  }
 
   res.status(200).json({ success: 1 });
 };
 export const MessageReaction = async (req, res) => {
-  const { reaction, id, to } = req.body;
+  const { id, userId, reaction, to, members, ChatType } = req.body;
 
-  await Message.findByIdAndUpdate(id, { reaction: reaction });
-  let receiverSoket = getUserSocketId(to);
+  let message = await Message.findById(id);
+  if (!message) return res.status(404).json({ error: "Message not found" });
 
-  io.to(receiverSoket).emit("message_reaction", { id, reaction });
+  const reactionItem = message.reaction.find(
+    (item) => item.user.toString() === userId.toString()
+  );
 
+  if (reactionItem) {
+    reactionItem.id = reaction.id;
+    reactionItem.label = reaction.label;
+  } else {
+    message.reaction.push({
+      id: reaction.id,
+      label: reaction.label,
+      user: userId,
+    });
+  }
+
+  await message.save();
+
+  // Emit update to all users in the chat
+  const userSockets = new Set();
+  const receiverSocket = getUserSocketId(to);
+  if (receiverSocket) userSockets.add(receiverSocket);
+
+  members.forEach((member) => {
+    const memberSocket = getUserSocketId(member._id);
+    if (memberSocket) userSockets.add(memberSocket);
+  });
+
+  userSockets.forEach((socketId) => {
+    io.to(socketId).emit("message_reaction", id, {
+      id: reaction.id,
+      label: reaction.label,
+      user: userId,
+      ChatType,
+    });
+  });
+
+  res.status(200).json({ success: 1 });
+};
+
+export const handleVote = async (req, res) => {
+  const { pollId, to, members, data } = req.body;
+  await Message.findByIdAndUpdate(pollId, { data: data });
+  members.forEach((element) => {
+    const receiverId = getUserSocketId(element._id);
+
+    if (receiverId) {
+      io.to(receiverId).emit("vote", { data, pollId });
+    }
+  });
+
+  if (!members.length) {
+    const receiverId = getUserSocketId(to);
+    if (receiverId) {
+      io.to(receiverId).emit("vote", { data, pollId });
+    }
+  }
   res.status(200).json({ success: 1 });
 };
 

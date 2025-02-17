@@ -5,3 +5,8 @@ export const OpenCloseMenu = (ref) => {
     ref.current?.classList?.add("hidden");
   }
 };
+
+export const MemeberProfilePic = (data, id) => {
+  const member = data.find((m) => m._id === id);
+  return member?.profilePic || null;
+};

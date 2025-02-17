@@ -10,6 +10,7 @@ import {
   clearChat,
   sidebarUser,
   MessageReaction,
+  handleVote,
 } from "../controllers/message.controller.js";
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.get("/chat/:id", AuthRoute, getMessages);
 router.post("/send/:id", AuthRoute, sendMessage);
 router.delete("/clearChat/:id", AuthRoute, clearChat);
 router.post("/reaction", AuthRoute, MessageReaction);
+router.post("/sendVote/:id", AuthRoute, handleVote);
 
 export default router;

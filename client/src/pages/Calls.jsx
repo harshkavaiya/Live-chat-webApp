@@ -13,7 +13,7 @@ const Calls = () => {
   const users = [
     {
       name: "John Doe",
-      profilePhoto: "https://example.com/profiles/john_doe.jpg",
+      profilePhoto: "https://example.coms/profiles/john_doe.jpg",
       callType: "incoming",
       time: "2024-12-28T14:30:00Z",
       misscall: true,

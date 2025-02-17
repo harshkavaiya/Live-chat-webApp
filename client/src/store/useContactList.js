@@ -10,35 +10,30 @@ const useContactList = create((set, get) => ({
   isAddLoading: false,
   savedName: "",
   phone: "",
-
   setDialogOpen: (isOpen) => set({ isOpenDialog: isOpen }),
-
   // Set input fields
   setSavedData: (savedName, phone) => {
     set({ savedName, phone });
   },
-
   clearInputFields: () => {
     set({ savedName: "", phone: "" });
   },
-
   getGroupMessages: async () => {
     try {
       let res = await axiosInstance.get("/group/getGroup");
-     if(!res.data.success)
-      {
+      if (!res.data.success) {
         toast.error(res.data.message);
-        console.log("responce",res.data.message);
-        return;
+        console.log("responce", res.data.message);
+        return [];
       }
 
       set({ groups: res.data.groups });
-      console.log("responce",res.data.groups);
-      
+      return res.data.groups;
     } catch (error) {
       console.error("Error fetching messager users:", error);
       toast.error(error);
-    } 
+      return [];
+    }
   },
 
   getContactsList: async () => {

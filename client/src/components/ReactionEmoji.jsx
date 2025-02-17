@@ -11,7 +11,7 @@ const ReactionEmoji = ({ index }) => {
   const { SendMessageReaction } = useMessageStore();
 
   const handleReactionSelect = (reaction) => {
-    SendMessageReaction({ id: reaction.id, lable: reaction.label }, index);
+    SendMessageReaction({ id: reaction.id, label: reaction.label }, index);
   };
 
   return (

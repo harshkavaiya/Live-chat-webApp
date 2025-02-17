@@ -1,4 +1,4 @@
-import  { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaArrowLeft, FaPlus } from "react-icons/fa6";
 import { IoMdSearch } from "react-icons/io";
 import useContactList from "../../store/useContactList";
@@ -6,6 +6,7 @@ import useSearch from "../../function/SearchFunc";
 import AddContact from "./AddContact";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
+import useMessageStore from "../../store/useMessageStore";
 
 const ContactDialog = () => {
   const {
@@ -16,6 +17,7 @@ const ContactDialog = () => {
     deleteuserContact,
     isloading,
   } = useContactList();
+  const { selectUsertoChat } = useMessageStore();
   const { searchQuery, filteredData, handleSearchChange } = useSearch(contacts);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const closeDialog = () => {
@@ -98,6 +100,10 @@ const ContactDialog = () => {
               filteredData.map((i, idx) => (
                 <div
                   key={idx}
+                  onClick={() => {
+                    selectUsertoChat(i);
+                    document.getElementById("my_modal_4").close();
+                  }}
                   className="flex  items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
