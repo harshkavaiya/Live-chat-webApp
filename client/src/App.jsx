@@ -11,6 +11,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { Route, Routes } from "react-router-dom";
 import ShowQR from "./components/Group/ShowQR";
+import QRScanner from "./components/Group/ScannerQR";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -43,13 +44,14 @@ function App() {
     <div data-theme={theme}>
         <Toaster className="z-50"/>
       {/* {authUser && authUser._id} */}
-      {authUser != null ? <Home /> : <LoginPage />}
+      {/* {authUser != null ? <Home /> : <LoginPage />} */}
 
-      {/* <Routes> */}
+      <Routes>
       {/* <Route path="/" element={<Home />} />
         <Route path="/Login" element={<LoginPage />} /> */}
-      {/* <Route path="/qrgroup" element={<ShowQR />} /> */}
-      {/* </Routes> */}
+      <Route path="/qrgroup" element={<ShowQR />} />
+      <Route path="/readqr" element={<QRScanner />} />
+      </Routes>
       {/* <Route path="/Register" element={<Register />} /> */}
       {/* {authUser && <NewVideoCall />} */}
     </div>

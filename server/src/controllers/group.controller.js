@@ -62,7 +62,7 @@ export const joinGroup = async (req, res) => {
 
     //if group not found or invalid invite link
     if (!group) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "Invalid invite link or group not found",
       });
@@ -70,7 +70,7 @@ export const joinGroup = async (req, res) => {
 
     //if user is already a member of the group
     if (group.members.includes(memberId)) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "You are already a member of this group",
       });
