@@ -44,17 +44,16 @@ export const createGroup = async (req, res) => {
       "members",
       "fullname profilePic _id"
     );
-    
 
     const groupInfo = {
-      _id:newGroup._id,
+      _id: newGroup._id,
       fullname: name,
       profilePic: photo,
       members: groupMember.members,
-      admins:admin,
+      admins: admin,
       admin,
       inviteLink,
-      messagePermission:true,
+      messagePermission: true,
       sender: null,
       receiver: newGroup._id,
       type: "Group",
@@ -62,9 +61,9 @@ export const createGroup = async (req, res) => {
       lastMessageType: null,
       lastMessageTime: new Date().toISOString(),
     };
- 
+
     groupMember.members.map((user) => {
-      if (user._id != admin) {
+      if (user._id.toString() != admin.toString()) {
         let receiverId = getUserSocketId(user._id);
         if (receiverId) {
           io.to(receiverId).emit("newGroup", groupInfo);
@@ -369,6 +368,7 @@ export const toggleMessagePermission = async (req, res) => {
 export const deleteGroup = async (req, res) => {
   try {
     const { groupId } = req.body;
+    const myId = req.user._id;
     // Validate groupId
     if (!groupId || !mongoose.Types.ObjectId.isValid(groupId)) {
       return res
@@ -384,12 +384,21 @@ export const deleteGroup = async (req, res) => {
     }
 
     // Only admin can delete the group
-    if (group.admin.toString() !== req.user._id.toString()) {
+    if (group.admin.toString() !== myId.toString()) {
       return res.status(200).json({
         success: false,
         message: "You are not authorized to delete this group",
       });
     }
+
+    group?.members?.forEach((user) => {
+      if (user.toString() != myId.toString()) {
+        let socketId = getUserSocketId(user);
+        if (socketId) {
+          io.to(socketId).emit("deleteGroup", groupId);
+        }
+      }
+    });
 
     await group.deleteOne();
     res.status(200).json({ success: true, message: "Group deleted" });
@@ -581,9 +590,11 @@ export const leaveGroup = async (req, res) => {
 
     // Emit socket event to notify remaining members
     group.members.forEach((member) => {
-      const socketId = getUserSocketId(member._id);
-      if (socketId) {
-        io.to(socketId).emit("leaveGroup", myId, groupId);
+      if (member._id != myId) {
+        const socketId = getUserSocketId(member._id);
+        if (socketId) {
+          io.to(socketId).emit("leaveGroup", myId, groupId);
+        }
       }
     });
 

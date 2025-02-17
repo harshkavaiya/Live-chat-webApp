@@ -39,7 +39,7 @@ const Home = () => {
     handleNewGroup,
     handleNewAdmin,
     handleremoveMember,
-    handleLeaveGroup,handleRemoveAdmin
+    handleLeaveGroup,handleRemoveAdmin,hanldeDeleteGroup
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -102,6 +102,7 @@ const Home = () => {
       socket.on("removeMember", handleremoveMember);
       socket.on("leaveGroup", handleLeaveGroup);
       socket.on("removeAdmin",handleRemoveAdmin)
+      socket.on("deleteGroup",hanldeDeleteGroup)
       return () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
@@ -117,6 +118,7 @@ const Home = () => {
         socket.off("removeMember");
         socket.off("leaveGroup");
         socket.off("removeAdmin");
+        socket.off("deleteGroup")
       };
     }
   }, [
@@ -128,6 +130,11 @@ const Home = () => {
     handleDeleteStatus,
     currentChatingUser,
     handleMessageReaction,
+    handleNewAdmin,
+    handleNewGroup,
+    handleNewMember,
+    handleremoveMember,
+    handleRemoveAdmin,hanldeDeleteGroup
   ]);
 
   // useEffect(() => {
