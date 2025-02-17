@@ -42,7 +42,7 @@ app.use("/group", groupRoute);
 app.use("/status", statusRoute);
 app.post("/audio/upload", async (req, res) => {
   if (!req.files)
-    return res.status(404).json({ message: "Audio Not Receive", success: 0 });
+    return res.status(200).json({ message: "Audio Not Receive", success: 0 });
 
   const { audio } = req.files;
   const { name } = req.body;

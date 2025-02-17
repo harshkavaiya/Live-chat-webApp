@@ -29,7 +29,7 @@ export const UploadStatus = async (req, res) => {
     res.status(201).json({ success: 1 });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: error.message, success: 0 });
+    res.status(200).json({ message: error.message, success: 0 });
   }
 };
 
@@ -115,7 +115,7 @@ export const handleStatusSeen = async (req, res) => {
   } catch (error) {
     console.error("Error updating status:", error);
     return res
-      .status(500)
+      .status(200)
       .json({ message: "Error updating status", success: 0 });
   }
 };
