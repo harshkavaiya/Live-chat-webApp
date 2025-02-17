@@ -19,7 +19,7 @@ import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 import { useQueryClient } from "@tanstack/react-query";
-import CryptoJS from "crypto-js";
+import { MemeberProfilePic } from "../../function/function";
 
 const ChatMessage = ({
   isLoading,
@@ -32,8 +32,8 @@ const ChatMessage = ({
     suscribeToMessage,
     unsuscribeFromMessage,
     currentChatingUser,
-    handleMessageReaction,
   } = useMessageStore();
+
   const {
     onSelectionMessage,
     handleSelectMessage,
@@ -44,7 +44,8 @@ const ChatMessage = ({
     decryptData,
     generateUniqueId,
   } = useFunctionStore();
-  const { socket } = useAuthStore();
+  const { authUser } = useAuthStore();
+  const myId = authUser._id;
   const { handleMediaPreview } = useMediaStore();
 
   const messageEndRef = useRef();
@@ -60,18 +61,15 @@ const ChatMessage = ({
     }
   }, [messages]);
 
-  useEffect(() => {
-    socket.on("message_reaction", handleMessageReaction);
-
-    return () => {
-      socket.off("message_reaction");
-    };
-  }, [socket]);
-
   if (isLoading) return <MessageLoadingSkeleton />;
 
   const handleScroll = (event) => {
-    if (event.target.scrollTop === 0 && !isFetchingNextPage && hasNextPage) {
+    if (
+      event.target.scrollTop === 0 &&
+      !isFetchingNextPage &&
+      hasNextPage &&
+      !isLoading
+    ) {
       fetchNextPage();
     }
   };
@@ -86,10 +84,11 @@ const ChatMessage = ({
             <span className="text-center loading loading-dots loading-lg" />
           </div>
         )}
-        {messages.map((message, i) => {
-          const { _id, sender, receiver, type, read, createdAt } = message;
-          let secretKey = generateUniqueId(sender, receiver);
-          const data = decryptData(message.data, secretKey);
+        {messages?.map((message, i) => {
+          const { _id, sender, receiver, type, read, createdAt, reaction } =
+            message;
+          let secretKey = generateUniqueId(sender, receiver) || null;
+          const data = decryptData(message?.data, secretKey);
           return (
             <div
               ref={messageEndRef}
@@ -106,29 +105,59 @@ const ChatMessage = ({
 
               <div
                 className={`relative h-full chat w-full px-2 flex items-center  ${
-                  sender != currentChatingUser._id
+                  sender == myId
                     ? "justify-end chat-end"
                     : "justify-start chat-start group"
                 } `}
               >
+                {currentChatingUser.type == "Group" && (
+                  <div
+                    className={`chat-image avatar ${
+                      sender == myId && currentChatingUser.type == "Group"
+                        ? "order-2"
+                        : "order-1"
+                    }`}
+                  >
+                    <div className="w-5 rounded-full">
+                      <img
+                        src={
+                          MemeberProfilePic(
+                            currentChatingUser.members,
+                            sender
+                          ) ||
+                          "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
                 <div
                   className={`chat-bubble relative rounded-xl max-w-[70%] px-2 my-1 py-1 ${
-                    sender != currentChatingUser._id
-                      ? "bg-primary/70 text-primary-content"
-                      : "bg-base-300 text-base-content "
+                    sender == myId
+                      ? "bg-primary/70 text-primary-content "
+                      : "bg-base-300 text-base-content"
+                  } ${
+                    sender == myId
+                      ? "order-1"
+                      : currentChatingUser.type == "Group"
+                      ? "order-2"
+                      : "order-1"
                   }`}
                 >
-                  {/* reaction empoji */}
-                  {message.reaction && (
+                  {/* reaction emoji */}
+                  {reaction.length > 0 && (
                     <div
-                      className={`badge bg-transparent border-none absolute -bottom-4 p-0.5 w-6 h-6 ${
-                        sender == currentChatingUser._id ? "left-1" : "right-1 "
+                      className={`badge bg-transparent border-none absolute -bottom-3 p-0.5  ${
+                        sender == myId ? "left-1" : "right-1 "
                       }`}
                     >
-                      <img
-                        className="h-full w-full"
-                        src={reactions[message.reaction.id - 1].emoji}
-                      />
+                      {reaction.map((item, i) => (
+                        <img
+                          className="w-4 h-4"
+                          key={i}
+                          src={reactions[item.id - 1].emoji}
+                        />
+                      ))}
                     </div>
                   )}
                   {type == "text" && <p className="text-sm">{data}</p>}
@@ -151,28 +180,34 @@ const ChatMessage = ({
                       handleMediaPreview={handleMediaPreview}
                     />
                   )}
-                  {type == "poll" && <Poll id={_id} data={data} />}
+                  {type == "poll" && (
+                    <Poll id={_id} data={data} sender={sender} />
+                  )}
                   {type == "location" && <LocationPreview data={data} />}
                   {type == "audio" && <Audio data={data} />}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
-                      sender != currentChatingUser._id
+                      sender == myId
                         ? "text-primary-content/70"
                         : "text-base-content/70"
                     }`}
                   >
                     {formatMessageTime(createdAt)}
-                    {sender != currentChatingUser._id && (
+                    {sender == myId && (
                       <PiChecksBold
                         size={13}
                         className={`${
-                          read ? "text-sky-500" : "text-base-100"
+                          read.includes(myId) ? "text-sky-500" : "text-base-100"
                         }  ml-1`}
                       />
                     )}
                   </p>
                 </div>
-                <div className="dropdown dropdown-top dropdown-hover z-20">
+                <div
+                  className={`dropdown dropdown-top dropdown-hover z-20 ${
+                    currentChatingUser.type == "Group" ? "order-3" : "order-2"
+                  }`}
+                >
                   <button
                     tabIndex={0}
                     className="cursor-pointer rounded-full bg-base-300 w-7 h-7 hidden group-hover:flex items-center justify-center active:block"

@@ -17,9 +17,13 @@ import useStatusStore from "../store/useStatusStore";
 import StatusPreview from "../components/Status/StatusPreview";
 import MyStatusPreview from "../components/Status/MyStatusPreview";
 import CreatePoll from "../components/Poll/CreatePoll";
+import { useQueryClient } from "@tanstack/react-query";
+import useGroupStore from "../store/useGroupStore";
 
 const Home = () => {
-  const { currentChatingUser, handleNewMessage } = useMessageStore();
+  const { currentChatingUser, handleNewMessage, handleMessageReaction } =
+    useMessageStore();
+  const queryClient = useQueryClient();
   const { socket, authUser, checkAuth } = useAuthStore();
   const {
     status,
@@ -30,6 +34,13 @@ const Home = () => {
     hanldeRefreshStatus,
     handleDeleteStatus,
   } = useStatusStore();
+  const {
+    handleNewMember,
+    handleNewGroup,
+    handleNewAdmin,
+    handleremoveMember,
+    handleLeaveGroup,
+  } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
 
@@ -78,10 +89,18 @@ const Home = () => {
       socket.on("callOffer", callofferHanlder);
       socket.on("callEnded", endcallhandler);
       socket.on("newStatus", handleUserStatus);
-      socket.on("newMessage", handleNewMessage);
+      socket.on("newMessage", (data) => handleNewMessage(data, queryClient));
       socket.on("seenStatus", hanldeSeenStatus);
       socket.on("refreshStatus", hanldeRefreshStatus);
+      socket.on("message_reaction", (id, reaction) =>
+        handleMessageReaction(id, reaction, queryClient)
+      );
       socket.on("deleteStatus", handleDeleteStatus);
+      socket.on("newGroup", handleNewGroup);
+      socket.on("newMember", handleNewMember);
+      socket.on("newAdmin", handleNewAdmin);
+      socket.on("removeMember", handleremoveMember);
+      socket.on("leaveGroup", handleLeaveGroup);
       return () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
@@ -90,6 +109,12 @@ const Home = () => {
         socket.off("callOffer");
         socket.off("newMessage");
         socket.off("deleteStatus");
+        socket.off("message_reaction");
+        socket.off("newGroup");
+        socket.off("newMember");
+        socket.off("newAdmin");
+        socket.off("removeMember");
+        socket.off("leaveGroup");
       };
     }
   }, [
@@ -99,6 +124,8 @@ const Home = () => {
     hanldeSeenStatus,
     hanldeRefreshStatus,
     handleDeleteStatus,
+    currentChatingUser,
+    handleMessageReaction,
   ]);
 
   // useEffect(() => {

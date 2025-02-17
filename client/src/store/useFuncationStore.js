@@ -3,6 +3,7 @@ import useMessageStore from "./useMessageStore";
 import axios from "axios";
 import toast from "react-hot-toast";
 import CryptoJS from "crypto-js";
+import useAuthStore from "./useAuthStore";
 
 const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
@@ -36,13 +37,17 @@ const useFunctionStore = create((set, get) => ({
     set({ location: [] });
   },
   locationShare: (queryClient) => {
-    const { sendMessage, currentChatingUser } = useMessageStore.getState();
+    const { profilePic, fullname } = useAuthStore.getState().authUser;
+    const { sendMessage } = useMessageStore.getState();
     sendMessage(
       {
         type: "location",
         data: { latitude: get().location[0], longitude: get().location[1] },
       },
-      currentChatingUser,
+      {
+        profilePic,
+        fullname,
+      },
       queryClient
     );
     get().locationClose();
@@ -66,14 +71,16 @@ const useFunctionStore = create((set, get) => ({
         );
         dataUrl.push({ url: res.data.secure_url, type: check, read: false });
       }
-      const { sendMessage, currentChatingUser } = useMessageStore.getState();
+
+      const { profilePic, fullname } = useAuthStore.getState().authUser;
+      const { sendMessage } = useMessageStore.getState();
       sendMessage(
         {
           type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
           data: dataUrl,
         },
 
-        currentChatingUser,
+        { profilePic, fullname },
         queryClient
       );
 
@@ -123,6 +130,7 @@ const useFunctionStore = create((set, get) => ({
   },
   sendSelectionMessage: (receiver, queryClient) => {
     const { selectMessage } = get();
+    const { profilePic, fullname } = useAuthStore.getState().authUser;
     receiver.forEach((user) => {
       Object.keys(selectMessage).forEach((element) => {
         useMessageStore.getState().sendMessage(
@@ -130,7 +138,10 @@ const useFunctionStore = create((set, get) => ({
             type: selectMessage[element].type,
             data: selectMessage[element].data,
           },
-          user,
+          {
+            profilePic,
+            fullname,
+          },
           queryClient
         );
       });
@@ -147,7 +158,7 @@ const useFunctionStore = create((set, get) => ({
   },
   decryptData: (ciphertext, secretKey) => {
     const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   },
 }));
 

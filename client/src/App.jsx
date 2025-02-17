@@ -41,7 +41,7 @@ function App() {
 
   return (
     <div data-theme={theme}>
-      <Toaster />
+        <Toaster className="z-50"/>
       {/* {authUser && authUser._id} */}
       {authUser != null ? <Home /> : <LoginPage />}
 

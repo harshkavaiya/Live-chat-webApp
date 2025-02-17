@@ -14,7 +14,11 @@ import { MdMenuOpen } from "react-icons/md";
 import useAuthStore from "../store/useAuthStore";
 import { IoQrCodeOutline } from "react-icons/io5";
 import useHomePageNavi from "../store/useHomePageNavi";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
+=======
+import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
+>>>>>>> 0c5eab06727e5ef18cf996c7a14556a40418f84d
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -28,8 +32,13 @@ const Sidebar = () => {
   useEffect(() => {
     FetchOnlineUsers();
   }, []);
+<<<<<<< HEAD
 
   const { setDialogOpen, getGroupMessages, groups } = useContactList();
+=======
+  
+  const { setDialogOpen } = useContactList();
+>>>>>>> 0c5eab06727e5ef18cf996c7a14556a40418f84d
   const { searchQuery, filteredData, handleSearchChange } =
     useSearch(messagerUser);
 
@@ -41,7 +50,6 @@ const Sidebar = () => {
 
   useEffect(() => {
     getMessagerUser();
-    getGroupMessages();
   }, [getMessagerUser]);
 
   if (isLoading) return <SidebarUser />;
@@ -172,21 +180,35 @@ const Sidebar = () => {
         </div>
 
         {/* messeages list */}
-        {/* <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
-          {filteredData.length === 0 ? (
+        <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
+          {messagerUser.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
             </p>
           ) : (
-            filteredData.map((i, idx) => {
-              const { lastMessageTime, fullname, lastMessage, profilePic } = i;
+            messagerUser.map((i, idx) => {
+              const {
+                lastMessageTime,
+                fullname,
+                profilePic,
+                sender,
+                receiver,
+                lastMessageType,
+              } = i;
 
+              const secretKey = generateUniqueId(sender, receiver);
+
+              const data =
+                lastMessageType == "text"
+                  ? decryptData(i.lastMessage, secretKey)
+                  : i.lastMessage;
+              const lastMessage = data || i.lastMessage;
               return (
                 <div
                   key={idx}
                   onClick={() => selectUsertoChat(i)}
                   className={`flex justify-between pl-4 md:border-b w-full pr-2 border-primary/20 py-2 group hover:bg-primary/10 items-center
-                ${idx == filteredData.length - 1 && "border-b"}`}
+                ${idx == messagerUser.length - 1 && "border-b"}`}
                 >
                   <div className="flex items-center w-full">
                     <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
@@ -237,6 +259,7 @@ const Sidebar = () => {
               );
             })
           )}
+<<<<<<< HEAD
           {filteredData.length != 0 && (
             <div className="mb-36 md:mb-5">
               <div className="divider text-xs">end-to-end encrypted</div>
@@ -306,6 +329,9 @@ const Sidebar = () => {
             })
           )}
           {filteredData.length != 0 && (
+=======
+          {messagerUser.length != 0 && (
+>>>>>>> 0c5eab06727e5ef18cf996c7a14556a40418f84d
             <div className="mb-36 md:mb-5">
               <div className="divider text-xs">end-to-end encrypted</div>
             </div>

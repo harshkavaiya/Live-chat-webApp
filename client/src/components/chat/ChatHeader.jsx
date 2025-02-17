@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
-  const queryClient=useQueryClient()
+  const queryClient = useQueryClient();
   const { handleSelection } = useFunctionStore();
   const { closeChat, clearChat, currentChatingUser } = useMessageStore();
 
@@ -42,7 +42,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
               }}
               className="ml-4 font-semibold text-2xl w-full"
             >
-              Hardik
+              {currentChatingUser.fullname}
             </Link>
           </div>
         </div>
@@ -83,7 +83,9 @@ const ChatHeader = ({ setIsProfileOpen }) => {
                 <button onClick={closeChat}>Close Chat</button>
               </li>
               <li>
-                <button onClick={()=>clearChat(queryClient)}>Clear Chat</button>
+                <button onClick={() => clearChat(queryClient)}>
+                  Clear Chat
+                </button>
               </li>
               <li>
                 <p>Report</p>

@@ -5,31 +5,50 @@ import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
 import notification from "../assets/audio/notification.mp3";
 import NotificationToast from "../components/NotificationToast";
+import {
+  decryptData,
+  encryptData,
+  generateUniqueId,
+} from "../../../server/src/lib/crypto";
+
 const useMessageStore = create((set, get) => ({
   messages: [],
   messagerUser: [],
   isLoading: true,
   isMessageLoading: false,
   currentChatingUser: false,
+  setMessagerUser: (messagerUser) => {
+    set({ messagerUser });
+  },
+  setCurrentChatingUser: (currentChatingUser) => {
+    set({ currentChatingUser });
+  },
   setMessages: (messages) => {
     set({ messages });
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
-  sendMessage: async (data, receiver, queryClient) => {
-    let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
-      data,
-      receiver,
-    });
-    get().notificationSound();
-    queryClient.setQueryData([`chat-${receiver._id}`], (oldData) => {
+  sendMessage: async (data, notification, queryClient) => {
+    const { currentChatingUser, notificationSound } = get();
+    const { _id } = useAuthStore.getState().authUser;
+    let res = await axiosInstance.post(
+      `/message/send/${currentChatingUser._id}`,
+      {
+        data,
+        notification,
+        type: currentChatingUser.type,
+        members:
+          currentChatingUser?.members?.filter((item) => item._id != _id) || [],
+      }
+    );
+    notificationSound();
+
+    queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
       if (!oldData) return { pages: [[res.data]] };
       return {
         ...oldData,
         pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
       };
     });
-
-    set({ messages: [...get().messages, res.data] });
   },
   selectUsertoChat: (data) => {
     const { currentChatingUser } = get();
@@ -42,8 +61,10 @@ const useMessageStore = create((set, get) => ({
   },
   clearChat: async (queryClient) => {
     const { currentChatingUser } = get();
- 
-    await axiosInstance.delete(`/message/clearChat/${currentChatingUser._id}`);
+
+    await axiosInstance.delete(
+      `/message/clearChat/${currentChatingUser._id}?type=${currentChatingUser.type}`
+    );
     queryClient.setQueryData([`chat-${currentChatingUser._id}`], { pages: [] });
 
     set({ messages: [] });
@@ -117,10 +138,7 @@ const useMessageStore = create((set, get) => ({
       let res = await axiosInstance.get("/message/user");
       set({ isLoading: true });
       if (!res.data.success) return set({ messagerUser: [] });
-      const sortedUsers = res.data.usersWithLastMessage.sort(
-        (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
-      );
-      set({ messagerUser: [...sortedUsers] });
+      set({ messagerUser: res.data.usersWithLastMessage });
     } catch (error) {
       console.error("Error fetching messager users:", error);
       toast.error(error);
@@ -128,34 +146,81 @@ const useMessageStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
-
   suscribeToMessage: (queryClient) => {
     const socket = useAuthStore.getState().socket;
+    const { currentChatingUser, notificationSound } = get();
     if (!socket) return;
-
     socket.on("newMessage", (data) => {
       const { newMessage } = data;
-      socket.emit("messagesRead", newMessage.sender);
-      get().notificationSound();
+      socket.emit(
+        "messagesRead",
+        newMessage.sender,
+        useAuthStore.getState().authUser._id
+      );
+      queryClient.setQueryData(
+        [
+          `chat-${
+            currentChatingUser.type == "Group"
+              ? currentChatingUser._id
+              : newMessage.sender
+          }`,
+        ],
+        (oldData) => {
+          if (!oldData) return { pages: [[newMessage]] };
+          return {
+            ...oldData,
+            pages: [
+              [newMessage, ...oldData.pages[0]],
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+      );
+      notificationSound();
       set({ messages: [...get().messages, newMessage] });
-      queryClient.setQueryData([`chat-${newMessage.sender}`], (oldData) => {
-        if (!oldData) return { pages: [[newMessage]] };
-        return {
-          ...oldData,
-          pages: [[newMessage, ...oldData.pages[0]], ...oldData.pages.slice(1)],
-        };
-      });
     });
   },
-  handleNewMessage: (data) => {
-    const { newMessage, name, profilePic } = data;
+  handleNewMessage: (data, queryClient) => {
+    const { newMessage, name, profilePic, ChatType } = data;
     const { type, data: message, sender } = newMessage;
     const { currentChatingUser, notificationSound } = get();
-
-    console.log(sender == currentChatingUser._id);
-    if (currentChatingUser || currentChatingUser?._id == sender) return;
+    if (currentChatingUser?._id == sender) return;
+    if (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver)
+      return;
+    const qdata = queryClient.getQueryData([
+      `chat-${ChatType == "Group" ? newMessage.receiver : sender}`,
+    ]);
+    if (qdata) {
+      queryClient.setQueryData(
+        [
+          `chat-${
+            ChatType == "Group" ? newMessage.receiver : newMessage.sender
+          }`,
+        ],
+        (oldData) => {
+          if (!oldData) return { pages: [[newMessage]] };
+          return {
+            ...oldData,
+            pages: [
+              [newMessage, ...oldData.pages[0]],
+              ...oldData.pages.slice(1),
+            ],
+          };
+        }
+      );
+    }
     notificationSound();
-    NotificationToast(message, type, name, profilePic);
+
+    let dData = message;
+    if (type == "text") {
+      const secretkey = generateUniqueId(
+        newMessage.sender,
+        newMessage.receiver
+      );
+      dData = decryptData(message, secretkey);
+    }
+
+    NotificationToast(dData, type, name, profilePic);
   },
   unsuscribeFromMessage: () => {
     const socket = useAuthStore.getState().socket;
@@ -163,36 +228,109 @@ const useMessageStore = create((set, get) => ({
     socket.off("newMessage");
   },
   SendMessageReaction: async (reaction, index) => {
-    const { messages } = get();
+    const { messages, currentChatingUser, notificationSound } = get();
+    const { _id } = useAuthStore.getState().authUser;
 
     await axiosInstance.post("/message/reaction", {
       id: messages[index]._id,
+      userId: _id,
       reaction,
       to: messages[index].sender,
+      ChatType: currentChatingUser.type,
+      members:
+        currentChatingUser?.members?.filter((item) => item._id != _id) || [],
     });
-    messages[index].reaction = reaction;
-    get().notificationSound();
-    set({ messages });
+    const reactionItem = messages[index].reaction.find(
+      (item) => item.user.toString() === _id.toString()
+    );
+
+    if (reactionItem) {
+      reactionItem.id = reaction.id;
+      reactionItem.label = reaction.label;
+    } else {
+      messages[index].reaction.push({
+        id: reaction.id,
+        label: reaction.label,
+        user: _id,
+      });
+    }
+    notificationSound();
+    set({ messages: messages });
   },
-  handleMessageReaction: async (data) => {
-    const { id, reaction } = data;
+  handleMessageReaction: async (id, reaction, queryClient) => {
     const { messages } = get();
-    messages.forEach((element) => {
-      if (element._id == id) {
-        element.reaction = reaction;
+    const { label, user, ChatType } = reaction;
+    const data = messages.find((item) => item._id.toString() === id.toString());
+
+    if (!data) return;
+
+    const reactionItem = data.reaction.find(
+      (item) => item.user.toString() === user.toString()
+    );
+    if (reactionItem) {
+      reactionItem.id = reaction.id;
+      reactionItem.label = label;
+    } else {
+      data.reaction.push({
+        id: reaction.id,
+        label,
+        user,
+      });
+    }
+
+    set({ messages });
+    queryClient.setQueryData(
+      [ChatType == "Group" ? data.receiver : data.sender],
+      (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            messages: page.messages.map((msg) =>
+              msg._id.toString() === id.toString()
+                ? { ...msg, reaction: [...data.reaction] }
+                : msg
+            ),
+          })),
+        };
+      }
+    );
+  },
+  sendVote: async (pollId, selectedOption, to, data, sender) => {
+    const { currentChatingUser } = get();
+    const { _id } = useAuthStore.getState().authUser;
+
+    const { messages } = get();
+    const secretkey = generateUniqueId(to, sender);
+
+    data.options[selectedOption].vote++;
+    data.voted.push({ id: _id, ans: selectedOption });
+    const encrypt = encryptData(data, secretkey);
+    messages?.forEach((element) => {
+      if (element._id == pollId) {
+        element.data = encrypt;
       }
     });
-    get().notificationSound();
+
+    await axiosInstance.post(`/message/sendVote/${pollId}`, {
+      pollId,
+      to,
+      data: encrypt,
+      members:
+        currentChatingUser?.members?.filter((item) => item._id != _id) || [],
+    });
+
     set({ messages });
   },
-  hanldeVote: (data) => {
-    const { pollId, optionIndex, from } = data;
+  handleVote: (item) => {
+    const { data, pollId } = item;
 
     const { messages } = get();
     messages?.forEach((element) => {
       if (element._id == pollId) {
-        element.data.options[optionIndex].vote++;
-        element.data.voted.push({ id: from, ans: optionIndex });
+        element.data = data;
       }
     });
     set({ messages });
@@ -205,11 +343,11 @@ const useMessageStore = create((set, get) => ({
       console.error("Playback failed:", error);
     }
   },
-  handleMessageRead: () => {
+  handleMessageRead: (id) => {
     const { messages } = get();
     messages.forEach((element) => {
-      if (!element.read) {
-        element.read = true;
+      if (!element.read.includes(id)) {
+        element.read.push(id);
       }
     });
     set({ messages });
