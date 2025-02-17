@@ -16,6 +16,7 @@ import { IoQrCodeOutline } from "react-icons/io5";
 import useHomePageNavi from "../store/useHomePageNavi";
 import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
 import { useNavigate } from "react-router-dom";
+import QRScanner from "./Group/ScannerQR";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -30,6 +31,12 @@ const Sidebar = () => {
     FetchOnlineUsers();
   }, []);
   
+  const openQRscanner = () => {
+   
+document.getElementById("Qr_scanner").showModal();
+    
+  }
+
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
     useSearch(messagerUser);
@@ -50,6 +57,7 @@ const Sidebar = () => {
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
       <GroupDialog />
+      <QRScanner/>
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
@@ -74,7 +82,7 @@ const Sidebar = () => {
               <li>
                 <div
                   className="flex items-center justify-evenly"
-                  onClick={() => navigation("/qrgroup")}
+                  onClick={openQRscanner}
                 >
                   <IoQrCodeOutline size={20} />
                   <p className="text-sm">Scan to join group</p>

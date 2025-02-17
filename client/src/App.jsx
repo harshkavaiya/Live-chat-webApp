@@ -44,7 +44,7 @@ function App() {
     <div data-theme={theme}>
         <Toaster className="z-50"/>
       {/* {authUser && authUser._id} */}
-      {authUser != null ? <Home /> : <LoginPage />}
+       {authUser != null ? <Home /> : <LoginPage />} 
 
       <Routes>
       {/* <Route path="/" element={<Home />} />
