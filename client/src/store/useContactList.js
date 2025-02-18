@@ -24,7 +24,7 @@ const useContactList = create((set, get) => ({
       if (!res.data.success) {
         toast.error(res.data.message);
         console.log("responce", res.data.message);
-        return [];
+        return;
       }
 
       set({ groups: res.data.groups });

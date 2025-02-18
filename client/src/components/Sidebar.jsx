@@ -17,6 +17,7 @@ import useHomePageNavi from "../store/useHomePageNavi";
 import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
 import { useNavigate } from "react-router-dom";
 import QRScanner from "./Group/ScannerQR";
+import ShowQR from "./Group/ShowQR";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -75,10 +76,13 @@ const Sidebar = () => {
               className="dropdown-content menu text-primary bg-primary-content/90 rounded-lg z-[1] w-48 p-1 shadow font-semibold"
             >
               <li>
-                <div
-                  className="flex items-center justify-evenly"
-                  onClick={openQRscanner}
-                >
+                <div className="flex items-center" onClick={Showqrcode}>
+                  <IoQrCodeOutline size={20} />
+                  <p className="text-sm">Show QR</p>
+                </div>
+              </li>
+              <li>
+                <div className="flex items-center" onClick={openQRscanner}>
                   <IoQrCodeOutline size={20} />
                   <p className="text-sm">Scan to join group</p>
                 </div>

@@ -75,7 +75,7 @@ export const createGroup = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       return res
-        .status(200)
+        .status(400)
         .json({ message: "You already have a group with this name." });
     }
     console.log("Error in createGroup:", error.message);
@@ -384,8 +384,8 @@ export const deleteGroup = async (req, res) => {
     }
 
     // Only admin can delete the group
-    if (group.admin.toString() !== myId.toString()) {
-      return res.status(200).json({
+    if (group.admin.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to delete this group",
       });
@@ -428,7 +428,7 @@ export const removeMember = async (req, res) => {
     const group = await Group.findById(groupId);
     if (!group) {
       return res
-        .status(200)
+        .status(404)
         .json({ success: false, message: "Group not found" });
     }
 
@@ -437,7 +437,7 @@ export const removeMember = async (req, res) => {
       !group.admins.includes(req.user._id) &&
       group.admin.toString() !== req.user._id.toString()
     ) {
-      return res.status(200).json({
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to remove members",
       });
@@ -449,7 +449,7 @@ export const removeMember = async (req, res) => {
       const memberIdx = group.members.indexOf(memberId);
       if (memberIdx === -1) {
         return res
-          .status(200)
+          .status(404)
           .json({ success: false, message: "Member not found in the group" });
       }
 
@@ -495,7 +495,7 @@ export const removeMember = async (req, res) => {
       const memberIdx = group.members.indexOf(memberId);
       if (memberIdx === -1) {
         return res
-          .status(200)
+          .status(404)
           .json({ success: false, message: "Member not found in the group" });
       }
 
