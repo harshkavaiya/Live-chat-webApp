@@ -40,7 +40,7 @@ const useGroupStore = create((set, get) => ({
   removeAdmin: async (groupId, adminId) => {
     const { currentChatingUser, setCurrentChatingUser } =
       useMessageStore.getState();
-    let res = await axiosInstance.post("/group/removeAdmin", {  
+    let res = await axiosInstance.post("/group/removeAdmin", {
       groupId,
       adminId,
     });
@@ -55,19 +55,47 @@ const useGroupStore = create((set, get) => ({
     }
   },
   handleRemoveAdmin: (id, adminId) => {
-    const { messagerUser, setMessagerUser,currentChatingUser,setCurrentChatingUser } = useMessageStore.getState();
+    const {
+      messagerUser,
+      setMessagerUser,
+      currentChatingUser,
+      setCurrentChatingUser,
+    } = useMessageStore.getState();
     messagerUser.forEach((element) => {
       if (element._id == id) {
         element.admins = element.admins.filter((user) => user != adminId);
       }
-    }); 
-    if(currentChatingUser._id == id){
-      currentChatingUser.admins = currentChatingUser.admins.filter((user) => user != adminId);
+    });
+    if (currentChatingUser._id == id) {
+      currentChatingUser.admins = currentChatingUser.admins.filter(
+        (user) => user != adminId
+      );
       setCurrentChatingUser(currentChatingUser);
     }
     setMessagerUser(messagerUser);
   },
-  deleteGroup: () => {},
+  deleteGroup: async () => {
+    const {
+      messagerUser,
+      setMessagerUser,
+      currentChatingUser,
+      setCurrentChatingUser,
+    } = useMessageStore.getState();
+
+    let res = await axiosInstance.post(`/group/delete`, {
+      groupId: currentChatingUser._id,
+    });
+
+    if (res.data.success) {
+      if (currentChatingUser) {
+        setCurrentChatingUser(false);
+      }
+      const filteredUsers = messagerUser.filter((user) => user._id !== currentChatingUser._id);
+      setMessagerUser(filteredUsers);
+    } else {
+      toast.error(res.data.message);
+    }
+  },
   removeMember: async (groupId, memberId) => {
     const { currentChatingUser, setCurrentChatingUser } =
       useMessageStore.getState();
@@ -109,7 +137,7 @@ const useGroupStore = create((set, get) => ({
     }
   },
   handleNewGroup: async (data) => {
-    console.log(data)
+    console.log(data);
     const {
       messagerUser,
       setMessagerUser,
@@ -202,6 +230,22 @@ const useGroupStore = create((set, get) => ({
     }
     setMessagerUser(messagerUser);
     setCurrentChatingUser(currentChatingUser);
+  },
+  hanldeDeleteGroup: (groupId) => {
+    
+    const {
+      messagerUser,
+      setMessagerUser,
+      currentChatingUser,
+      setCurrentChatingUser,
+    } = useMessageStore.getState();
+
+    if (currentChatingUser) {
+      setCurrentChatingUser(false);
+    }
+
+    const filteredUsers = messagerUser.filter((user) => user._id !== groupId);
+    setMessagerUser(filteredUsers);
   },
 }));
 

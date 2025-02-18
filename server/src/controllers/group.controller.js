@@ -63,7 +63,7 @@ export const createGroup = async (req, res) => {
     };
 
     groupMember.members.map((user) => {
-      if (user._id != admin) {
+      if (user._id.toString() != admin.toString()) {
         let receiverId = getUserSocketId(user._id);
         if (receiverId) {
           io.to(receiverId).emit("newGroup", groupInfo);
@@ -75,14 +75,11 @@ export const createGroup = async (req, res) => {
   } catch (error) {
     if (error.code === 11000) {
       return res
-        .status(200)
-        .json({
-          success: false,
-          message: "You already have a group with this name.",
-        });
+        .status(400)
+        .json({ message: "You already have a group with this name." });
     }
     console.log("Error in createGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -118,7 +115,7 @@ export const joinGroup = async (req, res) => {
       .json({ success: true, message: "Successfully joined the group", group });
   } catch (error) {
     console.log("Error in joinGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -217,7 +214,7 @@ export const addMember = async (req, res) => {
       .json({ success: true, message: "Member added successfully" });
   } catch (error) {
     console.log("Error in addMember:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -272,7 +269,7 @@ export const assignAdmin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in assignAdmin:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -326,7 +323,7 @@ export const RemoveAdmin = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in removeAdmin:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -364,13 +361,14 @@ export const toggleMessagePermission = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in toggleMessagePermission:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
 export const deleteGroup = async (req, res) => {
   try {
     const { groupId } = req.body;
+    const myId = req.user._id;
     // Validate groupId
     if (!groupId || !mongoose.Types.ObjectId.isValid(groupId)) {
       return res
@@ -387,17 +385,26 @@ export const deleteGroup = async (req, res) => {
 
     // Only admin can delete the group
     if (group.admin.toString() !== req.user._id.toString()) {
-      return res.status(200).json({
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to delete this group",
       });
     }
 
+    group?.members?.forEach((user) => {
+      if (user.toString() != myId.toString()) {
+        let socketId = getUserSocketId(user);
+        if (socketId) {
+          io.to(socketId).emit("deleteGroup", groupId);
+        }
+      }
+    });
+
     await group.deleteOne();
     res.status(200).json({ success: true, message: "Group deleted" });
   } catch (error) {
     console.log("Error in deleteGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -421,7 +428,7 @@ export const removeMember = async (req, res) => {
     const group = await Group.findById(groupId);
     if (!group) {
       return res
-        .status(204)
+        .status(404)
         .json({ success: false, message: "Group not found" });
     }
 
@@ -430,7 +437,7 @@ export const removeMember = async (req, res) => {
       !group.admins.includes(req.user._id) &&
       group.admin.toString() !== req.user._id.toString()
     ) {
-      return res.status(203).json({
+      return res.status(403).json({
         success: false,
         message: "You are not authorized to remove members",
       });
@@ -442,7 +449,7 @@ export const removeMember = async (req, res) => {
       const memberIdx = group.members.indexOf(memberId);
       if (memberIdx === -1) {
         return res
-          .status(204)
+          .status(404)
           .json({ success: false, message: "Member not found in the group" });
       }
 
@@ -488,7 +495,7 @@ export const removeMember = async (req, res) => {
       const memberIdx = group.members.indexOf(memberId);
       if (memberIdx === -1) {
         return res
-          .status(204)
+          .status(404)
           .json({ success: false, message: "Member not found in the group" });
       }
 
@@ -522,7 +529,7 @@ export const removeMember = async (req, res) => {
       .json({ success: true, message: "Member removed successfully" });
   } catch (error) {
     console.log("Error in removeMember:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -583,9 +590,11 @@ export const leaveGroup = async (req, res) => {
 
     // Emit socket event to notify remaining members
     group.members.forEach((member) => {
-      const socketId = getUserSocketId(member._id);
-      if (socketId) {
-        io.to(socketId).emit("leaveGroup", myId, groupId);
+      if (member._id != myId) {
+        const socketId = getUserSocketId(member._id);
+        if (socketId) {
+          io.to(socketId).emit("leaveGroup", myId, groupId);
+        }
       }
     });
 
@@ -595,7 +604,7 @@ export const leaveGroup = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in leaveGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -643,6 +652,6 @@ export const getGroup = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in getGroup:", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };

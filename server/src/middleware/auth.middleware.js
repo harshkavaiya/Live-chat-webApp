@@ -25,6 +25,6 @@ export const AuthRoute = async (req, res, next) => {
     next();
   } catch (error) {
     console.log("error in authRoute middleware: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({ message: "Server error" });
   }
 };

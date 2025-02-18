@@ -123,7 +123,7 @@ export const sidebarUser = async (req, res) => {
     res.status(200).json({ success: true, usersWithLastMessage: merge });
   } catch (error) {
     console.log("error in sidebarUser controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({ message: "Server error" });
   }
 };
 
@@ -133,7 +133,7 @@ export const contactList = async (req, res) => {
     const loggedUser = await Users.findById(loggedUserId).select("contacts");
 
     if (!loggedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(200).json({ message: "User not found" });
     }
 
     const contactsWithUserIds = loggedUser.contacts.map((contact) => ({
@@ -160,7 +160,7 @@ export const contactList = async (req, res) => {
     res.status(200).json(usersWithSavedNames);
   } catch (error) {
     console.log("Error in contactList controller: ", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -228,7 +228,7 @@ export const addNewContact = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in newAddContact controller: ", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: false, message: "Server error" });
   }
 };
 
@@ -271,7 +271,7 @@ export const deleteContact = async (req, res) => {
       .json({ success: true, message: "Contact deleted successfully" });
   } catch (error) {
     console.log("Error in deleteContact controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({ message: "Server error" });
   }
 };
 
@@ -279,7 +279,7 @@ export const getMessages = async (req, res) => {
   const myId = req.user._id;
   const { Datalength, type } = req.query;
   if (!myId)
-    return res.status(400).json({ message: "Server error", success: 0 });
+    return res.status(200).json({ message: "Server error", success: 0 });
 
   const { id: userToChatId } = req.params;
   try {
@@ -332,7 +332,7 @@ export const getMessages = async (req, res) => {
     res.status(200).json(message);
   } catch (error) {
     console.log("error in getMessage controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({ message: "Server error" });
   }
 };
 
@@ -383,7 +383,7 @@ export const sendMessage = async (req, res) => {
     res.status(200).json(newMessage);
   } catch (error) {
     console.log("error in sendMessage controller: ", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(200).json({ message: "Server error" });
   }
 };
 
@@ -421,7 +421,7 @@ export const MessageReaction = async (req, res) => {
   const { id, userId, reaction, to, members, ChatType } = req.body;
 
   let message = await Message.findById(id);
-  if (!message) return res.status(404).json({ error: "Message not found" });
+  if (!message) return res.status(200).json({ error: "Message not found" });
 
   const reactionItem = message.reaction.find(
     (item) => item.user.toString() === userId.toString()

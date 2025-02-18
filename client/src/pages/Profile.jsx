@@ -1,5 +1,5 @@
 import { IoChevronDownOutline } from "react-icons/io5";
-import { FiShare2 } from "react-icons/fi";
+import { FiShare2, FiTrash2 } from "react-icons/fi";
 import { LuTrash2 } from "react-icons/lu";
 import {
   MdOutlineFileDownload,
@@ -24,7 +24,8 @@ import toast from "react-hot-toast";
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
-  const { removeMember, assignAdmin, addMember, leaveGroup ,removeAdmin} = useGroupStore();
+  const { removeMember, assignAdmin, addMember, leaveGroup, removeAdmin,deleteGroup } =
+    useGroupStore();
   const mediaRef = useRef();
   const { authUser } = useAuthStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
@@ -240,7 +241,16 @@ const Profile = ({ setIsProfileOpen }) => {
                             >
                               {isAdmin && (
                                 <li>
-                                  <button onClick={()=>removeAdmin(currentChatingUser._id, item._id)}>Dismiss As Admin</button>
+                                  <button
+                                    onClick={() =>
+                                      removeAdmin(
+                                        currentChatingUser._id,
+                                        item._id
+                                      )
+                                    }
+                                  >
+                                    Dismiss As Admin
+                                  </button>
                                 </li>
                               )}
                               {!isAdmin && (
@@ -302,10 +312,19 @@ const Profile = ({ setIsProfileOpen }) => {
           {currentChatingUser.type == "Group" && (
             <button
               onClick={() => leaveGroup(currentChatingUser._id)}
-              className="flex items-center gap-2 w-full py-1"
+              className="flex items-center gap-2 w-full py-1 text-error font-semibold"
             >
-              <RxExit />
+              <RxExit size={20} />
               <span>Leave Group</span>
+            </button>
+          )}
+          {currentChatingUser.type == "Group" && currentChatingUser.admin==authUser._id && (
+            <button
+              onClick={() => deleteGroup()}
+              className="flex items-center gap-2 w-full py-1 text-error font-semibold"
+            >
+              <FiTrash2 size={20} />
+              <span>Delete Group</span>
             </button>
           )}
         </div>

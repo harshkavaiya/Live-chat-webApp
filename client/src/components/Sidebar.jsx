@@ -35,9 +35,6 @@ const Sidebar = () => {
   const openQRscanner = () => {
     document.getElementById("Qr_scanner").showModal();
   };
-  const Showqrcode = () => {
-    document.getElementById("Qr_code").showModal();
-  };
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
@@ -60,7 +57,6 @@ const Sidebar = () => {
       <ContactDialog />
       <GroupDialog />
       <QRScanner />
-      <ShowQR />
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">

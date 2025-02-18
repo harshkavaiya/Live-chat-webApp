@@ -44,14 +44,17 @@ function App() {
     <div data-theme={theme}>
       <Toaster className="z-50" />
       {/* {authUser && authUser._id} */}
-      {authUser != null ? <Home /> : <LoginPage />}
+      {/* {authUser != null ? <Home /> : <LoginPage />} */}
 
-      {/* <Routes>
-        <Route path="/" element="" />
-        <Route path="/Login" element={<LoginPage />} /> 
+      <Routes>
+        {/* <Route path="/" element={<Home />} />
+        
+        <Route path="/Login" element={<LoginPage />} /> */}
+        <Route path="/" element={authUser != null ? <Home /> : <LoginPage />} />
+
         <Route path="/qrgroup" element={<ShowQR />} />
         <Route path="/readqr" element={<QRScanner />} />
-      </Routes> */}
+      </Routes>
       {/* <Route path="/Register" element={<Register />} /> */}
       {/* {authUser && <NewVideoCall />} */}
     </div>

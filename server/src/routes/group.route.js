@@ -19,7 +19,7 @@ const validateGroupId = (req, res, next) => {
   const { groupId } = req.body;
   if (!groupId || !mongoose.Types.ObjectId.isValid(groupId)) {
     return res
-      .status(400)
+      .status(200)
       .json({ success: false, message: "Invalid or missing Group IDd" });
   }
 
