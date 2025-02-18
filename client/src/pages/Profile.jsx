@@ -6,7 +6,12 @@ import {
   MdOutlineBlock,
   MdNotificationsActive,
 } from "react-icons/md";
-import { IoIosArrowDown, IoMdPersonAdd, IoMdSearch } from "react-icons/io";
+import {
+  IoIosArrowDown,
+  IoMdLink,
+  IoMdPersonAdd,
+  IoMdSearch,
+} from "react-icons/io";
 import { IoClose, IoVolumeMuteSharp } from "react-icons/io5";
 import { useRef, useState, useEffect } from "react";
 import { OpenCloseMenu } from "../function/function";
@@ -20,12 +25,19 @@ import useContactList from "../store/useContactList";
 import useSearch from "../function/SearchFunc";
 import { RxCross2, RxExit } from "react-icons/rx";
 import toast from "react-hot-toast";
+import GroupLink from "../components/GroupLink/GroupLink";
 
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
-  const { removeMember, assignAdmin, addMember, leaveGroup, removeAdmin,deleteGroup } =
-    useGroupStore();
+  const {
+    removeMember,
+    assignAdmin,
+    addMember,
+    leaveGroup,
+    removeAdmin,
+    deleteGroup,
+  } = useGroupStore();
   const mediaRef = useRef();
   const { authUser } = useAuthStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
@@ -178,22 +190,43 @@ const Profile = ({ setIsProfileOpen }) => {
         {currentChatingUser.type == "Group" && (
           <div className="border-b border-base-300 space-y-2 my-2">
             {currentChatingUser.admin == authUser._id && (
-              <div
-                onClick={() =>
-                  document.getElementById("addUsersDialog").showModal()
-                }
-                className="flex group relative items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-base-300 grid w-10 h-10 place-items-center rounded-full overflow-hidden">
-                    <IoMdPersonAdd />
-                  </div>
+              <>
+                <div
+                  onClick={() =>
+                    document.getElementById("addUsersDialog").showModal()
+                  }
+                  className="flex group relative items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className=" grid w-10 h-10 place-items-center rounded-full overflow-hidden bg-primary">
+                      <IoMdPersonAdd
+                        size={20}
+                        className="text-primary-content"
+                      />
+                    </div>
 
-                  <div className="flex flex-col gap-px">
-                    <p className="font-semibold">Add Member</p>
+                    <div className="flex flex-col gap-px">
+                      <p className="font-semibold">Add Member</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+                <div
+                  onClick={() =>
+                    document.getElementById("groupLinkModal").showModal()
+                  }
+                  className="flex group relative items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className=" grid w-10 h-10 place-items-center rounded-full overflow-hidden bg-primary">
+                      <IoMdLink size={20} className="text-primary-content" />
+                    </div>
+
+                    <div className="flex flex-col gap-px">
+                      <p className="font-semibold">Invite Via Link</p>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
             {currentChatingUser.members.map((item, idx) => {
               const isAdmin = currentChatingUser.admins.includes(item._id);
@@ -318,15 +351,16 @@ const Profile = ({ setIsProfileOpen }) => {
               <span>Leave Group</span>
             </button>
           )}
-          {currentChatingUser.type == "Group" && currentChatingUser.admin==authUser._id && (
-            <button
-              onClick={() => deleteGroup()}
-              className="flex items-center gap-2 w-full py-1 text-error font-semibold"
-            >
-              <FiTrash2 size={20} />
-              <span>Delete Group</span>
-            </button>
-          )}
+          {currentChatingUser.type == "Group" &&
+            currentChatingUser.admin == authUser._id && (
+              <button
+                onClick={() => deleteGroup()}
+                className="flex items-center gap-2 w-full py-1 text-error font-semibold"
+              >
+                <FiTrash2 size={20} />
+                <span>Delete Group</span>
+              </button>
+            )}
         </div>
       </div>
       <AddUserGroup
@@ -339,6 +373,13 @@ const Profile = ({ setIsProfileOpen }) => {
           document.getElementById("addUsersDialog").close();
         }}
       />
+      {currentChatingUser.type == "Group" && (
+        <GroupLink
+          img={currentChatingUser.profilePic}
+          name={currentChatingUser.fullname}
+          inviteLink={currentChatingUser.inviteLink}
+        />
+      )}
     </>
   );
 };
