@@ -12,13 +12,12 @@ const ShowQR = () => {
       getGroupMessages();
     }
     console.log("Groups", groups);
-    
   }, [groups]);
 
   useEffect(() => {
     if (groups[0]?.inviteLink) {
-      const qrcode =groups[0];
-      
+      const qrcode = groups[0];
+
       QRCode.toDataURL(qrcode.inviteLink)
         .then((url) => {
           setQrCodeUrl(url);
@@ -27,22 +26,24 @@ const ShowQR = () => {
           console.error("Error generating QR code", err);
         });
     }
-  }, [groups,getGroupMessages]);
+  }, [groups, getGroupMessages]);
 
   if (!groups) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>{groups.name}</h1>
-      <p>{groups.description}</p>
-      <img src={groups.photo} alt="Group Photo" />
-      <h3>Invite Link QR Code</h3>
-      {qrCodeUrl ? (
-        <img src={qrCodeUrl} alt="QR Code"className="w-96 h-96" />
-      ) : (
-        <div>Generating QR code...</div>
-      )}
-    </div>
+    <dialog id="Qr_code" className="modal">
+      <div className="modal-box">
+        <h1>{groups.name}</h1>
+        <p>{groups.description}</p>
+        <img src={groups.photo} alt="Group Photo" />
+        <h3>Invite Link QR Code</h3>
+        {qrCodeUrl ? (
+          <img src={qrCodeUrl} alt="QR Code" className="w-96 h-96" />
+        ) : (
+          <div>Generating QR code...</div>
+        )}
+      </div>
+    </dialog>
   );
 };
 

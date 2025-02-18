@@ -17,6 +17,7 @@ import useHomePageNavi from "../store/useHomePageNavi";
 import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
 import { useNavigate } from "react-router-dom";
 import QRScanner from "./Group/ScannerQR";
+import ShowQR from "./Group/ShowQR";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
@@ -30,12 +31,13 @@ const Sidebar = () => {
   useEffect(() => {
     FetchOnlineUsers();
   }, []);
-  
+
   const openQRscanner = () => {
-   
-document.getElementById("Qr_scanner").showModal();
-    
-  }
+    document.getElementById("Qr_scanner").showModal();
+  };
+  const Showqrcode = () => {
+    document.getElementById("Qr_code").showModal();
+  };
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
@@ -57,7 +59,8 @@ document.getElementById("Qr_scanner").showModal();
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
       <GroupDialog />
-      <QRScanner/>
+      <QRScanner />
+      <ShowQR />
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">
@@ -77,13 +80,13 @@ document.getElementById("Qr_scanner").showModal();
               className="dropdown-content menu bg-primary-content/95 rounded-box z-[1] w-52 p-2 shadow"
             >
               <li>
-                <a>Item 1</a>
+                <div className="flex items-center" onClick={Showqrcode}>
+                  <IoQrCodeOutline size={20} />
+                  <p className="text-sm">Show QR</p>
+                </div>
               </li>
               <li>
-                <div
-                  className="flex items-center justify-evenly"
-                  onClick={openQRscanner}
-                >
+                <div className="flex items-center" onClick={openQRscanner}>
                   <IoQrCodeOutline size={20} />
                   <p className="text-sm">Scan to join group</p>
                 </div>
