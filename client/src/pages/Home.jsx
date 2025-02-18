@@ -75,10 +75,7 @@ const Home = () => {
         );
         incomingCallAnswere(data.from, data.callType);
       };
-      // const test = () => {
-      //   console.log("test");
-      // };
-
+   
       const endcallhandler = (data) => {
         console.log("Call ended by:", data.from);
         endCall();
@@ -136,21 +133,6 @@ const Home = () => {
     handleremoveMember,
     handleRemoveAdmin,hanldeDeleteGroup
   ]);
-
-  // useEffect(() => {
-  //   console.log("Home: incomingCall updated =>", incomingCall);
-
-  //   if (incomingCall) {
-  //     setTimeout(() => {
-  //       const dialog = document.getElementById("incomingDialog");
-  //       if (dialog) {
-  //         dialog.showModal();
-  //       } else {
-  //         console.error("Dialog element not found!");
-  //       }
-  //     }, 100); // Small delay to ensure re-render
-  //   }
-  // }, [incomingCall]);
 
   const renderActivePage = () => {
     switch (activePage) {

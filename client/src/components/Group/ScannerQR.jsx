@@ -1,27 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react';
-import QrScanner from 'qr-scanner';
-import axiosInstance from '../../lib/axiosInstance';
+import React, { useEffect, useRef, useState } from "react";
+import QrScanner from "qr-scanner";
+import axiosInstance from "../../lib/axiosInstance";
 
 // QRScanner component
 const QRScanner = () => {
-  const [qrResult, setQrResult] = useState('');
+  const [qrResult, setQrResult] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const videoRef = useRef(null);
-  const qrScannerRef = useRef(null); 
+  const qrScannerRef = useRef(null);
 
   const joinGroup = async (inviteLink) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.post(`group/join/${inviteLink}`); 
+      const response = await axiosInstance.post(`group/join/${inviteLink}`);
       if (response.data.success) {
-        setQrResult('Successfully joined the group!');
+        setQrResult("Successfully joined the group!");
       } else {
         setError(response.data.message);
       }
     } catch (err) {
-      setError('Error joining the group.');
-      console.error('Join Group Error:', err);
+      setError("Error joining the group.");
+      console.error("Join Group Error:", err);
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ const QRScanner = () => {
         }
       });
 
-      qrScannerRef.current.start(); 
+      qrScannerRef.current.start();
 
       return () => {
         qrScannerRef.current.stop();
@@ -49,53 +49,55 @@ const QRScanner = () => {
   }, []);
 
   return (
-   
-  <dialog id="Qr_scanner" className="modal">
-  <div className="modal-box">
-  <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">QR Code Scanner</h2>
-      
+    <dialog id="Qr_scanner" className="modal">
+      <div className="modal-box">
+        <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+            QR Code Scanner
+          </h2>
+
           <video ref={videoRef} className="w-full h-64 border rounded-xl" />
-    
 
-        {/* Conditional Loading, Success, Error Messages */}
-        {loading && (
-          <div className="alert alert-info mb-4">
-            <span>Joining group...</span>
+          {/* Conditional Loading, Success, Error Messages */}
+          {loading && (
+            <div className="alert alert-info mb-4">
+              <span>Joining group...</span>
+            </div>
+          )}
+
+          {qrResult && !loading && (
+            <div className="alert alert-success mb-4">
+              <span>{qrResult}</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="alert alert-error mb-4">
+              <span>{error}</span>
+            </div>
+          )}
+
+          {!loading && !qrResult && !error && (
+            <p className="text-center text-gray-600">
+              Scan a QR code to join a group.
+            </p>
+          )}
+
+          {/* Action Button */}
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={() => window.location.reload()} // Reload the scanner if needed
+              className="btn btn-primary"
+            >
+              Restart Scanner
+            </button>
           </div>
-        )}
-
-        {qrResult && !loading && (
-          <div className="alert alert-success mb-4">
-            <span>{qrResult}</span>
-          </div>
-        )}
-
-        {error && (
-          <div className="alert alert-error mb-4">
-            <span>{error}</span>
-          </div>
-        )}
-
-        {!loading && !qrResult && !error && (
-          <p className="text-center text-gray-600">Scan a QR code to join a group.</p>
-        )}
-
-        {/* Action Button */}
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={() => window.location.reload()} // Reload the scanner if needed
-            className="btn btn-primary"
-          >
-            Restart Scanner
-          </button>
         </div>
       </div>
-  </div>
-  <form method="dialog" className="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
   );
 };
 

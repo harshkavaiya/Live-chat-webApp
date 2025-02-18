@@ -35,7 +35,7 @@ const useMessageStore = create((set, get) => ({
       {
         data,
         notification,
-        type: currentChatingUser.type,
+        type: currentChatingUser.type || "Single",
         members:
           currentChatingUser?.members?.filter(
             (item) => item._id.toString() != _id.toString()
@@ -43,7 +43,16 @@ const useMessageStore = create((set, get) => ({
       }
     );
     notificationSound();
-    messagerUser.forEach((user) => {
+    let isExits = messagerUser.some(
+      (user) => user._id == currentChatingUser._id
+    );
+
+    let updateData = messagerUser;
+    if (!isExits) {
+      updateData = [currentChatingUser, ...updateData];
+    }
+
+    updateData.forEach((user) => {
       if (user._id == currentChatingUser._id) {
         if (data.type == "text") {
           user.lastMessage = res.data.data;
@@ -54,7 +63,8 @@ const useMessageStore = create((set, get) => ({
         user.lastMessageTime = new Date().toISOString();
       }
     });
-    set({ messagerUser });
+    set({ messagerUser: updateData });
+
     queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
       if (!oldData) return { pages: [[res.data]] };
       return {
@@ -63,10 +73,47 @@ const useMessageStore = create((set, get) => ({
       };
     });
   },
-  handleNewMessage: (data, queryClient) => {
+  handleNewMessage: async (data, queryClient) => {
     const { newMessage, name, profilePic, ChatType } = data;
     const { type, data: message, sender } = newMessage;
     const { currentChatingUser, notificationSound, messagerUser } = get();
+
+    let isExits = messagerUser.some((user) => user._id == sender);
+
+    let updateData = messagerUser;
+    if (!isExits) {
+      let fetchUser = await axiosInstance.get(`/auth/user/${sender}`);
+      if (!fetchUser.data.success) return;
+      const { phone, email, fullname } = fetchUser.data.user;
+      updateData = [
+        {
+          _id: sender,
+          phone: phone,
+          email: email,
+          fullname: fullname,
+          profilePic: profilePic,
+          savedName: fullname,
+          sender: sender,
+          receiver: newMessage.receiver,
+          type: "Single",
+          lastMessage: null,
+          lastMessageTime: null,
+          lastMessageType: null,
+        },
+        ...updateData,
+      ];
+    }
+
+    updateData.forEach((user) => {
+      let id = ChatType == "Group" ? newMessage.receiver : sender;
+      if (user._id == id) {
+        user.lastMessage =
+          newMessage.type == "text" ? newMessage.data : newMessage.type;
+        user.lastMessageType = newMessage.type;
+        user.lastMessageTime = new Date().toISOString();
+      }
+    });
+    set({ messagerUser: updateData });
 
     if (currentChatingUser?._id == sender) return;
     if (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver)
@@ -103,16 +150,7 @@ const useMessageStore = create((set, get) => ({
       );
       dData = decryptData(message, secretkey);
     }
-    messagerUser.forEach((user) => {
-      let id = ChatType == "Group" ? newMessage.receiver : sender;
-      if (user._id == id) {
-        user.lastMessage =
-          newMessage.type == "text" ? newMessage.data : newMessage.type;
-        user.lastMessageType = newMessage.type;
-        user.lastMessageTime = new Date().toISOString();
-      }
-    });
-    set({ messagerUser });
+
     NotificationToast(dData, type, name, profilePic);
   },
   selectUsertoChat: (data) => {

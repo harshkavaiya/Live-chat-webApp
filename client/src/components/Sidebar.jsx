@@ -72,11 +72,8 @@ const Sidebar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="dropdown-content menu bg-primary-content/95 rounded-box z-[1] w-52 p-2 shadow"
+              className="dropdown-content menu text-primary bg-primary-content/90 rounded-lg z-[1] w-48 p-1 shadow font-semibold"
             >
-              <li>
-                <a>Item 1</a>
-              </li>
               <li>
                 <div
                   className="flex items-center justify-evenly"
