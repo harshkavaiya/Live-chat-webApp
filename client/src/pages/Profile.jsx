@@ -26,10 +26,12 @@ import useSearch from "../function/SearchFunc";
 import { RxCross2, RxExit } from "react-icons/rx";
 import toast from "react-hot-toast";
 import GroupLink from "../components/GroupLink/GroupLink";
+import useFunctionStore from "../store/useFuncationStore";
 
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
   const [isdocumentRotate, setIsdocumentRotate] = useState(false);
+
   const {
     removeMember,
     assignAdmin,
@@ -39,6 +41,7 @@ const Profile = ({ setIsProfileOpen }) => {
     deleteGroup,
   } = useGroupStore();
   const mediaRef = useRef();
+  const { isGroupLink, setIsGroupLink } = useFunctionStore();
   const { authUser } = useAuthStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
   const [ismediaRotate, setIsmediaRotate] = useState(false);
@@ -211,9 +214,7 @@ const Profile = ({ setIsProfileOpen }) => {
                   </div>
                 </div>
                 <div
-                  onClick={() =>
-                    document.getElementById("groupLinkModal").showModal()
-                  }
+                  onClick={() => document.getElementById("groupLinkModal").showModal()}
                   className="flex group relative items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
@@ -373,7 +374,7 @@ const Profile = ({ setIsProfileOpen }) => {
           document.getElementById("addUsersDialog").close();
         }}
       />
-      {currentChatingUser.type == "Group" && (
+      {currentChatingUser.type == "Group"  && (
         <GroupLink
           img={currentChatingUser.profilePic}
           name={currentChatingUser.fullname}

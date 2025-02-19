@@ -20,6 +20,7 @@ import ReactionEmoji, { reactions } from "../ReactionEmoji";
 import Audio from "./msg_type/Audio";
 import { useQueryClient } from "@tanstack/react-query";
 import { MemeberProfilePic } from "../../function/function";
+import { Link } from "react-router-dom";
 
 const ChatMessage = ({
   isLoading,
@@ -161,6 +162,15 @@ const ChatMessage = ({
                     </div>
                   )}
                   {type == "text" && <p className="text-sm">{data}</p>}
+                  {type == "link" && (
+                    <Link
+                      to={data}
+                      target="_blank"
+                      className="text-sm text-blue-600"
+                    >
+                      {data}
+                    </Link>
+                  )}
                   {type == "image" && (
                     <Image
                       src={data[0].url}

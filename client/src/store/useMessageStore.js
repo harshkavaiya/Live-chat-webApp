@@ -75,9 +75,10 @@ const useMessageStore = create((set, get) => ({
   },
   handleNewMessage: async (data, queryClient) => {
     const { newMessage, name, profilePic, ChatType } = data;
+    const { _id } = useAuthStore().getState().authUser;
     const { type, data: message, sender } = newMessage;
     const { currentChatingUser, notificationSound, messagerUser } = get();
-
+    console.log(newMessage);
     let isExits = messagerUser.some((user) => user._id == sender);
 
     let updateData = messagerUser;
@@ -94,7 +95,7 @@ const useMessageStore = create((set, get) => ({
           profilePic: profilePic,
           savedName: fullname,
           sender: sender,
-          receiver: newMessage.receiver,
+          receiver: _id,
           type: "Single",
           lastMessage: null,
           lastMessageTime: null,
@@ -144,10 +145,7 @@ const useMessageStore = create((set, get) => ({
 
     let dData = message;
     if (type == "text") {
-      const secretkey = generateUniqueId(
-        newMessage.sender,
-        newMessage.receiver
-      );
+      const secretkey = generateUniqueId(newMessage.sender, _id);
       dData = decryptData(message, secretkey);
     }
 
@@ -200,7 +198,7 @@ const useMessageStore = create((set, get) => ({
         return `${formattedDate} - ${msg.sender}: [Image: ${imageUrl}]`;
       }
 
-      if (msg.type === "text") {
+      if (msg.type === "text" || msg.type === "link") {
         return `${formattedDate} - ${msg.sender}: ${msg.data}`;
       }
       if (msg.type === "multiple-file") {
