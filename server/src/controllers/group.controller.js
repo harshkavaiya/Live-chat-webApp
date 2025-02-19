@@ -50,7 +50,7 @@ export const createGroup = async (req, res) => {
       fullname: name,
       profilePic: photo,
       members: groupMember.members,
-      admins: admin,
+      admins: [admin],
       admin,
       inviteLink,
       messagePermission: true,
