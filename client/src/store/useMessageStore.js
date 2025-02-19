@@ -60,6 +60,8 @@ const useMessageStore = create((set, get) => ({
           user.lastMessage = data.type;
         }
         user.lastMessageType = data.type;
+        user.sender= _id;
+        user.receiver = currentChatingUser._id;
         user.lastMessageTime = new Date().toISOString();
       }
     });
@@ -75,12 +77,12 @@ const useMessageStore = create((set, get) => ({
   },
   handleNewMessage: async (data, queryClient) => {
     const { newMessage, name, profilePic, ChatType } = data;
-    const { _id } = useAuthStore().getState().authUser;
+  
     const { type, data: message, sender } = newMessage;
     const { currentChatingUser, notificationSound, messagerUser } = get();
-    console.log(newMessage);
-    let isExits = messagerUser.some((user) => user._id == sender);
-
+    
+    let isExits = messagerUser.some((user) => user._id == ( ChatType == "Group" ? newMessage.receiver : sender));
+console.log(isExits,ChatType)
     let updateData = messagerUser;
     if (!isExits) {
       let fetchUser = await axiosInstance.get(`/auth/user/${sender}`);
@@ -95,7 +97,7 @@ const useMessageStore = create((set, get) => ({
           profilePic: profilePic,
           savedName: fullname,
           sender: sender,
-          receiver: _id,
+          receiver: newMessage.receiver,
           type: "Single",
           lastMessage: null,
           lastMessageTime: null,
@@ -110,6 +112,8 @@ const useMessageStore = create((set, get) => ({
       if (user._id == id) {
         user.lastMessage =
           newMessage.type == "text" ? newMessage.data : newMessage.type;
+        user.sender = sender;
+        user.receiver = newMessage.receiver;
         user.lastMessageType = newMessage.type;
         user.lastMessageTime = new Date().toISOString();
       }
@@ -145,7 +149,7 @@ const useMessageStore = create((set, get) => ({
 
     let dData = message;
     if (type == "text") {
-      const secretkey = generateUniqueId(newMessage.sender, _id);
+      const secretkey = generateUniqueId(newMessage.sender, newMessage.receiver);
       dData = decryptData(message, secretkey);
     }
 
