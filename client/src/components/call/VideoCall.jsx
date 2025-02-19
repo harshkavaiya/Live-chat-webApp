@@ -30,7 +30,7 @@ const VideoCall = ({ name }) => {
         setRinging(false); // Stop ringing
         document.getElementById("my_modal_1").close();
         endCall();
-        toast.error(`Call rejected by ${data.from}`);
+        toast.error(`Call rejected by ${data.from}`, { id: "callReject" });
       });
 
       // Handle ended calls

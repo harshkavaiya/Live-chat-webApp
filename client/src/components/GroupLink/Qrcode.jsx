@@ -46,7 +46,7 @@ const Qrcode = ({ img, name, inviteLink }) => {
           </div>
           <div className="p-6 rounded-lg">
             <QRCode
-              value={groupLink}
+              value={inviteLink}
               size={200}
               style={{ height: "auto", maxWidth: "100%", width: "100%" }}
               viewBox={`0 0 256 256`}

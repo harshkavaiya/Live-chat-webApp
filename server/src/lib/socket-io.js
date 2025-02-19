@@ -16,7 +16,6 @@ const io = new Server(server, {
 });
 
 let onlineUser = {};
-const peerSocketMap = new Map();
 
 export const getUserSocketId = (data) => {
   return onlineUser[data];
@@ -36,23 +35,22 @@ io.on("connection", (socket) => {
 
   // Register Peer ID with socket ID
   socket.on("registerPeerId", (peerId) => {
-    if (peerSocketMap.has(peerId)) {
+    if (getUserSocketId(peerId)) {
       console.log(`Peer ID ${peerId} already registered`);
       return;
     }
-    peerSocketMap.set(peerId, socket.id);
-    console.log(`Peer ID ${peerId} registered with socket ID ${socket.id}`);
   });
 
   // Listen for call offer
   socket.on("callOffer", (data) => {
-    const receiverSocketId = peerSocketMap.get(data.to); // Find socket ID for 'to' Peer ID
+    const receiverSocketId =getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
+    console.log(receiverSocketId)
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("callOffer", {
         from: data.from,
         callType: data.callType,
       });
-      console.log(`Call offer sent from ${data.from} to ${data.to}`);
+      console.log(`Call offer sent from ${data.from} to ${data.to} - ${socket.id}`);
     } else {
       console.log(`Peer ID ${data.to} not found`);
     }
@@ -60,7 +58,7 @@ io.on("connection", (socket) => {
 
   // Listen for accept call
   socket.on("acceptCall", (data) => {
-    const callerSocketId = peerSocketMap.get(data.to);
+    const callerSocketId = getUserSocketId(data.to);
     if (callerSocketId) {
       io.to(callerSocketId).emit("callAccepted", { from: data.from });
       console.log(`Call accepted by ${data.from}`);
@@ -69,7 +67,7 @@ io.on("connection", (socket) => {
 
   // Listen for call rejection
   socket.on("callRejected", (data) => {
-    const callerSocketId = peerSocketMap.get(data.to); // Find socket ID for 'to' Peer ID
+    const callerSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
     if (callerSocketId) {
       io.to(callerSocketId).emit("callRejected", { from: data.to }); // Notify caller that the call was rejected
       console.log(`Call rejected by ${data.to}`);
@@ -81,8 +79,8 @@ io.on("connection", (socket) => {
   // Listen for end call
   socket.on("endCall", (data) => {
     console.log(`Call ended by ${data.from}`);
-    // const receiverSocketId = peerSocketMap.get(data.from);
-    const callerSocketId = peerSocketMap.get(data.to);
+    // const receiverSocketId = getUserSocketId(data.from);
+    const callerSocketId = getUserSocketId(data.to);
 
     // if (receiverSocketId) {
     //   io.to(receiverSocketId).emit("callEnded", { from: data.from });
@@ -100,15 +98,6 @@ io.on("connection", (socket) => {
     console.log("User is Disconnected", socket.id);
     delete onlineUser[id];
     emitOnlineUsers();
-    // Remove socket ID from peerSocketMap
-    console.log("Peer Socket Map", peerSocketMap);
-    for (let [peerId, socketId] of peerSocketMap.entries()) {
-      if (socketId === socket.id) {
-        console.log(`Peer ID ${peerId} disconnected`);
-        peerSocketMap.delete(peerId);
-        break;
-      }
-    }
   });
 
   socket.on("vote", async (data) => {
