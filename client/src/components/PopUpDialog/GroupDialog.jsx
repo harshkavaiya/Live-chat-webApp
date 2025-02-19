@@ -73,7 +73,7 @@ const GroupDialog = () => {
         alert(response.data.message);
         return;
       }
-
+ console.log(response)
       setMessagerUser([response.data.groupInfo, ...messagerUser]);
       closeDialog();
     } catch (error) {
