@@ -15,14 +15,12 @@ import useAuthStore from "../store/useAuthStore";
 import { IoQrCodeOutline } from "react-icons/io5";
 import useHomePageNavi from "../store/useHomePageNavi";
 import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
-import { useNavigate } from "react-router-dom";
+
 import QRScanner from "./Group/ScannerQR";
-import ShowQR from "./Group/ShowQR";
 
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const [activeTab, setActiveTab] = useState("all");
-  const navigation = useNavigate();
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -75,12 +73,6 @@ const Sidebar = () => {
               tabIndex={0}
               className="dropdown-content menu text-primary bg-primary-content/90 rounded-lg z-[1] w-48 p-1 shadow font-semibold"
             >
-              <li>
-                <div className="flex items-center">
-                  <IoQrCodeOutline size={20} />
-                  <p className="text-sm">Show QR</p>
-                </div>
-              </li>
               <li>
                 <div className="flex items-center" onClick={openQRscanner}>
                   <IoQrCodeOutline size={20} />
@@ -147,13 +139,13 @@ const Sidebar = () => {
             </div>
             <div
               className={`badge badge-lg cursor-pointer border-none ${
-                activeTab == "private"
+                activeTab == "Individual"
                   ? "badge-primary"
                   : "bg-base-100/40 text-opacity-70"
               }`}
-              onClick={() => setActiveTab("private")}
+              onClick={() => setActiveTab("Individual")}
             >
-              Privates
+              Individual
             </div>
             <div
               className={`badge badge-lg cursor-pointer border-none ${
@@ -165,7 +157,7 @@ const Sidebar = () => {
             >
               Groups
             </div>
-            <div
+            {/* <div
               className={`badge badge-lg cursor-pointer border-none ${
                 activeTab == "unread"
                   ? "badge-primary"
@@ -174,7 +166,7 @@ const Sidebar = () => {
               onClick={() => setActiveTab("unread")}
             >
               Unread
-            </div>
+            </div> */}
           </div>
         </div>
 

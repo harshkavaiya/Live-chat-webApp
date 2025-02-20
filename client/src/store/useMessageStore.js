@@ -27,62 +27,60 @@ const useMessageStore = create((set, get) => ({
     set({ messages });
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
-  sendMessage: async (data, notification, queryClient) => {
-    const { currentChatingUser, messagerUser, notificationSound } = get();
+  sendMessage: async (receiver, data, notification, queryClient) => {
+    const { messagerUser, notificationSound } = get();
+
     const { _id } = useAuthStore.getState().authUser;
-    let res = await axiosInstance.post(
-      `/message/send/${currentChatingUser._id}`,
-      {
-        data,
-        notification,
-        type: currentChatingUser.type || "Single",
-        members:
-          currentChatingUser?.members?.filter(
-            (item) => item._id.toString() != _id.toString()
-          ) || [],
-      }
-    );
+    let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
+      data,
+      notification,
+      type: receiver.type || "Single",
+      members:
+        receiver?.members?.filter(
+          (item) => item._id.toString() != _id.toString()
+        ) || [],
+    });
     notificationSound();
-    let isExits = messagerUser.some(
-      (user) => user._id == currentChatingUser._id
-    );
+    let isExits = messagerUser.some((user) => user._id == receiver._id);
 
     let updateData = messagerUser;
     if (!isExits) {
-      updateData = [currentChatingUser, ...updateData];
+      updateData = [receiver, ...updateData];
     }
 
     updateData.forEach((user) => {
-      if (user._id == currentChatingUser._id) {
-        if (data.type == "text") {
-          user.lastMessage = res.data.data;
-        } else {
-          user.lastMessage = data.type;
-        }
+      if (user._id == receiver._id) {
+        user.lastMessage = data.type == "text" ? res.data.data : data.type;
         user.lastMessageType = data.type;
-        user.sender= _id;
-        user.receiver = currentChatingUser._id;
+        user.sender = _id;
+        user.receiver = receiver._id;
         user.lastMessageTime = new Date().toISOString();
       }
     });
+
     set({ messagerUser: updateData });
 
-    queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
-      if (!oldData) return { pages: [[res.data]] };
-      return {
-        ...oldData,
-        pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
-      };
-    });
+    const qdata = queryClient.getQueryData([`chat-${receiver._id}`]);
+    if (qdata) {
+      queryClient.setQueryData([`chat-${receiver._id}`], (oldData) => {
+        if (!oldData) return { pages: [[res.data]] };
+        return {
+          ...oldData,
+          pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
+        };
+      });
+    }
   },
   handleNewMessage: async (data, queryClient) => {
     const { newMessage, name, profilePic, ChatType } = data;
-  
+
     const { type, data: message, sender } = newMessage;
     const { currentChatingUser, notificationSound, messagerUser } = get();
-    
-    let isExits = messagerUser.some((user) => user._id == ( ChatType == "Group" ? newMessage.receiver : sender));
-console.log(isExits,ChatType)
+
+    let isExits = messagerUser.some(
+      (user) => user._id == (ChatType == "Group" ? newMessage.receiver : sender)
+    );
+
     let updateData = messagerUser;
     if (!isExits) {
       let fetchUser = await axiosInstance.get(`/auth/user/${sender}`);
@@ -149,7 +147,10 @@ console.log(isExits,ChatType)
 
     let dData = message;
     if (type == "text") {
-      const secretkey = generateUniqueId(newMessage.sender, newMessage.receiver);
+      const secretkey = generateUniqueId(
+        newMessage.sender,
+        newMessage.receiver
+      );
       dData = decryptData(message, secretkey);
     }
 

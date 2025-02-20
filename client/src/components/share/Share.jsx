@@ -5,22 +5,42 @@ import { useState } from "react";
 import useFunctionStore from "../../store/useFuncationStore";
 import useAuthStore from "../../store/useAuthStore";
 import { useQueryClient } from "@tanstack/react-query";
+import useMessageStore from "../../store/useMessageStore";
+import useContactList from "../../store/useContactList";
 
 const Share = () => {
   const { handleSelectMessage, sendSelectionMessage, setSelectMessage } =
     useFunctionStore();
+  const { messagerUser } = useMessageStore();
   const queryClient = useQueryClient();
+  const { authUser } = useAuthStore();
+  const { contacts } = useContactList();
 
-  const { friends } = useAuthStore();
+  const uniqueUsers = Array.from(
+    new Map(
+      [...contacts, ...messagerUser].map((user) => [user._id, user])
+    ).values()
+  );
   const [selectedUser, setSelectedUser] = useState([]);
 
-  const toggleChat = (id, name) => {
-    let check = selectedUser.filter((item) => item.id == id);
-
-    if (check.length) {
-      setSelectedUser((prev) => prev.filter((item) => item.id !== id));
+  const toggleChat = (i) => {
+    if (!i.type) {
+      i.type = "Single";
+      i.fullname = i.savedName;
+      (i.lastMessage = null),
+        (i.lastMessageTime = null),
+        (i.lastMessageType = null);
+      i.receiver = i._id;
+      i.sender = authUser._id;
+    }
+    if (selectedUser.some((item) => item._id == i._id)) {
+      setSelectedUser((prev) => prev.filter((item) => item._id !== i._id));
     } else {
-      setSelectedUser((prev) => [...prev, { id, name }]);
+      if (selectedUser.length) {
+        setSelectedUser((prev) => [...prev, i]);
+      } else {
+        setSelectedUser([i]);
+      }
     }
   };
   return (
@@ -42,19 +62,18 @@ const Share = () => {
         </div>
 
         {/* Recent Chats Section */}
-        <div className="p-2 max-h-[70vh] overflow-y-auto">
+        <div className="p-2 max-h-[70vh] w-[80%] overflow-y-auto">
           <h2 className="text-primary font-medium mb-4">RECENT CHATS</h2>
 
           <div className="space-y-2 h-full ">
-            {friends.map((user, i) => (
+            {uniqueUsers.map((user, i) => (
               <div
                 key={i}
                 className="flex items-center space-x-4 cursor-pointer"
-                onClick={() => toggleChat(user.userId, user.savedName)}
+                onClick={() => toggleChat(user)}
               >
                 <div className="flex-shrink-0">
-                  {selectedUser.filter((item) => item.id == user.userId)
-                    .length ? (
+                  {selectedUser.some((item) => item._id == user._id) ? (
                     <BsCheckSquare className="text-primary" size={20} />
                   ) : (
                     <FiSquare className="" size={20} />
@@ -65,7 +84,10 @@ const Share = () => {
                   <span className="indicator-item rounded-full absolute w-3 h-3 p-0 top-2 right-2"></span>
                   <div className="bg-base-300 grid w-12 h-12 place-items-center rounded-full overflow-hidden">
                     <img
-                      src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                      src={
+                        user.profilePic ||
+                        "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                      }
                       alt="user"
                       className="object-cover"
                     />
@@ -74,9 +96,9 @@ const Share = () => {
 
                 <div className="flex-1 min-w-0">
                   <p className="text-lg font-medium truncate">
-                    {user.savedName}
+                    {user.savedName || user.fullname}
                   </p>
-                  <p className="text-sm truncate">{user.description}</p>
+                  <p className="text-sm truncate">{user.description || ""}</p>
                 </div>
               </div>
             ))}
@@ -88,10 +110,10 @@ const Share = () => {
           <div className="flex items-center space-x-3 px-3 py-2">
             <div className="flex-1">
               <p className="text-sm t">
-                {selectedUser.map((item) => {
-                  if (selectedUser.length == 1) return item.name;
+                {selectedUser.map((item, i) => {
+                  if (i == 0) return item.fullname;
 
-                  return `${item.name},`;
+                  return `,${item.fullname}`;
                 })}
               </p>
             </div>

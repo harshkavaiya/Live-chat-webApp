@@ -5,6 +5,7 @@ import {
   MdOutlineFileDownload,
   MdOutlineBlock,
   MdNotificationsActive,
+  MdDelete,
 } from "react-icons/md";
 import {
   IoIosArrowDown,
@@ -12,7 +13,7 @@ import {
   IoMdPersonAdd,
   IoMdSearch,
 } from "react-icons/io";
-import { IoClose, IoVolumeMuteSharp } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { useRef, useState, useEffect } from "react";
 import { OpenCloseMenu } from "../function/function";
 import { FaVideo } from "react-icons/fa";
@@ -39,6 +40,7 @@ const Profile = ({ setIsProfileOpen }) => {
     leaveGroup,
     removeAdmin,
     deleteGroup,
+    RemoveGroupFromChat,
   } = useGroupStore();
   const mediaRef = useRef();
   const { isGroupLink, setIsGroupLink } = useFunctionStore();
@@ -214,7 +216,9 @@ const Profile = ({ setIsProfileOpen }) => {
                   </div>
                 </div>
                 <div
-                  onClick={() => document.getElementById("groupLinkModal").showModal()}
+                  onClick={() =>
+                    document.getElementById("groupLinkModal").showModal()
+                  }
                   className="flex group relative items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
@@ -267,7 +271,7 @@ const Profile = ({ setIsProfileOpen }) => {
                               size={25}
                               role="button"
                               tabIndex={0}
-                              className="group-hover:-translate-x-0 translate-x-16 transition-all duration-150 ease-in-out"
+                              className="group-focus-within:block group-hover:block hidden"
                             />
                             <ul
                               tabIndex={0}
@@ -325,13 +329,13 @@ const Profile = ({ setIsProfileOpen }) => {
         )}
         {/* Actions */}
         <div className="p-4 space-y-4">
-          <ActionMenu icon={<MdOutlineBlock />} label={"Block"} />
-          <ActionMenu icon={<IoVolumeMuteSharp />} label={"Mute"} />
-          <ActionMenu
+          {/* <ActionMenu icon={<MdOutlineBlock />} label={"Block"} /> */}
+          {/* <ActionMenu icon={<IoVolumeMuteSharp />} label={"Mute"} /> */}
+          {/* <ActionMenu
             icon={<MdNotificationsActive />}
             label={"Get Notification"}
-          />
-          <ActionMenu icon={<FiShare2 />} label={"Share Contact"} />
+          /> */}
+          {/* <ActionMenu icon={<FiShare2 />} label={"Share Contact"} /> */}
           <ActionMenu
             icon={<MdOutlineFileDownload />}
             onClick={handleExport}
@@ -343,20 +347,31 @@ const Profile = ({ setIsProfileOpen }) => {
             label={"Clear Chat"}
             onClick={() => clearChat(queryClient)}
           />
-          {currentChatingUser.type == "Group" && (
+          {currentChatingUser.type == "Group" &&
+          currentChatingUser.members.some(
+            (user) => user._id == authUser._id
+          ) ? (
             <button
               onClick={() => leaveGroup(currentChatingUser._id)}
-              className="flex items-center gap-2 w-full py-1 text-error font-semibold"
+              className="flex items-center gap-2 w-full  text-error font-semibold"
             >
               <RxExit size={20} />
               <span>Leave Group</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => RemoveGroupFromChat(currentChatingUser._id)}
+              className="flex items-center gap-2 w-full  text-error font-semibold"
+            >
+              <MdDelete size={20} />
+              <span>Exit</span>
             </button>
           )}
           {currentChatingUser.type == "Group" &&
             currentChatingUser.admin == authUser._id && (
               <button
                 onClick={() => deleteGroup()}
-                className="flex items-center gap-2 w-full py-1 text-error font-semibold"
+                className="flex items-center gap-2 w-full  text-error font-semibold"
               >
                 <FiTrash2 size={20} />
                 <span>Delete Group</span>
@@ -374,7 +389,7 @@ const Profile = ({ setIsProfileOpen }) => {
           document.getElementById("addUsersDialog").close();
         }}
       />
-      {currentChatingUser.type == "Group"  && (
+      {currentChatingUser.type == "Group" && (
         <GroupLink
           img={currentChatingUser.profilePic}
           name={currentChatingUser.fullname}
@@ -387,7 +402,7 @@ const Profile = ({ setIsProfileOpen }) => {
 
 const ActionMenu = ({ icon, label, onClick }) => {
   return (
-    <button onClick={onClick} className="flex items-center gap-2 w-full py-1">
+    <button onClick={onClick} className="flex items-center gap-2 w-full ">
       {icon}
       <span>{label}</span>
     </button>

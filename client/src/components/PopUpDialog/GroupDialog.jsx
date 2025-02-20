@@ -5,6 +5,7 @@ import { MdOutlineCloudUpload } from "react-icons/md";
 import AddUserGroup from "./AddUserGroup";
 import axiosInstance from "../../lib/axiosInstance";
 import useMessageStore from "../../store/useMessageStore";
+import toast, { Toaster } from "react-hot-toast";
 
 const GroupDialog = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +13,7 @@ const GroupDialog = () => {
     description: "",
     selectedUsers: [],
   });
-  const {messagerUser,setMessagerUser}=useMessageStore(
-
-  )
+  const { messagerUser, setMessagerUser } = useMessageStore();
   const fileInputRef = useRef(null);
   const [photo, setPhoto] = useState(null);
   const [groupType, setGroupType] = useState("");
@@ -53,7 +52,17 @@ const GroupDialog = () => {
 
   const handleCreateGroup = async () => {
     if (!formData.groupName) {
-      alert("Group name is required!");
+      toast.error("Group name is required!");
+      return;
+    }
+
+    if (!formData.selectedUsers.length) {
+      toast.error("Please add users to the group!");
+      return;
+    }
+
+    if (groupType === "") {
+      toast.error("Please select group type!");
       return;
     }
 
@@ -70,10 +79,10 @@ const GroupDialog = () => {
         headers: { "Content-Type": "application/json" },
       });
       if (!response.data.success) {
-        alert(response.data.message);
+        toast.error(response.data.message);
         return;
       }
- console.log(response)
+
       setMessagerUser([response.data.groupInfo, ...messagerUser]);
       closeDialog();
     } catch (error) {
@@ -81,7 +90,7 @@ const GroupDialog = () => {
         "Error creating group:",
         error.response?.data || error.message
       );
-      alert(
+      toast.error(
         "Failed to create group: " +
           (error.response?.data?.message || error.message)
       );
@@ -90,6 +99,7 @@ const GroupDialog = () => {
 
   return (
     <dialog id="my_modal_5" className="modal">
+      <Toaster />
       <AddUserGroup
         isOpen={isOpen}
         setIsOpenDialog={setIsOpenDialog}

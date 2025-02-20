@@ -214,17 +214,17 @@ const ChatMessage = ({
                   </p>
                 </div>
                 <div
-                  className={`dropdown dropdown-top dropdown-hover z-20 ${
+                  className={`dropdown dropdown-right  dropdown-end ${
                     currentChatingUser.type == "Group" ? "order-3" : "order-2"
                   }`}
                 >
                   <button
                     tabIndex={0}
-                    className="cursor-pointer rounded-full bg-base-300 w-7 h-7 hidden group-hover:flex items-center justify-center active:block"
+                    className="cursor-pointer rounded-full bg-base-300 w-7 h-7 hidden group-focus-within:flex group-hover:flex items-center justify-center active:block"
                   >
                     <BsEmojiLaughing className="text-base-content/80" />
                   </button>
-                  <div className="dropdown-content menu bg-base-100 border mt-3 mr-2 w-56 rounded-box p-2 shadow-lg gap-1">
+                  <div className="dropdown-content z-50 bg-base-100 border mt-3 mr-2 w-56 rounded-box p-2 shadow-lg gap-1">
                     <ReactionEmoji index={i} />
                   </div>
                 </div>

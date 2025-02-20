@@ -28,7 +28,7 @@ const ChatInput = () => {
   const { startRecording, isRecording, stopRecording, audioUrl } =
     useAudioStore();
 
-  const { sendMessage } = useMessageStore();
+  const { sendMessage ,currentChatingUser} = useMessageStore();
   const handelUploadDocument = useCallback(async (e) => {
     let form = new FormData();
 
@@ -145,6 +145,7 @@ const ChatInput = () => {
               <button
                 onClick={() => {
                   sendMessage(
+                    currentChatingUser,
                     { data: text, type: "text" },
                     {
                       profilePic: authUser.profilePic,

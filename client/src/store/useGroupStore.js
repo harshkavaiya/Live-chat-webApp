@@ -90,7 +90,9 @@ const useGroupStore = create((set, get) => ({
       if (currentChatingUser) {
         setCurrentChatingUser(false);
       }
-      const filteredUsers = messagerUser.filter((user) => user._id !== currentChatingUser._id);
+      const filteredUsers = messagerUser.filter(
+        (user) => user._id !== currentChatingUser._id
+      );
       setMessagerUser(filteredUsers);
     } else {
       toast.error(res.data.message);
@@ -232,7 +234,6 @@ const useGroupStore = create((set, get) => ({
     setCurrentChatingUser(currentChatingUser);
   },
   hanldeDeleteGroup: (groupId) => {
-    
     const {
       messagerUser,
       setMessagerUser,
@@ -243,6 +244,14 @@ const useGroupStore = create((set, get) => ({
     if (currentChatingUser) {
       setCurrentChatingUser(false);
     }
+
+    const filteredUsers = messagerUser.filter((user) => user._id !== groupId);
+    setMessagerUser(filteredUsers);
+  },
+  RemoveGroupFromChat: (groupId) => {
+    const { messagerUser, setMessagerUser, setCurrentChatingUser } =
+      useMessageStore.getState();
+    setCurrentChatingUser(false);
 
     const filteredUsers = messagerUser.filter((user) => user._id !== groupId);
     setMessagerUser(filteredUsers);

@@ -16,7 +16,9 @@ const CreatePoll = () => {
   ]);
 
   const handleCreatPoll = (data) => {
+    const {currentChatingUser}=useMessageStore.getState()
     sendMessage(
+      currentChatingUser,
       {
         type: "poll",
         data,

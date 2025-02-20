@@ -32,13 +32,13 @@ const ChatPage = () => {
     handleVote,
     handleMessageRead,
   } = useMessageStore();
-  const { socket } = useAuthStore();
+  const { socket, authUser } = useAuthStore();
 
   // Fetch chat message
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: [`chat-${currentChatingUser?._id}`],
-      queryFn: async ({ pageParam = false }) => {
+      queryFn: async ({ pageParam = 0 }) => {
         if (!currentChatingUser?._id) return [];
         const res = await axiosInstance.get(
           `/message/chat/${currentChatingUser._id}?lastMessageId=${pageParam}&Datalength=${messages.length}&type=${currentChatingUser.type}`
@@ -48,7 +48,7 @@ const ChatPage = () => {
       enabled: !!currentChatingUser?._id,
       staleTime: Infinity,
       getNextPageParam: (lastPage) => {
-        return lastPage?.length ? lastPage[0]._id : undefined;
+        return lastPage?.length ? lastPage[0]?._id : false;
       },
     });
 
@@ -98,9 +98,18 @@ const ChatPage = () => {
             </div>
             {/* Input Area */}
             {/* pending */}
-
             <div className="w-full h-[10%]">
-              <ChatInput />
+              {currentChatingUser.type == "Single" && <ChatInput />}
+              {currentChatingUser.type == "Group" &&
+              currentChatingUser.members.some(
+                (user) => user._id == authUser._id
+              ) ? (
+                <ChatInput />
+              ) : (
+                <p className="bg-base-100 border-t border-base-300 text-xl w-full h-full flex items-center justify-center text-primary-content ">
+                  You are not a member of this group.
+                </p>
+              )}
             </div>
           </div>
         )}

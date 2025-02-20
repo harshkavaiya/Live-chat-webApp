@@ -38,6 +38,7 @@ const GroupLink = ({ img, name, inviteLink }) => {
 
     receiver.forEach((_) => {
       sendMessage(
+        currentChatingUser,
         {
           type: "link",
           data: link,

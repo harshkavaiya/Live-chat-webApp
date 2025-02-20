@@ -65,8 +65,10 @@ const useAudioStore = create((set, get) => ({
       },
     });
     const { profilePic, fullname } = useAuthStore.getState().authUser;
+    const { currentChatingUser } = useMessageStore.getState();
 
     useMessageStore.getState().sendMessage(
+      currentChatingUser,
       {
         type: "audio",
         data: {

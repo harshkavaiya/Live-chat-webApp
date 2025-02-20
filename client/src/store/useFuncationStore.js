@@ -4,6 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import CryptoJS from "crypto-js";
 import useAuthStore from "./useAuthStore";
+import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
 
 const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
@@ -38,8 +39,10 @@ const useFunctionStore = create((set, get) => ({
   },
   locationShare: (queryClient) => {
     const { profilePic, fullname } = useAuthStore.getState().authUser;
-    const { sendMessage } = useMessageStore.getState();
+    const { sendMessage, currentChatingUser } = useMessageStore.getState();
+
     sendMessage(
+      currentChatingUser,
       {
         type: "location",
         data: { latitude: get().location[0], longitude: get().location[1] },
@@ -73,8 +76,9 @@ const useFunctionStore = create((set, get) => ({
       }
 
       const { profilePic, fullname } = useAuthStore.getState().authUser;
-      const { sendMessage } = useMessageStore.getState();
+      const { sendMessage, currentChatingUser } = useMessageStore.getState();
       sendMessage(
+        currentChatingUser,
         {
           type: data.length <= 1 ? data[0].type.split("/")[0] : "multiple-file",
           data: dataUrl,
@@ -131,12 +135,19 @@ const useFunctionStore = create((set, get) => ({
   sendSelectionMessage: (receiver, queryClient) => {
     const { selectMessage } = get();
     const { profilePic, fullname } = useAuthStore.getState().authUser;
+
     receiver.forEach((user) => {
       Object.keys(selectMessage).forEach((element) => {
+        const secretKey = generateUniqueId(
+          selectMessage[element].sender,
+          selectMessage[element].receiver
+        );
+        const data = decryptData(selectMessage[element].data, secretKey);
         useMessageStore.getState().sendMessage(
+          user,
           {
             type: selectMessage[element].type,
-            data: selectMessage[element].data,
+            data: data,
           },
           {
             profilePic,
