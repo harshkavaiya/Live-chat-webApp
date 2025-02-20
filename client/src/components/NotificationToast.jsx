@@ -24,14 +24,11 @@ const NotificationToast = (message, type, name, profilePic) => {
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-gray-900">{name}</p>
               <p className="mt-1 text-sm text-gray-500">
-                {type == "text" && <span className="truncate">{message}</span>}
-                {type == "location" && <span>Location</span>}
-                {type == "poll" && <span>Poll</span>}
-                {type == "image" && <span>Image</span>}
-                {type == "video" && <span>Video</span>}
-                {type == "audio" && <span>Audio</span>}
-                {type == "multiple-file" && <span>Multiple File</span>}
-                {type == "file" && <span>File</span>}
+                {type == "text" ? (
+                  <span className="truncate">{message}</span>
+                ) : (
+                  <span className="capitalize">{type}</span>
+                )}
               </p>
             </div>
           </div>

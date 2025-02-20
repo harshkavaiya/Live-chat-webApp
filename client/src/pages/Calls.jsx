@@ -17,7 +17,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-28T14:30:00Z",
       misscall: true,
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -25,7 +25,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/jane_smith.jpg",
       callType: "outgoing",
       time: "2024-12-28T10:00:00Z",
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "video",
     },
     {
@@ -34,7 +34,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T16:00:00Z",
       misscall: false,
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -42,7 +42,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/emily_davis.jpg",
       callType: "outgoing",
       time: "2024-12-26T17:00:00Z",
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -51,7 +51,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T18:30:00Z",
       misscall: true,
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -68,7 +68,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T20:00:00Z",
       misscall: true,
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -76,7 +76,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/olivia_moore.jpg",
       callType: "outgoing",
       time: "2024-12-26T21:00:00Z",
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "video",
     },
     {
@@ -85,7 +85,7 @@ const Calls = () => {
       callType: "incoming",
       time: "2024-12-26T22:00:00Z",
       misscall: false,
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "voice",
     },
     {
@@ -93,7 +93,7 @@ const Calls = () => {
       profilePhoto: "https://example.com/profiles/isabella_anderson.jpg",
       callType: "outgoing",
       time: "2024-12-26T23:00:00Z",
-      Id: "676e285fa50bb46cb7b5effd",
+      Id: "67b31a81e0aa199101006ea3",
       callNature: "video",
     },
   ];

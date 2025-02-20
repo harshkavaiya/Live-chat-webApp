@@ -136,3 +136,13 @@ export const checkAuth = (req, res) => {
     res.status(200).json({ success: false, message: "Server error" });
   }
 };
+
+export const FetchUser = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await Users.findById(id).select(
+    "phone email fullname profilpic"
+  );
+
+  res.status(200).json({ success: 1, user });
+};

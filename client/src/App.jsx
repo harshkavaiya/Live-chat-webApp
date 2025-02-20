@@ -6,12 +6,9 @@ import LoginPage from "./pages/Login";
 import useAuthStore from "./store/useAuthStore";
 import { Toaster } from "react-hot-toast";
 import TimeAgo from "javascript-time-ago";
-
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
-import { Route, Routes } from "react-router-dom";
-import ShowQR from "./components/Group/ShowQR";
-import QRScanner from "./components/Group/ScannerQR";
+import GroupLink from "./components/GroupLink/GroupLink";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -43,20 +40,7 @@ function App() {
   return (
     <div data-theme={theme}>
       <Toaster className="z-50" />
-      {/* {authUser && authUser._id} */}
-      {/* {authUser != null ? <Home /> : <LoginPage />} */}
-
-      <Routes>
-        {/* <Route path="/" element={<Home />} />
-        
-        <Route path="/Login" element={<LoginPage />} /> */}
-        <Route path="/" element={authUser != null ? <Home /> : <LoginPage />} />
-
-        <Route path="/qrgroup" element={<ShowQR />} />
-        <Route path="/readqr" element={<QRScanner />} />
-      </Routes>
-      {/* <Route path="/Register" element={<Register />} /> */}
-      {/* {authUser && <NewVideoCall />} */}
+      {authUser != null ? <Home /> : <LoginPage />}
     </div>
   );
 }

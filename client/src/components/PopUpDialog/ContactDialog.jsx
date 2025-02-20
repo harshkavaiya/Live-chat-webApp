@@ -7,6 +7,7 @@ import AddContact from "./AddContact";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import useMessageStore from "../../store/useMessageStore";
+import useAuthStore from "../../store/useAuthStore";
 
 const ContactDialog = () => {
   const {
@@ -18,6 +19,7 @@ const ContactDialog = () => {
     isloading,
   } = useContactList();
   const { selectUsertoChat } = useMessageStore();
+  const { authUser } = useAuthStore();
   const { searchQuery, filteredData, handleSearchChange } = useSearch(contacts);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const closeDialog = () => {
@@ -101,7 +103,20 @@ const ContactDialog = () => {
                 <div
                   key={idx}
                   onClick={() => {
-                    selectUsertoChat(i);
+                    selectUsertoChat({
+                      _id: i._id,
+                      phone: i.phone,
+                      email: i.email,
+                      fullname: i.fullname,
+                      profilePic: i.profilePic,
+                      savedName: i.savedName,
+                      sender: authUser._id,
+                      receiver: i._id,
+                      type: "Single",
+                      lastMessage: null,
+                      lastMessageTime: new Date().toISOString(),
+                      lastMessageType: null,
+                    });
                     document.getElementById("my_modal_4").close();
                   }}
                   className="flex  items-center justify-between p-1 rounded-btn sm:hover:bg-primary/10 cursor-pointer"
