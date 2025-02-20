@@ -76,7 +76,7 @@ const Sidebar = () => {
               className="dropdown-content menu bg-primary-content/95 rounded-box z-[1] w-52 p-2 shadow"
             >
               <li>
-                <div className="flex items-center" onClick={Showqrcode}>
+                <div className="flex items-center">
                   <IoQrCodeOutline size={20} />
                   <p className="text-sm">Show QR</p>
                 </div>
