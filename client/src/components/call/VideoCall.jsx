@@ -21,7 +21,7 @@ const VideoCall = ({ name }) => {
     } else {
       console.error("myVideoRef is null during initialization");
     }
-  }, []);
+  }, [ endCall,  socket]);
 
   useEffect(() => {
     if (socket) {
@@ -50,7 +50,7 @@ const VideoCall = ({ name }) => {
         socket.off("callEnded");
       };
     }
-  }, [socket]);
+  }, [socket, endCall]);
 
   const [activeDot, setActiveDot] = useState(0);
 
@@ -125,7 +125,6 @@ const VideoCall = ({ name }) => {
             } sm:w-1/2 object-cover sm:rounded-l-box`}
           />
         </div>
-
         <CallControl model={1} />
       </div>
     </dialog>

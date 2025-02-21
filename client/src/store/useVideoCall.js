@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 
 const useVideoCall = create((set, get) => ({
   peer: null,
-  socket: null,
   localStream: null,
   currentCall: null,
   peerId: "",
@@ -21,8 +20,7 @@ const useVideoCall = create((set, get) => ({
 
   createPeerId: (userId) => {
     const { peer } = get();
-    const { socket } = useAuthStore.getState();
-    set({ socket });
+
     if (peer) {
       console.log("Peer already exists:", peer.id);
       peer.destroy();
@@ -51,9 +49,8 @@ const useVideoCall = create((set, get) => ({
   // Initialize Peer and Socket
   initializeVideoCall: (myVideoRef, peerVideoRef) => {
     // Get local media
-
-    set({ myVideoRef, peerVideoRef });
-    const { peer, socket } = get();
+    const { peer } = get();
+    const { socket } = useAuthStore.getState();
 
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
@@ -77,53 +74,54 @@ const useVideoCall = create((set, get) => ({
         get().endCall();
       });
     });
+    set({ myVideoRef, peerVideoRef });
   },
 
-  answerCall: () => {
-    const { incomingCall, localStream, peer, socket, peerId } = get();
-    // console.log("Incoming call:", incomingCall);
-    console.log("Local stream:", localStream);
+  answerCall: async () => {
+    const { socket } = useAuthStore.getState();
+    let { incomingCall, localStream, peer, peerId } = get();
 
-    if (!incomingCall || !localStream) {
-      console.error(
-        "Cannot accept call: incomingCall or localStream is missing."
-      );
+    if (!incomingCall) {
+      console.error("No incoming call to answer.");
+      return;
     }
 
-    console.log("Accepting call from:", peerId);
-
-    // Proceed to get the local stream if not available
     if (!localStream) {
-      get().GetLocalStream(); // Ensure we have the local stream
+      console.log("Fetching local stream before answering...");
+      await get().GetLocalStream();
+      localStream = get().localStream;
     }
-    // Once localStream is available, establish the call
-    if (peer && incomingCall) {
-      const call = peer.call(incomingCall, localStream); // Create the call
 
+    console.log("Answering call from:", incomingCall);
+
+    if (peer) {
       peer.on("call", (call) => {
-        console.log("localStream", localStream);
         call.answer(localStream);
 
-        // Handle the stream once the call is established
         call.on("stream", (remoteStream) => {
-          console.log("stream-received", remoteStream);
-          get().peerVideoRef.srcObject = remoteStream;
+          console.log("Remote stream received");
+          if (get().peerVideoRef) {
+            get().peerVideoRef.srcObject = remoteStream;
+          }
         });
-      });
-      // Set the current call and update the state
-      set({ currentCall: call, isCallInProgress: true });
 
-      // Emit an event to notify the server that the call is accepted
+        call.on("close", () => {
+          console.log("Call ended.");
+          get().endCall();
+        });
+
+        set({ currentCall: call, isCallInProgress: true });
+      });
+
       socket.emit("acceptCall", { to: incomingCall, from: peerId });
-      // Clear the call timeout once the call is accepted
       clearTimeout(get().callTimeout);
     } else {
-      console.error("Error: Peer or incoming call is missing.");
+      console.error("Error: Peer instance is missing.");
     }
   },
 
   GetLocalStream: async () => {
-    const { callType } = get();
+    const { callType, myVideoRef } = get();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: callType === "video" ? true : false,
@@ -132,8 +130,9 @@ const useVideoCall = create((set, get) => ({
       set({ localStream: stream });
       console.log("Local stream initialized");
       // Set the local video stream for the UI
-      if (get().myVideoRef) {
-        get().myVideoRef.srcObject = stream;
+      if (myVideoRef) {
+        myVideoRef.srcObject = stream;
+        set({ myVideoRef });
       }
     } catch (error) {
       console.error("Failed to get local stream:", error);
@@ -154,7 +153,8 @@ const useVideoCall = create((set, get) => ({
 
   startCall: (remotePeerId, callType) => {
     set({ callType });
-    const { localStream, socket, peerId } = get();
+    const { socket } = useAuthStore.getState();
+    const { localStream, peerId } = get();
 
     if (!localStream) {
       console.log("Cannot start call: localStream is not initialized.");
@@ -186,7 +186,8 @@ const useVideoCall = create((set, get) => ({
 
   // Reject a call
   rejectCall: () => {
-    const { incomingCall, socket } = get();
+    const { socket } = useAuthStore.getState();
+    const { incomingCall } = get();
     if (incomingCall) {
       console.log("reject call by me");
       socket.emit("callRejected", { to: incomingCall });
@@ -217,13 +218,19 @@ const useVideoCall = create((set, get) => ({
       myVideoRef.srcObject = null;
     }
 
-    set({ currentCall: null, incomingCall: null, isCallInProgress: false });
+    set({
+      currentCall: null,
+      incomingCall: null,
+      isCallInProgress: false,
+      peerVideoRef,
+      myVideoRef,
+    });
   },
   setIncomming: (incomingCall) => set({ incomingCall }),
 
   endCallByPeer: () => {
-    const { incomingCall, socket, remotePeerId, peerId, isCallInProgress } =
-      get();
+    const { socket } = useAuthStore.getState();
+    const { incomingCall, remotePeerId, peerId, isCallInProgress } = get();
     // if (isCallInProgress) {
     socket.emit("endCall", {
       to: incomingCall == null ? remotePeerId : incomingCall,
