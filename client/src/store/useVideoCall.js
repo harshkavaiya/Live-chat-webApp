@@ -19,12 +19,14 @@ const useVideoCall = create((set, get) => ({
   callType: null,
 
   createPeerId: (userId) => {
-    const { peer } = get();
+    let { peer } = get();
 
     if (peer) {
-      console.log("Peer already exists:", peer.id);
+      console.log("Destroying previous peer instance:", peer.id);
       peer.destroy();
+      set({ peer: null }); // Reset previous peer instance
     }
+
     if (userId) {
       const newPeer = new Peer(userId);
       set({ peer: newPeer });
@@ -35,16 +37,32 @@ const useVideoCall = create((set, get) => ({
       });
 
       newPeer.on("error", (err) => {
-        if (err.type === "unavailable-id") {
-          console.log("ID is already taken, retrying with a new ID...");
-        } else {
-          console.error("PeerJS error:", err);
-        }
+        console.error("PeerJS error:", err);
+      });
+
+      // Ensure call events are handled every time a peer is created
+      newPeer.on("call", (call) => {
+        console.log("Receiving call...", call);
+        call.answer(get().localStream);
+
+        call.on("stream", (remoteStream) => {
+          console.log("Received remote stream", remoteStream);
+          if (get().peerVideoRef) {
+            get().peerVideoRef.srcObject = remoteStream;
+          }
+        });
+
+        call.on("close", () => {
+          console.log("Call closed.");
+          get().endCall();
+        });
+
+        set({ currentCall: call, isCallInProgress: true });
       });
     } else {
       console.log("User ID is null");
     }
-  },
+},
 
   // Initialize Peer and Socket
   initializeVideoCall: (myVideoRef, peerVideoRef) => {
@@ -79,7 +97,7 @@ const useVideoCall = create((set, get) => ({
 
   answerCall: async () => {
     const { socket } = useAuthStore.getState();
-    let { incomingCall, localStream, peer, peerId } = get();
+    let { incomingCall, localStream, peer } = get();
 
     if (!incomingCall) {
       console.error("No incoming call to answer.");
@@ -94,31 +112,30 @@ const useVideoCall = create((set, get) => ({
 
     console.log("Answering call from:", incomingCall);
 
-    if (peer) {
-      peer.on("call", (call) => {
-        call.answer(localStream);
-
-        call.on("stream", (remoteStream) => {
-          console.log("Remote stream received");
-          if (get().peerVideoRef) {
-            get().peerVideoRef.srcObject = remoteStream;
-          }
-        });
-
-        call.on("close", () => {
-          console.log("Call ended.");
-          get().endCall();
-        });
-
-        set({ currentCall: call, isCallInProgress: true });
-      });
-
-      socket.emit("acceptCall", { to: incomingCall, from: peerId });
-      clearTimeout(get().callTimeout);
-    } else {
-      console.error("Error: Peer instance is missing.");
+    if (!peer) {
+      console.error("Peer instance is missing. Creating new...");
+      get().createPeerId(incomingCall);
+      peer = get().peer;
     }
-  },
+
+    const call = peer.call(incomingCall, localStream);
+
+    call.on("stream", (remoteStream) => {
+      console.log("Remote stream received");
+      if (get().peerVideoRef) {
+        get().peerVideoRef.srcObject = remoteStream;
+      }
+    });
+
+    call.on("close", () => {
+      console.log("Call ended.");
+      get().endCall();
+    });
+
+    set({ currentCall: call, isCallInProgress: true });
+    socket.emit("acceptCall", { to: incomingCall, from: peer.id });
+    clearTimeout(get().callTimeout);
+},
 
   GetLocalStream: async () => {
     const { callType, myVideoRef } = get();
@@ -151,38 +168,41 @@ const useVideoCall = create((set, get) => ({
     console.log("Incoming Call Set:", get().incomingCall);
   },
 
-  startCall: (remotePeerId, callType) => {
+  startCall: async (remotePeerId, callType) => {
     set({ callType });
+
     const { socket } = useAuthStore.getState();
-    const { localStream, peerId } = get();
+    let { localStream, peerId, peer } = get();
 
     if (!localStream) {
-      console.log("Cannot start call: localStream is not initialized.");
-      get().GetLocalStream(); // Fetch the stream if it's missing
+      console.log("Fetching local stream before starting the call...");
+      await get().GetLocalStream();
+      localStream = get().localStream; // Update after fetching
+    }
+
+    if (!peer) {
+      console.error("Peer instance is missing. Creating a new one...");
+      get().createPeerId(peerId);
+      peer = get().peer;
     }
 
     set({ remotePeerId });
-    // const call = peer.call(remotePeerId, localStream); // Create the call
+
     console.log("Calling peer:", remotePeerId);
-
-    // set({ currentCall: call, isCallInProgress: true });
-
     socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
-    // Set a timeout to automatically reject the call after 15 seconds
-    // if (get().incomingCall) {
+
+    // Set a timeout to automatically reject the call after 10 seconds
     const callTimeout = setTimeout(() => {
       console.log("Call timed out - no answer received");
       socket.emit("callRejected", { to: remotePeerId });
       set({ incomingCall: null });
-      get().endCall(); // End the call on both sides
-      document.getElementById("my_modal_1").close();
+      get().endCall();
       toast.error("Call timed out - No response received.");
-    }, 10000); // 15 seconds
+    }, 10000);
 
-    // Save the timeout ID so we can clear it if the call is answered before timeout
     set({ callTimeout });
-    // }
-  },
+},
+
 
   // Reject a call
   rejectCall: () => {
