@@ -5,15 +5,21 @@ import toast from "react-hot-toast";
 
 // QRScanner component
 const QRScanner = () => {
- 
   const videoRef = useRef(null);
   const qrScannerRef = useRef(null);
 
   const joinGroup = async (inviteLink) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.post(`group/join/${inviteLink}`);
-      
+      const res = await axiosInstance.post(`group/join/${inviteLink}`);
+      if(res.data.success==1){
+        setCurrentChatingUser(res.data.group)
+      }
+      else if (res.data.success) {
+        // setCurrentChatingUser(res.data.group)
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (err) {
       console.error("Join Group Error:", err);
     } finally {
@@ -25,7 +31,6 @@ const QRScanner = () => {
     // Initialize QR scanner when component mounts
     if (videoRef.current) {
       qrScannerRef.current = new QrScanner(videoRef.current, (result) => {
-       
         console.log("QR Result", result);
 
         if (result) {

@@ -101,7 +101,8 @@ export const joinGroup = async (req, res) => {
     //if user is already a member of the group
     if (group.members.includes(memberId)) {
       return res.status(200).json({
-        success: false,
+        success: 1,
+        id:group._id,
         message: "You are already a member of this group",
       });
     }
