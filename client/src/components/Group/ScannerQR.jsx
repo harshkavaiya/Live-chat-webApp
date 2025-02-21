@@ -5,9 +5,7 @@ import toast from "react-hot-toast";
 
 // QRScanner component
 const QRScanner = () => {
-  const [qrResult, setQrResult] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+ 
   const videoRef = useRef(null);
   const qrScannerRef = useRef(null);
 
@@ -15,13 +13,8 @@ const QRScanner = () => {
     try {
       setLoading(true);
       const response = await axiosInstance.post(`group/join/${inviteLink}`);
-      if (response.data.success) {
-        setQrResult("Successfully joined the group!");
-      } else {
-        setError(response.data.message);
-      }
+      
     } catch (err) {
-      setError("Error joining the group.");
       console.error("Join Group Error:", err);
     } finally {
       setLoading(false);
@@ -32,7 +25,7 @@ const QRScanner = () => {
     // Initialize QR scanner when component mounts
     if (videoRef.current) {
       qrScannerRef.current = new QrScanner(videoRef.current, (result) => {
-        setQrResult(result); // Update state with the scanned result
+       
         console.log("QR Result", result);
 
         if (result) {
@@ -67,25 +60,6 @@ const QRScanner = () => {
               className="absolute w-52"
             />
           </div>
-
-          {/* Conditional Loading, Success, Error Messages */}
-          {loading && (
-            <div className="alert alert-info mb-4">
-              <span>Joining group...</span>
-            </div>
-          )}
-
-          {qrResult && !loading && (
-            <div className="alert alert-success mb-4">
-              <span>{qrResult}</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="alert alert-error mb-4">
-              <span>{error}</span>
-            </div>
-          )}
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

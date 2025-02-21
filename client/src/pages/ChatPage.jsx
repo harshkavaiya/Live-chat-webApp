@@ -99,8 +99,8 @@ const ChatPage = () => {
             {/* Input Area */}
             {/* pending */}
             <div className="w-full h-[10%]">
-              {currentChatingUser.type == "Single" && <ChatInput />}
-              {currentChatingUser.type == "Group" &&
+          
+              {currentChatingUser.type == "Group" ?
               currentChatingUser.members.some(
                 (user) => user._id == authUser._id
               ) ? (
@@ -109,7 +109,7 @@ const ChatPage = () => {
                 <p className="bg-base-100 border-t border-base-300 text-xl w-full h-full flex items-center justify-center text-primary-content ">
                   You are not a member of this group.
                 </p>
-              )}
+              ): <ChatInput />}
             </div>
           </div>
         )}

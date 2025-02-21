@@ -21,9 +21,11 @@ import QRScanner from "./Group/ScannerQR";
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const [activeTab, setActiveTab] = useState("all");
+  const [activeTabData, setActiveTabData] = useState([]);
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
+  let data = messagerUser;
   const { FetchOnlineUsers, onlineUsers } = useAuthStore();
   const { activePage } = useHomePageNavi.getState();
   useEffect(() => {
@@ -34,9 +36,19 @@ const Sidebar = () => {
     document.getElementById("Qr_scanner").showModal();
   };
 
+  useEffect(() => {
+    if (activeTab === "all") {
+      setActiveTabData(messagerUser);
+    } else if (activeTab === "Individual") {
+      setActiveTabData(messagerUser.filter((i) => i.type === "Single"));
+    } else if (activeTab === "group") {
+      setActiveTabData(messagerUser.filter((i) => i.type === "Group"));
+    }
+  }, [activeTab]);
+
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
-    useSearch(messagerUser);
+    useSearch(activeTabData);
 
   const Opendialog = (dialog) => {
     if (dialog === 4) setDialogOpen(true);
@@ -172,12 +184,12 @@ const Sidebar = () => {
 
         {/* messeages list */}
         <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
-          {messagerUser.length === 0 ? (
+          {activeTabData.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
             </p>
           ) : (
-            messagerUser.map((i, idx) => {
+            activeTabData.map((i, idx) => {
               const {
                 lastMessageTime,
                 fullname,
@@ -194,6 +206,7 @@ const Sidebar = () => {
                   ? decryptData(i.lastMessage, secretKey)
                   : i.lastMessage;
               const lastMessage = data || i.lastMessage;
+
               return (
                 <div
                   key={idx}
