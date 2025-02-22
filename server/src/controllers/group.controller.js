@@ -89,7 +89,6 @@ export const joinGroup = async (req, res) => {
     const memberId = req.user._id;
 
     const group = await Group.findOne({ inviteLink });
-
     //if group not found or invalid invite link
     if (!group) {
       return res.status(200).json({
@@ -101,8 +100,8 @@ export const joinGroup = async (req, res) => {
     //if user is already a member of the group
     if (group.members.includes(memberId)) {
       return res.status(200).json({
-        success: 1,
-        id:group._id,
+        success: 2,
+        id: group._id,
         message: "You are already a member of this group",
       });
     }
@@ -111,9 +110,66 @@ export const joinGroup = async (req, res) => {
     group.members.push(memberId);
     await group.save();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Successfully joined the group", group });
+    const groupMember = await group.populate(
+      "members",
+      "fullname profilePic _id"
+    );
+
+    const userContacts = await Users.findById(memberId).select("contacts");
+
+    for (const member of groupMember.members) {
+      if (member._id != memberId) {
+        let { name, profilePic } = req.body;
+        let receiverId = getUserSocketId(member._id);
+
+        let findUser = await Users.findById(member._id).select("contacts");
+
+        if (findUser.contacts.length > 0) {
+          let contact = findUser.contacts.find(
+            (contact) => contact.userId.toString() === memberId.toString()
+          );
+          const displayName = contact ? contact.savedName : name;
+          name = displayName;
+        }
+
+        if (receiverId) {
+          io.to(receiverId).emit(
+            "newMember",
+            [{ fullname: name, profilePic, _id: memberId }],
+            groupMember._id
+          );
+        }
+      }
+      const contact = userContacts.contacts.find(
+        (contact) => contact.userId.toString() === member._id.toString()
+      );
+      const displayName = contact ? contact.savedName : member.fullname;
+      member.fullname = displayName;
+    }
+
+    const { _id, name, photo, admin, admins } = group;
+    const groupInfo = {
+      _id,
+      fullname: name,
+      profilePic: photo,
+      members: groupMember.members,
+      admins,
+      admin,
+      inviteLink,
+      messagePermission: true,
+      sender: null,
+      receiver: _id,
+      type: "Group",
+      lastMessage: null,
+      lastMessageType: null,
+      lastMessageTime: new Date().toISOString(),
+    };
+
+    res.status(200).json({
+      success: 1,
+      message: "Successfully joined the group",
+      group: groupInfo,
+    });
   } catch (error) {
     console.log("Error in joinGroup:", error.message);
     res.status(200).json({ success: false, message: "Server error" });
@@ -152,7 +208,6 @@ export const addMember = async (req, res) => {
         .json({ success: false, message: "Member not added" });
     }
     group.members.map((user) => {
-      console.log(user, myId, "124");
       if (user != myId) {
         let receiverId = getUserSocketId(user);
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import useAuthStore from "../../store/useAuthStore";
 import { GoDotFill } from "react-icons/go";
@@ -21,7 +21,7 @@ const VideoCall = ({ name }) => {
     } else {
       console.error("myVideoRef is null during initialization");
     }
-  }, [ endCall,  socket]);
+  }, [endCall, socket]);
 
   useEffect(() => {
     if (socket) {

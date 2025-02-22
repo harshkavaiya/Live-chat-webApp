@@ -21,11 +21,11 @@ import QRScanner from "./Group/ScannerQR";
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const [activeTab, setActiveTab] = useState("all");
-  const [activeTabData, setActiveTabData] = useState([]);
+  const [isOpenScanner, setIsOpenScanner] = useState(false)
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
-  let data = messagerUser;
+  const [activeTabData, setActiveTabData] = useState(messagerUser);
   const { FetchOnlineUsers, onlineUsers } = useAuthStore();
   const { activePage } = useHomePageNavi.getState();
   useEffect(() => {
@@ -33,6 +33,7 @@ const Sidebar = () => {
   }, []);
 
   const openQRscanner = () => {
+    setIsOpenScanner(true)
     document.getElementById("Qr_scanner").showModal();
   };
 
@@ -66,7 +67,7 @@ const Sidebar = () => {
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
       <GroupDialog />
-      <QRScanner />
+      <QRScanner open={isOpenScanner} setOpen={setIsOpenScanner}/>
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">

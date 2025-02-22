@@ -319,7 +319,7 @@ const useMessageStore = create((set, get) => ({
       });
     }
     notificationSound();
-    set({ messages: messages });
+    set({ messages });
   },
   handleMessageReaction: async (id, reaction, queryClient) => {
     const { messages } = get();

@@ -96,7 +96,7 @@ const ChatMessage = ({
               key={i}
               className="flex w-full items-center scroll-smooth "
             >
-              {isSelectMessage && (
+              {isSelectMessage && type!="poll" && (
                 <input
                   type="checkbox"
                   onClick={() => onSelectionMessage(message)}

@@ -2,52 +2,67 @@ import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import axiosInstance from "../../lib/axiosInstance";
 import toast from "react-hot-toast";
+import useMessageStore from "../../store/useMessageStore";
+import useAuthStore from "../../store/useAuthStore";
 
 // QRScanner component
-const QRScanner = () => {
+const QRScanner = ({ open, setOpen }) => {
   const videoRef = useRef(null);
   const qrScannerRef = useRef(null);
-
+  const { authUser } = useAuthStore();
+  const { setMessagerUser, messagerUser, setCurrentChatingUser } =
+    useMessageStore();
   const joinGroup = async (inviteLink) => {
     try {
-      setLoading(true);
-      const res = await axiosInstance.post(`group/join/${inviteLink}`);
-      if(res.data.success==1){
-        setCurrentChatingUser(res.data.group)
-      }
-      else if (res.data.success) {
-        // setCurrentChatingUser(res.data.group)
+      const res = await axiosInstance.post(`group/join/${inviteLink}`, {
+        name: authUser.name,
+        profilePic: authUser.profilePic,
+      });
+
+      if (res.data.success == 2) {
+        toast.success(res.data.message);
+        let group = messagerUser.find((user) => user._id == res.data.id);
+        setCurrentChatingUser(group);
+      } else if (res.data.success == 1) {
+        toast.success("Successfully joined the group!");
+        setMessagerUser([res.data.group, ...messagerUser]);
+        setCurrentChatingUser(res.data.group);
       } else {
         toast.error(res.data.message);
       }
     } catch (err) {
       console.error("Join Group Error:", err);
+      document.getElementById("Qr_scanner").close();
+      toast.error("Internal Server Error");
     } finally {
-      setLoading(false);
+      setOpen(false);
+      document.getElementById("Qr_scanner").close();
     }
   };
 
   useEffect(() => {
     // Initialize QR scanner when component mounts
-    if (videoRef.current) {
-      qrScannerRef.current = new QrScanner(videoRef.current, (result) => {
-        console.log("QR Result", result);
 
-        if (result) {
-          joinGroup(result); // Call the joinGroup function with the scanned result (invite link)
-          qrScannerRef.current.stop(); // Stop the scanner after successful scan
-          toast.success("Successfully joined the group!");
-          document.getElementById("Qr_scanner").close();
-        }
-      });
+    if (!open) return;
 
-      qrScannerRef.current.start();
+    if (!videoRef?.current) return;
 
-      return () => {
-        qrScannerRef.current.stop();
-      };
-    }
-  }, []);
+    qrScannerRef.current = new QrScanner(videoRef.current, (result) => {
+      console.log("QR Result", result);
+
+      if (result) {
+        joinGroup(result); // Call the joinGroup function with the scanned result (invite link)
+        qrScannerRef.current.stop(); // Stop the scanner after successful scan
+      }
+    });
+
+    qrScannerRef.current.start();
+
+    return () => {
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+    };
+  }, [open]);
 
   return (
     <dialog id="Qr_scanner" className="modal">

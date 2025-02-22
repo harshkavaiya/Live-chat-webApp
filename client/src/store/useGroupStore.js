@@ -160,6 +160,7 @@ const useGroupStore = create((set, get) => ({
     setMessagerUser(messagerUser);
   },
   handleNewMember: (newMember, id) => {
+    console.log(newMember,id)
     const { messagerUser, setMessagerUser } = useMessageStore.getState();
     messagerUser.forEach((element) => {
       if (element._id == id) {
