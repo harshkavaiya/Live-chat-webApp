@@ -86,7 +86,7 @@ const useVideoCall = create((set, get) => ({
 
   answerCall: async () => {
     const { socket } = useAuthStore.getState();
-    const { incomingCall, localStream, peer } = get();
+    let { incomingCall, localStream, peer } = get();
 
     if (!incomingCall) {
       return;
