@@ -5,7 +5,7 @@ import useVideoCall from "../../store/useVideoCall";
 import toast from "react-hot-toast";
 import useAuthStore from "../../store/useAuthStore";
 
-const AudioCall = ({ name }) => {
+const AudioCall = ({ name="Hardik" }) => {
   const caller = [1, 2];
   const [isAudioActive, setIsAudioActive] = useState(false);
   const { initializeVideoCall, endCall } = useVideoCall.getState();
@@ -29,7 +29,7 @@ const AudioCall = ({ name }) => {
     if (socket) {
       //reject call
       socket.on("callRejected", (data) => {
-        document.getElementById("my_modal_2").close();
+        document.getElementById("audio_call_modal").close();
         endCall();
         toast.error(`Call rejected by ${data.from}`);
       });
@@ -37,7 +37,7 @@ const AudioCall = ({ name }) => {
       // Handle ended calls
       socket.on("callEnded", (data) => {
         console.log("Call ended by:", data.from);
-        document.getElementById("my_modal_2").close();
+        document.getElementById("audio_call_modal").close();
         endCall();
         console.log("cleaning resources");
       });
@@ -50,7 +50,7 @@ const AudioCall = ({ name }) => {
   }, [socket]);
 
   return (
-    <dialog id="my_modal_2" className="modal">
+    <dialog id="audio_call_modal" className="modal">
       <div
         className={`bg-base-200 w-full h-full grid gap-2 sm:gap-4 p-2 overflow-y-auto
         ${

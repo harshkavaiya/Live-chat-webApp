@@ -30,9 +30,9 @@ const IncomingCallDialog = () => {
     document.getElementById("incomingDialog").close();
     answerCall();
     if (callType === "video") {
-      document.getElementById("my_modal_1").showModal();
+      document.getElementById("video_call_modal").showModal();
     } else if (callType === "voice") {
-      document.getElementById("my_modal_2").showModal();
+      document.getElementById("audio_call_modal").showModal();
     }
   };
   const RejectCall = () => {

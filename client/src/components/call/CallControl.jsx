@@ -17,9 +17,9 @@ const CallControl = ({ model }) => {
   const handleEndCall = () => {
     console.log("end call by me");
     if (callType === "video") {
-      document.getElementById("my_modal_1").close();
+      document.getElementById("video_call_modal").close();
     } else if (callType === "voice") {
-      document.getElementById("my_modal_2").close();
+      document.getElementById("audio_call_modal").close();
     }
     endCallByPeer();
   };

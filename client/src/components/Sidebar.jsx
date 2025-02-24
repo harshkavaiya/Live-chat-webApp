@@ -21,7 +21,7 @@ import QRScanner from "./Group/ScannerQR";
 const Sidebar = () => {
   const receiveMessage = true; //if messeage is receiver or not seen
   const [activeTab, setActiveTab] = useState("all");
-  const [isOpenScanner, setIsOpenScanner] = useState(false)
+  const [isOpenScanner, setIsOpenScanner] = useState(false);
 
   const { getMessagerUser, messagerUser, isLoading, selectUsertoChat } =
     useMessageStore();
@@ -33,11 +33,13 @@ const Sidebar = () => {
   }, []);
 
   const openQRscanner = () => {
-    setIsOpenScanner(true)
+    setIsOpenScanner(true);
     document.getElementById("Qr_scanner").showModal();
   };
 
   useEffect(() => {
+    if (!messagerUser) return;
+
     if (activeTab === "all") {
       setActiveTabData(messagerUser);
     } else if (activeTab === "Individual") {
@@ -45,7 +47,7 @@ const Sidebar = () => {
     } else if (activeTab === "group") {
       setActiveTabData(messagerUser.filter((i) => i.type === "Group"));
     }
-  }, [activeTab]);
+  }, [activeTab, messagerUser]);
 
   const { setDialogOpen } = useContactList();
   const { searchQuery, filteredData, handleSearchChange } =
@@ -67,7 +69,7 @@ const Sidebar = () => {
     <div className="h-full w-full flex flex-col gap-2">
       <ContactDialog />
       <GroupDialog />
-      <QRScanner open={isOpenScanner} setOpen={setIsOpenScanner}/>
+      <QRScanner open={isOpenScanner} setOpen={setIsOpenScanner} />
 
       {/* user online */}
       <div className="flex flex-col w-full pl-2 py-2">

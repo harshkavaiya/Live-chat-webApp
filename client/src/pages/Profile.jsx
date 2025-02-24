@@ -368,7 +368,8 @@ const Profile = ({ setIsProfileOpen }) => {
             </button>
           )}
           {currentChatingUser.type == "Group" &&
-            currentChatingUser.admin == authUser._id && (
+            currentChatingUser.admin == authUser._id &&
+            currentChatingUser.members.length == 1 && (
               <button
                 onClick={() => deleteGroup()}
                 className="flex items-center gap-2 w-full  text-error font-semibold"

@@ -1,18 +1,17 @@
-import {  useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CallControl from "./CallControl";
 import useAuthStore from "../../store/useAuthStore";
 import { GoDotFill } from "react-icons/go";
 import useVideoCall from "../../store/useVideoCall";
 import toast from "react-hot-toast";
 
-const VideoCall = ({ name }) => {
-  const { initializeVideoCall, localStream, isCallInProgress, endCall } =
-    useVideoCall.getState();
+const VideoCall = ({ name = "Hardik" }) => {
+  const { initializeVideoCall, localStream, isCallInProgress, endCall,Ringing } =
+    useVideoCall();
   const { socket } = useAuthStore();
 
   const myVideoRef = useRef(null); // Local video
   const peerVideoRef = useRef(null); // Remote video
-  const [Ringing, setRinging] = useState(true);
 
   useEffect(() => {
     if (myVideoRef.current) {
@@ -22,35 +21,6 @@ const VideoCall = ({ name }) => {
       console.error("myVideoRef is null during initialization");
     }
   }, [endCall, socket]);
-
-  useEffect(() => {
-    if (socket) {
-      //reject call
-      socket.on("callRejected", (data) => {
-        setRinging(false); // Stop ringing
-        document.getElementById("my_modal_1").close();
-        endCall();
-        toast.error(`Call rejected by ${data.from}`, { id: "callReject" });
-      });
-
-      // Handle ended calls
-      // if (isCallInProgress) {
-      socket.on("callEnded", (data) => {
-        console.log("Call ended by:", data.from);
-        setRinging(false); // Stop ringing
-        document.getElementById("my_modal_1").close();
-        endCall();
-        console.log("cleaning resources");
-      });
-      // }
-
-      // Clean up socket events on unmount
-      return () => {
-        socket.off("callRejected");
-        socket.off("callEnded");
-      };
-    }
-  }, [socket, endCall]);
 
   const [activeDot, setActiveDot] = useState(0);
 
@@ -81,7 +51,7 @@ const VideoCall = ({ name }) => {
   }, [localStream]);
 
   return (
-    <dialog id="my_modal_1" className={`modal overflow-hidden`}>
+    <dialog id="video_call_modal" className={`modal overflow-hidden`}>
       <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
         {/* Video Screen */}
         <div className="w-full h-full sm:h-screen flex sm:gap-1">

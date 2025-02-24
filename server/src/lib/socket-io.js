@@ -82,12 +82,7 @@ io.on("connection", (socket) => {
     // const receiverSocketId = getUserSocketId(data.from);
     const callerSocketId = getUserSocketId(data.to);
 
-    // if (receiverSocketId) {
-    //   io.to(receiverSocketId).emit("callEnded", { from: data.from });
-    //   console.log(`Call ended notification sent to receiver Id: ${data.from}`);
-    // }
-
-    // Notify the user who ended the call (to clean up UI)
+  console.log(callerSocketId)
     if (callerSocketId) {
       io.to(callerSocketId).emit("callEnded", { from: data.from });
       console.log(`Call ended notification sent to caller id: ${data.to}`);

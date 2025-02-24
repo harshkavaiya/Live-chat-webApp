@@ -102,11 +102,12 @@ const Calls = () => {
   const [calltype, setCalltype] = useState(null);
   const [ready, setReady] = useState(false);
   const { startCall } = useVideoCall();
+
   const VcallsHandler = (data) => {
     setcallerName(data.name);
     setRemoteId(data.Id);
     setCalltype(data.callNature);
-    document.getElementById("my_modal_1").showModal();
+    document.getElementById("video_call_modal").showModal();
     setReady(true);
   };
 
@@ -114,7 +115,7 @@ const Calls = () => {
     setcallerName(data.name);
     setRemoteId(data.Id);
     setCalltype(data.callNature);
-    document.getElementById("my_modal_2").showModal();
+    document.getElementById("audio_call_modal").showModal();
     setReady(true);
   };
 
@@ -127,9 +128,6 @@ const Calls = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <VideoCall name={callName} />
-      <AudioCall name={callName} />
-
       {/* user message */}
       <div className="flex-1 h-0 flex flex-col">
         <div className="text-lg flex items-center justify-between font-bold pl-2 py-2 cursor-default">

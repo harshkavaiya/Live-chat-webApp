@@ -11,9 +11,9 @@ import MessageLoadingSkeleton from "../Skeleton/MessageLoginSkeleton";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMediaStore from "../../store/useMediaStore";
 import Image from "./msg_type/Image";
-import Video from "./msg_type/video";
-import File from "./msg_type/file";
-import Multiplefile from "./msg_type/multiplefile";
+import Video from "./msg_type/Video";
+import File from "./msg_type/File";
+import Multiplefile from "./msg_type/Multiplefile";
 import LocationPreview from "./msg_type/LocationPreview";
 import { BsEmojiLaughing } from "react-icons/bs";
 import ReactionEmoji, { reactions } from "../ReactionEmoji";
@@ -96,7 +96,7 @@ const ChatMessage = ({
               key={i}
               className="flex w-full items-center scroll-smooth "
             >
-              {isSelectMessage && type!="poll" && (
+              {isSelectMessage && type != "poll" && (
                 <input
                   type="checkbox"
                   onClick={() => onSelectionMessage(message)}
@@ -203,14 +203,16 @@ const ChatMessage = ({
                     }`}
                   >
                     {formatMessageTime(createdAt)}
-                    {sender == myId && (
+                    {/* {sender == myId && (
                       <PiChecksBold
                         size={13}
                         className={`${
-                          read.includes(myId) ? "text-sky-500" : "text-base-100"
+                          read.includes(myId)
+                            ? "text-sky-500"
+                            : "text-base-100"
                         }  ml-1`}
                       />
-                    )}
+                    )} */}
                   </p>
                 </div>
                 <div

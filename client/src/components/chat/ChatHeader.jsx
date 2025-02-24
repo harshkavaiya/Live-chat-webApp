@@ -6,11 +6,13 @@ import useFunctionStore from "../../store/useFuncationStore";
 import { IoChevronBackOutline } from "react-icons/io5";
 import useMessageStore from "../../store/useMessageStore";
 import { useQueryClient } from "@tanstack/react-query";
+import useVideoCall from "../../store/useVideoCall";
 
 const ChatHeader = ({ setIsProfileOpen }) => {
   const headerMenuRef = useRef();
   const queryClient = useQueryClient();
   const { handleSelection } = useFunctionStore();
+  const { startCall } = useVideoCall();
   const { closeChat, clearChat, currentChatingUser } = useMessageStore();
 
   return (
@@ -47,7 +49,16 @@ const ChatHeader = ({ setIsProfileOpen }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 ">
-          <IoVideocam className="cursor-pointer" size={20} />
+          {currentChatingUser.type == "Single" && (
+            <IoVideocam
+              onClick={() => {
+                startCall(currentChatingUser._id, "video");
+                document.getElementById("video_call_modal").showModal();
+              }}
+              className="cursor-pointer"
+              size={20}
+            />
+          )}
 
           <div className="dropdown dropdown-bottom dropdown-end">
             <IoEllipsisVerticalSharp

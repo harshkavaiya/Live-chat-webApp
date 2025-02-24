@@ -10,7 +10,7 @@ import ChatHeader from "../components/chat/ChatHeader";
 import ChatMessage from "../components/chat/ChatMessage";
 import Profile from "./Profile";
 import ImagePreview from "../components/ImagePreview/ImagePreview";
-import Share from "../components/share/share";
+import Share from "../components/share/Share";
 import Location from "../components/Location";
 import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
 

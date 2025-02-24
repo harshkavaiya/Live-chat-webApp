@@ -19,6 +19,9 @@ import MyStatusPreview from "../components/Status/MyStatusPreview";
 import CreatePoll from "../components/Poll/CreatePoll";
 import { useQueryClient } from "@tanstack/react-query";
 import useGroupStore from "../store/useGroupStore";
+import VideoCall from "../components/call/VideoCall";
+import AudioCall from "../components/call/AudioCall";
+import toast from "react-hot-toast";
 
 const Home = () => {
   const { currentChatingUser, handleNewMessage, handleMessageReaction } =
@@ -39,12 +42,14 @@ const Home = () => {
     handleNewGroup,
     handleNewAdmin,
     handleremoveMember,
-    handleLeaveGroup,handleRemoveAdmin,hanldeDeleteGroup
+    handleLeaveGroup,
+    handleRemoveAdmin,
+    hanldeDeleteGroup,
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
 
-  const { createPeerId, incomingCallAnswere, setIncomming, endCall } =
+  const { createPeerId, incomingCallAnswere, setIncomming, endCall,setRinging } =
     useVideoCall();
 
   const { SetActivePage, activePage } = useHomePageNavi();
@@ -75,7 +80,7 @@ const Home = () => {
         );
         incomingCallAnswere(data.from, data.callType);
       };
-   
+
       const endcallhandler = (data) => {
         console.log("Call ended by:", data.from);
         endCall();
@@ -98,8 +103,22 @@ const Home = () => {
       socket.on("newAdmin", handleNewAdmin);
       socket.on("removeMember", handleremoveMember);
       socket.on("leaveGroup", handleLeaveGroup);
-      socket.on("removeAdmin",handleRemoveAdmin)
-      socket.on("deleteGroup",hanldeDeleteGroup)
+      socket.on("removeAdmin", handleRemoveAdmin);
+      socket.on("deleteGroup", hanldeDeleteGroup);
+
+      socket.on("callRejected", (data) => {
+        setRinging(false); // Stop ringing
+        document.getElementById("video_call_modal").close();
+        endCall();
+        toast.error(`Call rejected by ${data.from}`, { id: "callReject" });
+      });
+
+      socket.on("callEnded", () => {
+        setRinging(false); // Stop ringing
+        document.getElementById("video_call_modal").close();
+        endCall();
+        console.log("cleaning resources");
+      });
       return () => {
         socket.off("newStatus");
         socket.off("refreshStatus");
@@ -115,7 +134,9 @@ const Home = () => {
         socket.off("removeMember");
         socket.off("leaveGroup");
         socket.off("removeAdmin");
-        socket.off("deleteGroup")
+        socket.off("deleteGroup");
+        socket.off("callEnded");
+        socket.off("callRejected");
       };
     }
   }, [
@@ -131,7 +152,8 @@ const Home = () => {
     handleNewGroup,
     handleNewMember,
     handleremoveMember,
-    handleRemoveAdmin,hanldeDeleteGroup
+    handleRemoveAdmin,
+    hanldeDeleteGroup,
   ]);
 
   const renderActivePage = () => {
@@ -193,6 +215,9 @@ const Home = () => {
 
       {status.length > 0 && <StatusPreview />}
       {isStatusPageOpen && <MyStatusPreview />}
+
+      <VideoCall />
+      <AudioCall />
 
       <CreatePoll />
     </div>

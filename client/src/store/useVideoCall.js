@@ -17,12 +17,14 @@ const useVideoCall = create((set, get) => ({
   peerVideoRef: null,
   callTimeout: null,
   callType: null,
-
+  Ringing: false,
+  setRinging: (Ringing) => {
+    set({ Ringing });
+  },
   createPeerId: (userId) => {
     let { peer } = get();
 
     if (peer) {
-      console.log("Destroying previous peer instance:", peer.id);
       peer.destroy();
       set({ peer: null }); // Reset previous peer instance
     }
@@ -33,7 +35,6 @@ const useVideoCall = create((set, get) => ({
 
       newPeer.on("open", (id) => {
         set({ peerId: id });
-        console.log("My Peer ID:", id);
       });
 
       newPeer.on("error", (err) => {
@@ -42,78 +43,61 @@ const useVideoCall = create((set, get) => ({
 
       // Ensure call events are handled every time a peer is created
       newPeer.on("call", (call) => {
-        console.log("Receiving call...", call);
         call.answer(get().localStream);
 
         call.on("stream", (remoteStream) => {
-          console.log("Received remote stream", remoteStream);
           if (get().peerVideoRef) {
             get().peerVideoRef.srcObject = remoteStream;
           }
         });
 
         call.on("close", () => {
-          console.log("Call closed.");
           get().endCall();
         });
 
         set({ currentCall: call, isCallInProgress: true });
       });
-    } else {
-      console.log("User ID is null");
     }
-},
+  },
 
   // Initialize Peer and Socket
   initializeVideoCall: (myVideoRef, peerVideoRef) => {
     // Get local media
-    const { peer } = get();
-    const { socket } = useAuthStore.getState();
 
+    const { socket } = useAuthStore.getState();
+    set({ myVideoRef, peerVideoRef });
     // Handle accepted calls
     socket.on("callAccepted", (data) => {
-      console.log("Call accepted by:", data.from);
       clearTimeout(get().callTimeout); // Clear the timeout if the call is accepted
-      const call = peer.call(get().remotePeerId, get().localStream);
+      const call = get().peer.call(data.from, get().localStream);
       set({ currentCall: call, isCallInProgress: true });
-      console.log("call data", call);
-      // Check if peerVideoRef exists and assign remoteStream
+
       call.on("stream", (remoteStream) => {
-        console.log("peerVideoRef is", remoteStream);
-        // console.log("initializeVideoCall", peerVideoRef);
         if (peerVideoRef) {
-          console.log("Remote stream received.");
           peerVideoRef.srcObject = remoteStream;
         }
       });
 
       call.on("close", () => {
-        console.log("Call closed.");
         get().endCall();
       });
     });
-    set({ myVideoRef, peerVideoRef });
   },
 
   answerCall: async () => {
     const { socket } = useAuthStore.getState();
-    let { incomingCall, localStream, peer } = get();
+    const { incomingCall, localStream, peer } = get();
 
     if (!incomingCall) {
-      console.error("No incoming call to answer.");
       return;
     }
 
     if (!localStream) {
-      console.log("Fetching local stream before answering...");
       await get().GetLocalStream();
       localStream = get().localStream;
     }
 
-    console.log("Answering call from:", incomingCall);
-
     if (!peer) {
-      console.error("Peer instance is missing. Creating new...");
       get().createPeerId(incomingCall);
       peer = get().peer;
     }
@@ -121,27 +105,25 @@ const useVideoCall = create((set, get) => ({
     const call = peer.call(incomingCall, localStream);
 
     call.on("stream", (remoteStream) => {
-      console.log("Remote stream received");
       if (get().peerVideoRef) {
         get().peerVideoRef.srcObject = remoteStream;
       }
     });
 
     call.on("close", () => {
-      console.log("Call ended.");
       get().endCall();
     });
 
     set({ currentCall: call, isCallInProgress: true });
     socket.emit("acceptCall", { to: incomingCall, from: peer.id });
     clearTimeout(get().callTimeout);
-},
+  },
 
   GetLocalStream: async () => {
     const { callType, myVideoRef } = get();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: callType === "video" ? true : false,
+        video: callType === "video",
         audio: true,
       });
       set({ localStream: stream });
@@ -161,11 +143,9 @@ const useVideoCall = create((set, get) => ({
     set({ callType });
     // If local stream is not available, fetch it
     if (!get().localStream) {
-      console.log("Local stream is missing, fetching...", get().localStream);
       get().GetLocalStream();
     }
     set({ incomingCall: CallerPeerId });
-    console.log("Incoming Call Set:", get().incomingCall);
   },
 
   startCall: async (remotePeerId, callType) => {
@@ -175,25 +155,21 @@ const useVideoCall = create((set, get) => ({
     let { localStream, peerId, peer } = get();
 
     if (!localStream) {
-      console.log("Fetching local stream before starting the call...");
       await get().GetLocalStream();
       localStream = get().localStream; // Update after fetching
     }
 
     if (!peer) {
-      console.error("Peer instance is missing. Creating a new one...");
       get().createPeerId(peerId);
       peer = get().peer;
     }
 
     set({ remotePeerId });
 
-    console.log("Calling peer:", remotePeerId);
     socket.emit("callOffer", { to: remotePeerId, from: peerId, callType });
 
     // Set a timeout to automatically reject the call after 10 seconds
     const callTimeout = setTimeout(() => {
-      console.log("Call timed out - no answer received");
       socket.emit("callRejected", { to: remotePeerId });
       set({ incomingCall: null });
       get().endCall();
@@ -201,16 +177,13 @@ const useVideoCall = create((set, get) => ({
     }, 10000);
 
     set({ callTimeout });
-},
-
+  },
 
   // Reject a call
   rejectCall: () => {
     const { socket } = useAuthStore.getState();
-    const { incomingCall } = get();
-    if (incomingCall) {
-      console.log("reject call by me");
-      socket.emit("callRejected", { to: incomingCall });
+    if (get().incomingCall) {
+      socket.emit("callRejected", { to: get().incomingCall });
       set({ incomingCall: null });
       get().endCall();
     }
@@ -250,13 +223,11 @@ const useVideoCall = create((set, get) => ({
 
   endCallByPeer: () => {
     const { socket } = useAuthStore.getState();
-    const { incomingCall, remotePeerId, peerId, isCallInProgress } = get();
-    // if (isCallInProgress) {
+    const { incomingCall, remotePeerId, peerId } = get();
     socket.emit("endCall", {
       to: incomingCall == null ? remotePeerId : incomingCall,
       from: peerId,
     });
-    // }
 
     get().endCall();
   },
@@ -264,14 +235,14 @@ const useVideoCall = create((set, get) => ({
   // Toggle microphone
   toggleMic: (mictong) => {
     const { localStream, isMicOn } = get();
-    console.log("mic local-", localStream, "mic-", isMicOn);
+
     const audioTrack = localStream
       ?.getTracks()
       .find((track) => track.kind === "audio");
-    console.log("auditrack", audioTrack);
+
     if (audioTrack) {
       audioTrack.enabled = mictong;
-      console.log("mic is : ", mictong);
+
       set({ isMicOn: audioTrack.enabled });
     }
   },
