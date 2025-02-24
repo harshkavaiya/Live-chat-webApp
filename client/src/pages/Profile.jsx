@@ -77,7 +77,7 @@ const Profile = ({ setIsProfileOpen }) => {
             {currentChatingUser.fullname}
           </h1>
           {currentChatingUser.type == "Single" && (
-            <p className="text-sm ">91+ {currentChatingUser.phone}</p>
+            <p className="text-sm ">+91 {currentChatingUser.phone}</p>
           )}
           {currentChatingUser.type == "Group" && (
             <p className="text-sm ">

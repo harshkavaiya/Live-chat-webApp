@@ -2,6 +2,7 @@ import React from "react";
 import { RxCross2 } from "react-icons/rx";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import useContactList from "../../store/useContactList";
+import { Toaster } from "react-hot-toast";
 
 const AddContact = () => {
   const {
@@ -24,7 +25,14 @@ const AddContact = () => {
   };
 
   return (
-    <dialog id="AddContactDialog" className="modal">
+    <dialog id="AddContactDialog" className="modal z-0">
+      <Toaster 
+      toastOptions={{
+        style: {
+          zIndex: 9999,
+        }
+      }}
+      />
       <div className="modal-box gap-2 w-[90%] h-full sm:h-[75%] flex p-5 bg-base-300 flex-col">
         {/* Header */}
         <div className="flex justify-between items-center">

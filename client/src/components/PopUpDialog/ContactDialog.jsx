@@ -50,7 +50,7 @@ const ContactDialog = () => {
   return (
     <>
       <AddContact />
-      <dialog id="my_modal_4" className="modal">
+      <dialog id="my_modal_4" className="modal z-0">
         <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
           {/* header */}
           <div className="flex justify-between items-center">
