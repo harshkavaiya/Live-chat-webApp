@@ -27,7 +27,8 @@ const useSearch = (data, delay = 500) => {
         ? item.savedName
             .toLowerCase()
             .includes(debouncedSearchQuery.toLowerCase())
-        : false;
+        : item.fullname
+        ? item.fullname.toLowerCase().includes(debouncedSearchQuery.toLowerCase()): false;
       const phoneNumberMatch = item.phone
         ? item.phone.includes(debouncedSearchQuery)
         : false;

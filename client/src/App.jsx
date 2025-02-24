@@ -39,7 +39,14 @@ function App() {
 
   return (
     <div data-theme={theme}>
-      <Toaster className="z-50" />
+      <Toaster 
+      
+      toastOptions={{
+        duration: 1000,
+        style: {
+          zIndex: 9999,
+        }
+      }}/>
       {authUser != null ? <Home /> : <LoginPage />}
     </div>
   );

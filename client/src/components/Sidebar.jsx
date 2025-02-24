@@ -187,12 +187,12 @@ const Sidebar = () => {
 
         {/* messeages list */}
         <div className="overflow-y-auto w-full relativ scrollbar-small overflow-x-hidden">
-          {activeTabData.length === 0 ? (
+          {filteredData.length === 0 ? (
             <p className="text-center inset-x-0 inset-y-1/2 absolute">
               No contacts found
             </p>
           ) : (
-            activeTabData.map((i, idx) => {
+            filteredData.map((i, idx) => {
               const {
                 lastMessageTime,
                 fullname,

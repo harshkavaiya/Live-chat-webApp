@@ -256,12 +256,12 @@ const ChatMessage = ({
                   }}
                   className=" btn btn-ghost btn-circle btn-md p-2"
                 />
-                <LuTrash2
+                {/* <LuTrash2
                   onClick={() => {
                     handleSelectMessage(false), setSelectMessage([]);
                   }}
                   className="btn btn-ghost btn-circle btn-md p-2"
-                />
+                /> */}
               </div>
             )}
           </div>
