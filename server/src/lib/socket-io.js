@@ -43,14 +43,16 @@ io.on("connection", (socket) => {
 
   // Listen for call offer
   socket.on("callOffer", (data) => {
-    const receiverSocketId =getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
-    console.log(receiverSocketId)
+    const receiverSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
+    console.log(receiverSocketId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("callOffer", {
         from: data.from,
         callType: data.callType,
       });
-      console.log(`Call offer sent from ${data.from} to ${data.to} - ${socket.id}`);
+      console.log(
+        `Call offer sent from ${data.from} to ${data.to} - ${socket.id}`
+      );
     } else {
       console.log(`Peer ID ${data.to} not found`);
     }
@@ -82,7 +84,7 @@ io.on("connection", (socket) => {
     // const receiverSocketId = getUserSocketId(data.from);
     const callerSocketId = getUserSocketId(data.to);
 
-  console.log(callerSocketId)
+    console.log(callerSocketId);
     if (callerSocketId) {
       io.to(callerSocketId).emit("callEnded", { from: data.from });
       console.log(`Call ended notification sent to caller id: ${data.to}`);
@@ -106,8 +108,20 @@ io.on("connection", (socket) => {
     io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
   });
 
-  socket.on("messagesRead", (data,myId) => {
-    io.to(getUserSocketId(data)).emit("messagesRead",myId);
+  socket.on("messagesRead", async (data, myId, userToChatId) => {
+    if (userToChatId) {
+      await Message.updateMany(
+        {
+          sender: { $ne: myId },
+          receiver: userToChatId,
+          "read.user": { $ne: myId },
+          deletedByUsers: { $ne: myId },
+          members: { $in: myId }, // Only update unread messages
+        },
+        { $push: { read: { user: myId, seenAt: new Date() } } }
+      );
+    }
+    io.to(getUserSocketId(data)).emit("messagesRead", myId);
   });
 });
 

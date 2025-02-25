@@ -60,7 +60,7 @@ const ChatPage = () => {
       ];
       setMessages(uniqueMessages.reverse());
     }
-  }, [data]);
+  }, [data, setMessages]);
 
   // Handle socket events
   useEffect(() => {

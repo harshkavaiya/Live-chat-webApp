@@ -3,6 +3,7 @@ import cloudinary from "../lib/cloudinary.js";
 import Group from "../models/group.model.js";
 import Users from "../models/users.model.js";
 import { getUserSocketId, io } from "../lib/socket-io.js";
+import Message from "../models/message.model.js";
 export const createGroup = async (req, res) => {
   try {
     const { name, description, type, photo, members } = req.body;
@@ -59,7 +60,7 @@ export const createGroup = async (req, res) => {
       type: "Group",
       lastMessage: null,
       lastMessageType: null,
-      lastMessageTime: new Date().toISOString(),
+      lastMessageTime: new Date(),
     };
 
     groupMember.members.map((user) => {
@@ -162,7 +163,7 @@ export const joinGroup = async (req, res) => {
       type: "Group",
       lastMessage: null,
       lastMessageType: null,
-      lastMessageTime: new Date().toISOString(),
+      lastMessageTime: new Date(),
     };
 
     res.status(200).json({
@@ -259,7 +260,7 @@ export const addMember = async (req, res) => {
             type: "Group",
             lastMessage: null,
             lastMessageType: null,
-            lastMessageTime: new Date().toISOString(),
+            lastMessageTime: new Date(),
           });
         }
       })
@@ -580,6 +581,11 @@ export const removeMember = async (req, res) => {
         memberId
       );
     }
+
+    await Message.updateMany(
+      { _id: group._id },
+      { push: { deletedByUsers: memberId } }
+    );
     res
       .status(200)
       .json({ success: true, message: "Member removed successfully" });

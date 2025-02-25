@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { io } from "socket.io-client";
 import axiosInstance from "../lib/axiosInstance";
 import toast from "react-hot-toast";
+import useHomePageNavi from "./useHomePageNavi";
 
 const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -113,6 +114,7 @@ const useAuthStore = create((set, get) => ({
       await axiosInstance.get("/auth/logout");
 
       toast.success("Logout");
+      useHomePageNavi.getState().SetActivePage("chat");
       set({ authUser: null, isLogin: false });
       sessionStorage.removeItem("authUser");
     } catch (error) {

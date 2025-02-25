@@ -200,6 +200,7 @@ const Sidebar = () => {
                 sender,
                 receiver,
                 lastMessageType,
+                unread,
               } = i;
 
               const secretKey = generateUniqueId(sender, receiver);
@@ -242,23 +243,24 @@ const Sidebar = () => {
                         <GoDotFill size={20} className="text-blue-500" />
                       </div>
                     )}
-                    <div className="flex flex-col gap-2 items-center">
-                      <p className="text-xs">
+                    <div className="flex flex-col gap-2 items-center w-14">
+                      <p className="text-xs w-full">
                         {formatMessageTime(lastMessageTime)}
                       </p>
 
-                      <div
-                        className={`flex items-center gap-3 group-hover:translate-x-0  transition-transform duration-75
-                    ${receiveMessage ? "translate-x-7" : "translate-x-10"}`}
-                      >
-                        {receiveMessage ? (
-                          <>
-                            <div className="badge badge-primary w-6 h-6">4</div>
-                            <FaAngleDown className="cursor-pointer" size={20} />
-                          </>
-                        ) : (
-                          <FaAngleDown className="cursor-pointer" size={20} />
-                        )}
+                      <div className="items-center flex">
+                        <div
+                          className={`${
+                            i.unseen > 0 ? "badge badge-primary" : ""
+                          } w-6 h-6`}
+                        >
+                          {i.unseen || ""}
+                        </div>
+
+                        <FaAngleDown
+                          className="cursor-pointer  group-hover:block hidden"
+                          size={20}
+                        />
                       </div>
                     </div>
                   </div>

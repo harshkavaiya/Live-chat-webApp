@@ -28,7 +28,7 @@ const useMessageStore = create((set, get) => ({
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   sendMessage: async (receiver, data, notification, queryClient) => {
-    const { messagerUser, notificationSound } = get();
+    const { messagerUser, notificationSound, messages } = get();
 
     const { _id } = useAuthStore.getState().authUser;
     let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
@@ -37,10 +37,11 @@ const useMessageStore = create((set, get) => ({
       type: receiver.type || "Single",
       members:
         receiver?.members?.filter(
-          (item) => item._id.toString() != _id.toString()
+          (item) => item._id.toString() !== _id.toString()
         ) || [],
     });
     notificationSound();
+    set({ messages: [...messages, res.data] });
     let isExits = messagerUser.some((user) => user._id == receiver._id);
 
     let updateData = messagerUser;
@@ -54,7 +55,7 @@ const useMessageStore = create((set, get) => ({
         user.lastMessageType = data.type;
         user.sender = _id;
         user.receiver = receiver._id;
-        user.lastMessageTime = new Date().toISOString();
+        user.lastMessageTime = new Date();
       }
     });
 
@@ -113,14 +114,13 @@ const useMessageStore = create((set, get) => ({
         user.sender = sender;
         user.receiver = newMessage.receiver;
         user.lastMessageType = newMessage.type;
-        user.lastMessageTime = new Date().toISOString();
+        user.lastMessageTime = new Date();
       }
     });
     set({ messagerUser: updateData });
 
     if (currentChatingUser?._id == sender) return;
-    if (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver)
-      return;
+
     const qdata = queryClient.getQueryData([
       `chat-${ChatType == "Group" ? newMessage.receiver : sender}`,
     ]);
@@ -143,7 +143,6 @@ const useMessageStore = create((set, get) => ({
         }
       );
     }
-    notificationSound();
 
     let dData = message;
     if (type == "text") {
@@ -154,6 +153,20 @@ const useMessageStore = create((set, get) => ({
       dData = decryptData(message, secretkey);
     }
 
+    if (
+      (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver) ||
+      (ChatType == "Single" && currentChatingUser?._id == sender)
+    )
+      return;
+
+    updateData.forEach((user) => {
+      let id = ChatType == "Group" ? newMessage.receiver : sender;
+      if (user._id == id) {
+        user.unseen = user.unseen ? user.unseen + 1 : 1;
+      }
+    });
+    set({ messagerUser: updateData });
+    notificationSound();
     NotificationToast(dData, type, name, profilePic);
   },
   selectUsertoChat: (data) => {
@@ -254,14 +267,41 @@ const useMessageStore = create((set, get) => ({
   },
   suscribeToMessage: (queryClient) => {
     const socket = useAuthStore.getState().socket;
-    const { currentChatingUser, notificationSound } = get();
+    const { currentChatingUser, notificationSound, messagerUser } = get();
     if (!socket) return;
+
+    messagerUser.forEach((user) => {
+      if (user._id == currentChatingUser._id) {
+        if (user.unseen) {
+          socket.emit(
+            "messagesRead",
+            user.sender,
+            useAuthStore.getState().authUser._id,
+            currentChatingUser._id
+          );
+          user.unseen = 0;
+        }
+      }
+    });
+
     socket.on("newMessage", (data) => {
       const { newMessage } = data;
+      if (
+        currentChatingUser.type == "Group" &&
+        currentChatingUser._id != newMessage.receiver
+      )
+        return;
+      if (
+        currentChatingUser.type == "Single" &&
+        currentChatingUser._id != newMessage.sender
+      )
+        return;
+
       socket.emit(
         "messagesRead",
         newMessage.sender,
-        useAuthStore.getState().authUser._id
+        useAuthStore.getState().authUser._id,
+        currentChatingUser._id
       );
       queryClient.setQueryData(
         [
@@ -283,7 +323,6 @@ const useMessageStore = create((set, get) => ({
         }
       );
       notificationSound();
-      set({ messages: [...get().messages, newMessage] });
     });
   },
   unsuscribeFromMessage: () => {
@@ -367,7 +406,7 @@ const useMessageStore = create((set, get) => ({
     const { _id } = useAuthStore.getState().authUser;
 
     const { messages } = get();
-    const secretkey = generateUniqueId(to, sender);
+    const secretkey = generateUniqueId(sender, to);
 
     data.options[selectedOption].vote++;
     data.voted.push({ id: _id, ans: selectedOption });
@@ -410,10 +449,11 @@ const useMessageStore = create((set, get) => ({
   handleMessageRead: (id) => {
     const { messages } = get();
     messages.forEach((element) => {
-      if (!element.read.includes(id)) {
-        element.read.push(id);
+      if (!element.read.some((item) => item.user == id)) {
+        element.read.push({ user: id, seenAt: new Date() });
       }
     });
+
     set({ messages });
   },
 }));

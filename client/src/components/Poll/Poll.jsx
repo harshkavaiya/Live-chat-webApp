@@ -4,14 +4,12 @@ import { FiBarChart2 } from "react-icons/fi";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
 
-const Poll = ({ data, id, sender }) => {
+const Poll = ({ data, id, sender, receiver }) => {
   const { options, pollTitle, voted } = data;
   const [selectedOption, setSelectedOption] = useState(null);
-  const { currentChatingUser, sendVote } = useMessageStore();
+  const { sendVote } = useMessageStore();
   const { authUser } = useAuthStore();
   const [isVoted, setIsVoted] = useState(false);
-
-  const totalVotes = options.reduce((sum, option) => sum + option.vote, 0);
 
   const getPercentage = (vote) => {
     return Math.round((vote / voted.length) * 100);
@@ -68,9 +66,7 @@ const Poll = ({ data, id, sender }) => {
       <div className="px-2 py-2  border-t border-base-300">
         {!isVoted ? (
           <button
-            onClick={() =>
-              sendVote(id, selectedOption, currentChatingUser._id, data, sender)
-            }
+            onClick={() => sendVote(id, selectedOption, receiver, data, sender)}
             disabled={selectedOption === null}
             className="flex items-center justify-center w-full py-2 px-2 border border-transparent rounded-md  text-sm font-medium text-primary-content bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >

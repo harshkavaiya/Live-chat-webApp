@@ -114,7 +114,7 @@ const ContactDialog = () => {
                       receiver: i._id,
                       type: "Single",
                       lastMessage: null,
-                      lastMessageTime: new Date().toISOString(),
+                      lastMessageTime: new Date(),
                       lastMessageType: null,
                     });
                     document.getElementById("my_modal_4").close();

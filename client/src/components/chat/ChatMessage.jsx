@@ -1,7 +1,7 @@
 import { PiChecksBold } from "react-icons/pi";
 import { memo, useEffect, useRef } from "react";
 import { IoClose } from "react-icons/io5";
-import { IoIosShareAlt } from "react-icons/io";
+import { IoIosArrowDown, IoIosShareAlt } from "react-icons/io";
 import { LuTrash2 } from "react-icons/lu";
 import Poll from "../Poll/Poll";
 import useMessageStore from "../../store/useMessageStore";
@@ -38,7 +38,6 @@ const ChatMessage = ({
   const {
     onSelectionMessage,
     handleSelectMessage,
-    setSelectMessage,
     selectMessage,
     isSelectMessage,
     handleSelection,
@@ -51,10 +50,11 @@ const ChatMessage = ({
 
   const messageEndRef = useRef();
   const queryClient = useQueryClient();
+
   useEffect(() => {
     suscribeToMessage(queryClient);
     return () => unsuscribeFromMessage();
-  }, [suscribeToMessage, unsuscribeFromMessage]);
+  }, [queryClient]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -86,8 +86,16 @@ const ChatMessage = ({
           </div>
         )}
         {messages?.map((message, i) => {
-          const { _id, sender, receiver, type, read, createdAt, reaction } =
-            message;
+          const {
+            _id,
+            sender,
+            receiver,
+            type,
+
+            read,
+            createdAt,
+            reaction,
+          } = message;
           let secretKey = generateUniqueId(sender, receiver) || null;
           const data = decryptData(message?.data, secretKey);
           return (
@@ -146,6 +154,30 @@ const ChatMessage = ({
                   }`}
                 >
                   {/* reaction emoji */}
+                  {sender == myId && (
+                    <div className="dropdown dropdown-bottom  dropdown-end ">
+                      <IoIosArrowDown
+                        size={25}
+                        role="button"
+                        tabIndex={0}
+                        className="group-focus-within:block group-hover:block hidden"
+                      />
+                      <ul
+                        tabIndex={0}
+                        className="dropdown-content menu text-sm bg-base-100 border w-44 rounded-xl z-30 p-2 shadow-lg gap-1"
+                      >
+                        <li>
+                          <button
+                          // onClick={() =>
+                          //   removeMember(currentChatingUser._id, item._id)
+                          // }
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                   {reaction.length > 0 && (
                     <div
                       className={`badge bg-transparent border-none absolute -bottom-3 p-0.5  ${
@@ -203,16 +235,18 @@ const ChatMessage = ({
                     }`}
                   >
                     {formatMessageTime(createdAt)}
-                    {/* {sender == myId && (
+                    {sender == myId && (
                       <PiChecksBold
                         size={13}
                         className={`${
-                          read.includes(myId)
+                          currentChatingUser.type == "Single" && read.length > 0
+                            ? "text-sky-500"
+                            : read.length == message.members.length - 1
                             ? "text-sky-500"
                             : "text-base-100"
                         }  ml-1`}
                       />
-                    )} */}
+                    )}
                   </p>
                 </div>
                 <div

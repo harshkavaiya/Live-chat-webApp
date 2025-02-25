@@ -12,7 +12,7 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     type: {
       type: String,
       required: true,
@@ -31,7 +31,12 @@ const messageSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    read: { type: Array },
+    read: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        seenAt: { type: Date },
+      },
+    ],
     deletedByUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

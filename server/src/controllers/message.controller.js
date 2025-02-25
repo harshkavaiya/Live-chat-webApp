@@ -288,19 +288,11 @@ export const getMessages = async (req, res) => {
       find = Message.find({
         receiver: userToChatId,
         deletedByUsers: { $ne: myId },
+        members: { $in: myId },
       })
         .sort({ createdAt: -1 })
         .skip(Datalength)
         .limit(10);
-
-      await Message.updateMany(
-        {
-          sender: { $ne: myId },
-          receiver: userToChatId,
-          read: { $ne: myId }, // Only update unread messages
-        },
-        { $addToSet: { read: myId } }
-      );
     } else {
       find = Message.find({
         $or: [
@@ -312,21 +304,24 @@ export const getMessages = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(Datalength)
         .limit(10);
-
-      await Message.updateMany(
-        {
-          sender: userToChatId,
-          receiver: myId,
-          read: { $ne: myId }, // Only update unread messages
-        },
-        { $addToSet: { read: myId } }
-      );
     }
 
-    io.to(getUserSocketId(userToChatId)).emit("messagesRead", {
-      receiver: myId,
-      sender: userToChatId,
-    });
+    await Message.updateMany(
+      {
+        sender: { $ne: myId },
+        receiver: type == "Group" ? userToChatId : myId,
+        deletedByUsers: { $ne: myId },
+        members: { $in: myId },
+        "read.user": { $ne: myId }, // Only update unread messages
+      },
+      { $push: { read: { user: myId, seenAt: new Date() } } }
+    );
+    io.to(getUserSocketId(userToChatId)).emit(
+      "messagesRead",
+      myId,
+      userToChatId,
+      false
+    );
     const message = await find;
 
     res.status(200).json(message);
@@ -353,32 +348,27 @@ export const sendMessage = async (req, res) => {
       data: enrData,
     });
     await newMessage.save();
+
     if (ChatType == "Group") {
       const { members } = req.body;
-
+      newMessage.members = [myId, ...members];
       members.forEach((element) => {
-        let receiverSoket = getUserSocketId(element._id);
-        if (receiverSoket) {
-          io.to(receiverSoket).emit("newMessage", {
-            newMessage,
-            profilePic,
-            name: fullname,
-            ChatType,
-          });
-        }
-      });
-    } else {
-      let receiverSoket = getUserSocketId(receiver);
-
-      if (receiverSoket) {
-        io.to(receiverSoket).emit("newMessage", {
+        io.to(getUserSocketId(element._id)).emit("newMessage", {
           newMessage,
           profilePic,
           name: fullname,
           ChatType,
         });
-      }
+      });
+    } else {
+      io.to(getUserSocketId(receiver)).emit("newMessage", {
+        newMessage,
+        profilePic,
+        name: fullname,
+        ChatType,
+      });
     }
+    await newMessage.save();
 
     res.status(200).json(newMessage);
   } catch (error) {

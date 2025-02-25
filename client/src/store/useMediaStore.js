@@ -10,7 +10,7 @@ const useMediaStore = create((set, get) => ({
   fetchChatUserMedia: (messages) => {
     set({ ischatmediaLoading: true });
     let media = [];
-    messages.forEach((element) => {
+    messages?.forEach((element) => {
       const { type, sender, receiver } = element;
       const { generateUniqueId, decryptData } = useFunctionStore.getState();
       let secretKey = generateUniqueId(sender, receiver);
