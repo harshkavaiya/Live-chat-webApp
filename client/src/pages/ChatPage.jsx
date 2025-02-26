@@ -17,6 +17,7 @@ import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { mediaPreview } = useMediaStore();
+
   const {
     isMessageShare,
     isLocationLoading,
@@ -35,7 +36,7 @@ const ChatPage = () => {
   const { socket, authUser } = useAuthStore();
 
   // Fetch chat message
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage ,isError} =
     useInfiniteQuery({
       queryKey: [`chat-${currentChatingUser?._id}`],
       queryFn: async ({ pageParam = 0 }) => {
@@ -73,6 +74,7 @@ const ChatPage = () => {
     };
   }, [socket, handleVote, handleMessageRead]);
 
+  console.log(data)
   return (
     <>
       <div className="relative w-full h-screen mb-52">

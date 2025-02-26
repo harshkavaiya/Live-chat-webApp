@@ -3,6 +3,7 @@ import http from "http";
 import express from "express";
 import Message from "../models/message.model.js";
 import dotenv from "dotenv";
+import Users from "../models/users.model.js";
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -108,20 +109,32 @@ io.on("connection", (socket) => {
     io.to(getUserSocketId(to)).emit("vote", { pollId, optionIndex, from });
   });
 
-  socket.on("messagesRead", async (data, myId, userToChatId) => {
+  socket.on("messagesRead", async (type, sender, myId, userToChatId) => {
+    io.to(getUserSocketId(sender)).emit("messagesRead", myId);
     if (userToChatId) {
-      await Message.updateMany(
-        {
-          sender: { $ne: myId },
-          receiver: userToChatId,
-          "read.user": { $ne: myId },
-          deletedByUsers: { $ne: myId },
-          members: { $in: myId }, // Only update unread messages
-        },
-        { $push: { read: { user: myId, seenAt: new Date() } } }
-      );
+      if (type == "Group") {
+        await Message.updateMany(
+          {
+            sender: { $ne: myId },
+            receiver: userToChatId,
+            "read.user": { $ne: myId },
+            deletedByUsers: { $ne: myId },
+            members: { $in: myId }, // Only update unread messages
+          },
+          { $push: { read: { user: myId, seenAt: new Date() } } }
+        );
+      } else {
+        await Message.updateMany(
+          {
+            sender: sender,
+            receiver: myId,
+            "read.user": { $ne: myId },
+            deletedByUsers: { $ne: myId },
+          },
+          { $push: { read: { user: myId, seenAt: new Date() } } }
+        );
+      }
     }
-    io.to(getUserSocketId(data)).emit("messagesRead", myId);
   });
 });
 

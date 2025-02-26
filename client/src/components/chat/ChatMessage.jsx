@@ -1,8 +1,7 @@
 import { PiChecksBold } from "react-icons/pi";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoIosArrowDown, IoIosShareAlt } from "react-icons/io";
-import { LuTrash2 } from "react-icons/lu";
 import Poll from "../Poll/Poll";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
@@ -21,6 +20,7 @@ import Audio from "./msg_type/Audio";
 import { useQueryClient } from "@tanstack/react-query";
 import { MemeberProfilePic } from "../../function/function";
 import { Link } from "react-router-dom";
+import MessageInfo from "../PopUpDialog/MessageInfo";
 
 const ChatMessage = ({
   isLoading,
@@ -47,7 +47,7 @@ const ChatMessage = ({
   const { authUser } = useAuthStore();
   const myId = authUser._id;
   const { handleMediaPreview } = useMediaStore();
-
+  const [messageInfoData, setMessageInfoData] = useState({});
   const messageEndRef = useRef();
   const queryClient = useQueryClient();
 
@@ -86,16 +86,8 @@ const ChatMessage = ({
           </div>
         )}
         {messages?.map((message, i) => {
-          const {
-            _id,
-            sender,
-            receiver,
-            type,
-
-            read,
-            createdAt,
-            reaction,
-          } = message;
+          const { _id, sender, receiver, type, read, createdAt, reaction } =
+            message;
           let secretKey = generateUniqueId(sender, receiver) || null;
           const data = decryptData(message?.data, secretKey);
           return (
@@ -141,7 +133,7 @@ const ChatMessage = ({
                   </div>
                 )}
                 <div
-                  className={`chat-bubble relative rounded-xl max-w-[70%] px-2 my-1 py-1 ${
+                  className={`chat-bubble group relative rounded-xl max-w-[70%] px-3 my-1 py-1 ${
                     sender == myId
                       ? "bg-primary/70 text-primary-content "
                       : "bg-base-300 text-base-content"
@@ -153,26 +145,51 @@ const ChatMessage = ({
                       : "order-1"
                   }`}
                 >
-                  {/* reaction emoji */}
+                  {/*See Message Info */}
                   {sender == myId && (
-                    <div className="dropdown dropdown-bottom  dropdown-end ">
+                    <div className="dropdown dropdown-bottom dropdown-end absolute top-1 right-1 ">
                       <IoIosArrowDown
-                        size={25}
+                        size={20}
                         role="button"
                         tabIndex={0}
                         className="group-focus-within:block group-hover:block hidden"
                       />
                       <ul
                         tabIndex={0}
-                        className="dropdown-content menu text-sm bg-base-100 border w-44 rounded-xl z-30 p-2 shadow-lg gap-1"
+                        className="dropdown-content menu text-sm bg-base-100 text-base-content border w-44 rounded-xl z-30 p-2 shadow-lg gap-1"
                       >
                         <li>
+                          <button
+                            onClick={() => {
+                              setMessageInfoData({
+                                type: type,
+                                createdAt: createdAt,
+                                data: data,
+                                sender: sender,
+                                handleMediaPreview: handleMediaPreview,
+                                _id: _id,
+                                read: read,
+                              });
+                              document
+                                .getElementById("message_info_modal")
+                                .showModal();
+                            }}
+                          >
+                            Message Info
+                          </button>
                           <button
                           // onClick={() =>
                           //   removeMember(currentChatingUser._id, item._id)
                           // }
                           >
-                            Remove
+                            Forward
+                          </button>
+                          <button
+                          // onClick={() =>
+                          //   removeMember(currentChatingUser._id, item._id)
+                          // }
+                          >
+                            Delete
                           </button>
                         </li>
                       </ul>
@@ -193,40 +210,13 @@ const ChatMessage = ({
                       ))}
                     </div>
                   )}
-                  {type == "text" && <p className="text-sm">{data}</p>}
-                  {type == "link" && (
-                    <Link
-                      to={data}
-                      target="_blank"
-                      className="text-sm text-blue-600"
-                    >
-                      {data}
-                    </Link>
+                  {renderMessageContent(
+                    type,
+                    data,
+                    sender,
+                    handleMediaPreview,
+                    _id
                   )}
-                  {type == "image" && (
-                    <Image
-                      src={data[0].url}
-                      handleMediaPreview={handleMediaPreview}
-                    />
-                  )}
-                  {type == "video" && (
-                    <Video
-                      src={data[0].url}
-                      handleMediaPreview={handleMediaPreview}
-                    />
-                  )}
-                  {type == "file" && <File sender={sender} data={data} />}
-                  {type == "multiple-file" && (
-                    <Multiplefile
-                      data={data}
-                      handleMediaPreview={handleMediaPreview}
-                    />
-                  )}
-                  {type == "poll" && (
-                    <Poll id={_id} data={data} sender={sender} />
-                  )}
-                  {type == "location" && <LocationPreview data={data} />}
-                  {type == "audio" && <Audio data={data} />}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
                       sender == myId
@@ -235,6 +225,7 @@ const ChatMessage = ({
                     }`}
                   >
                     {formatMessageTime(createdAt)}
+
                     {sender == myId && (
                       <PiChecksBold
                         size={13}
@@ -301,8 +292,62 @@ const ChatMessage = ({
           </div>
         </div>
       )}
+      <MessageInfo
+        messageInfoData={messageInfoData}
+        setMessageInfoData={setMessageInfoData}
+      />
     </>
   );
+};
+
+export const renderMessageContent = (
+  type,
+  data,
+  sender,
+  handleMediaPreview,
+  _id
+) => {
+  switch (type) {
+    case "text":
+      return <p className="text-sm">{data}</p>;
+
+    case "link":
+      return (
+        <Link to={data} target="_blank" className="text-sm text-blue-600">
+          {data}
+        </Link>
+      );
+
+    case "image":
+      return (
+        <Image src={data[0].url} handleMediaPreview={handleMediaPreview} />
+      );
+
+    case "video":
+      return (
+        <Video src={data[0].url} handleMediaPreview={handleMediaPreview} />
+      );
+
+    case "file":
+      return <File sender={sender} data={data} />;
+
+    case "multiple-file":
+      return (
+        <Multiplefile data={data} handleMediaPreview={handleMediaPreview} />
+      );
+
+    case "poll":
+      return <Poll id={_id} data={data} sender={sender} />;
+
+    case "location":
+      return <LocationPreview data={data} />;
+
+    case "audio":
+      return <Audio data={data} />;
+
+    default:
+      return null; // Handle unknown types gracefully
+  }
 };
 
 export default memo(ChatMessage);

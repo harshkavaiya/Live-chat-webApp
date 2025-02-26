@@ -48,7 +48,6 @@ const useMessageStore = create((set, get) => ({
     if (!isExits) {
       updateData = [receiver, ...updateData];
     }
-
     updateData.forEach((user) => {
       if (user._id == receiver._id) {
         user.lastMessage = data.type == "text" ? res.data.data : data.type;
@@ -58,9 +57,6 @@ const useMessageStore = create((set, get) => ({
         user.lastMessageTime = new Date();
       }
     });
-
-    set({ messagerUser: updateData });
-
     const qdata = queryClient.getQueryData([`chat-${receiver._id}`]);
     if (qdata) {
       queryClient.setQueryData([`chat-${receiver._id}`], (oldData) => {
@@ -71,43 +67,64 @@ const useMessageStore = create((set, get) => ({
         };
       });
     }
+
+    set({ messagerUser: updateData });
   },
   handleNewMessage: async (data, queryClient) => {
     const { newMessage, name, profilePic, ChatType } = data;
 
     const { type, data: message, sender } = newMessage;
+    const { _id: myId } = useAuthStore.getState().authUser;
     const { currentChatingUser, notificationSound, messagerUser } = get();
 
     let isExits = messagerUser.some(
-      (user) => user._id == (ChatType == "Group" ? newMessage.receiver : sender)
+      (user) =>
+        user._id ==
+        (ChatType == "Group"
+          ? newMessage.receiver
+          : sender == myId
+          ? newMessage.receiver
+          : sender)
     );
 
     let updateData = messagerUser;
     if (!isExits) {
-      let fetchUser = await axiosInstance.get(`/auth/user/${sender}`);
-      if (!fetchUser.data.success) return;
-      const { phone, email, fullname } = fetchUser.data.user;
-      updateData = [
-        {
-          _id: sender,
-          phone: phone,
-          email: email,
-          fullname: fullname,
-          profilePic: profilePic,
-          savedName: fullname,
-          sender: sender,
-          receiver: newMessage.receiver,
-          type: "Single",
-          lastMessage: null,
-          lastMessageTime: null,
-          lastMessageType: null,
-        },
-        ...updateData,
-      ];
+      if (
+        currentChatingUser._id == newMessage.receiver &&
+        ChatType == "Single"
+      ) {
+        updateData = [currentChatingUser, ...updateData];
+      } else {
+        let fetchUser = await axiosInstance.get(`/auth/user/${sender}`);
+        if (!fetchUser.data.success) return;
+        const { phone, email, fullname } = fetchUser.data.user;
+        updateData = [
+          {
+            _id: sender,
+            phone: phone,
+            email: email,
+            fullname: fullname,
+            profilePic: profilePic,
+            savedName: fullname,
+            sender: sender,
+            receiver: newMessage.receiver,
+            type: "Single",
+            lastMessage: null,
+            lastMessageTime: null,
+            lastMessageType: null,
+          },
+          ...updateData,
+        ];
+      }
     }
 
     updateData.forEach((user) => {
-      let id = ChatType == "Group" ? newMessage.receiver : sender;
+      let id =
+        ChatType == "Group"
+          ? newMessage.receiver
+          : sender == myId
+          ? newMessage.receiver
+          : sender;
       if (user._id == id) {
         user.lastMessage =
           newMessage.type == "text" ? newMessage.data : newMessage.type;
@@ -119,16 +136,24 @@ const useMessageStore = create((set, get) => ({
     });
     set({ messagerUser: updateData });
 
-    if (currentChatingUser?._id == sender) return;
-
     const qdata = queryClient.getQueryData([
-      `chat-${ChatType == "Group" ? newMessage.receiver : sender}`,
+      `chat-${
+        ChatType == "Group"
+          ? newMessage.receiver
+          : sender == myId
+          ? newMessage.receiver
+          : sender
+      }`,
     ]);
     if (qdata) {
       queryClient.setQueryData(
         [
           `chat-${
-            ChatType == "Group" ? newMessage.receiver : newMessage.sender
+            ChatType == "Group"
+              ? newMessage.receiver
+              : newMessage.sender == myId
+              ? newMessage.receiver
+              : newMessage.sender
           }`,
         ],
         (oldData) => {
@@ -143,6 +168,7 @@ const useMessageStore = create((set, get) => ({
         }
       );
     }
+    if (myId == sender) return;
 
     let dData = message;
     if (type == "text") {
@@ -153,19 +179,25 @@ const useMessageStore = create((set, get) => ({
       dData = decryptData(message, secretkey);
     }
 
+    updateData.forEach((user) => {
+      let id =
+        ChatType == "Group"
+          ? newMessage.receiver
+          : sender == myId
+          ? newMessage.receiver
+          : sender;
+      if (user._id == id) {
+        user.unseen = user.unseen ? user.unseen + 1 : 1;
+      }
+    });
+
+    set({ messagerUser: updateData });
     if (
       (ChatType == "Group" && currentChatingUser?._id == newMessage.receiver) ||
       (ChatType == "Single" && currentChatingUser?._id == sender)
     )
       return;
 
-    updateData.forEach((user) => {
-      let id = ChatType == "Group" ? newMessage.receiver : sender;
-      if (user._id == id) {
-        user.unseen = user.unseen ? user.unseen + 1 : 1;
-      }
-    });
-    set({ messagerUser: updateData });
     notificationSound();
     NotificationToast(dData, type, name, profilePic);
   },
@@ -266,7 +298,7 @@ const useMessageStore = create((set, get) => ({
     }
   },
   suscribeToMessage: (queryClient) => {
-    const socket = useAuthStore.getState().socket;
+    const { socket, authUser } = useAuthStore.getState();
     const { currentChatingUser, notificationSound, messagerUser } = get();
     if (!socket) return;
 
@@ -275,6 +307,7 @@ const useMessageStore = create((set, get) => ({
         if (user.unseen) {
           socket.emit(
             "messagesRead",
+            currentChatingUser.type,
             user.sender,
             useAuthStore.getState().authUser._id,
             currentChatingUser._id
@@ -286,6 +319,7 @@ const useMessageStore = create((set, get) => ({
 
     socket.on("newMessage", (data) => {
       const { newMessage } = data;
+
       if (
         currentChatingUser.type == "Group" &&
         currentChatingUser._id != newMessage.receiver
@@ -297,17 +331,13 @@ const useMessageStore = create((set, get) => ({
       )
         return;
 
-      socket.emit(
-        "messagesRead",
-        newMessage.sender,
-        useAuthStore.getState().authUser._id,
-        currentChatingUser._id
-      );
       queryClient.setQueryData(
         [
           `chat-${
             currentChatingUser.type == "Group"
               ? currentChatingUser._id
+              : newMessage.sender == authUser._id
+              ? newMessage.receiver
               : newMessage.sender
           }`,
         ],
@@ -322,6 +352,16 @@ const useMessageStore = create((set, get) => ({
           };
         }
       );
+      if (authUser._id == newMessage.sender) return;
+
+      socket.emit(
+        "messagesRead",
+        currentChatingUser.type,
+        newMessage.sender,
+        authUser._id,
+        currentChatingUser._id
+      );
+
       notificationSound();
     });
   },
@@ -362,6 +402,7 @@ const useMessageStore = create((set, get) => ({
   },
   handleMessageReaction: async (id, reaction, queryClient) => {
     const { messages } = get();
+    const { _id: myId } = useAuthStore.getState().authUser;
     const { label, user, ChatType } = reaction;
     const data = messages.find((item) => item._id.toString() === id.toString());
 
@@ -383,7 +424,13 @@ const useMessageStore = create((set, get) => ({
 
     set({ messages });
     queryClient.setQueryData(
-      [ChatType == "Group" ? data.receiver : data.sender],
+      [
+        ChatType == "Group"
+          ? data.receiver
+          : data.sender == myId
+          ? data.receiver
+          : data.sender,
+      ],
       (oldData) => {
         if (!oldData) return oldData;
 
@@ -448,8 +495,12 @@ const useMessageStore = create((set, get) => ({
   },
   handleMessageRead: (id) => {
     const { messages } = get();
+
     messages.forEach((element) => {
-      if (!element.read.some((item) => item.user == id)) {
+      if (
+        !element.read.some((item) => item.user == id) &&
+        element.sender != id
+      ) {
         element.read.push({ user: id, seenAt: new Date() });
       }
     });

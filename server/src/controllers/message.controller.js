@@ -36,6 +36,13 @@ export const sidebarUser = async (req, res) => {
           .sort({ createdAt: -1 })
           .limit(1)
           .select("data type createdAt sender receiver");
+
+        let unseen = await Message.find({
+          receiver: group._id,
+          sender: { $ne: loggedUserId },
+          "read.user": { $ne: loggedUserId },
+          members: { $in: loggedUserId },
+        }).countDocuments();
         const {
           _id,
           name,
@@ -53,6 +60,7 @@ export const sidebarUser = async (req, res) => {
           members,
           admins,
           admin,
+          unseen,
           inviteLink,
           messagePermission,
           sender: lastMessage?.sender,
@@ -94,6 +102,12 @@ export const sidebarUser = async (req, res) => {
           .limit(1)
           .select("data type createdAt sender receiver");
 
+        let unseen = await Message.find({
+          sender: user._id,
+          receiver: loggedUserId,
+          "read.user": { $ne: loggedUserId },
+        }).countDocuments();
+
         let lastMessageData;
         if (lastMessage?.type == "text") {
           lastMessageData = lastMessage.data;
@@ -109,6 +123,7 @@ export const sidebarUser = async (req, res) => {
           sender: lastMessage?.sender,
           receiver: lastMessage?.receiver,
           type: "Single",
+          unseen,
           lastMessage: lastMessageData || null,
           lastMessageType: lastMessage ? lastMessage.type : null,
           lastMessageTime: lastMessage ? lastMessage.createdAt : null,
@@ -293,6 +308,17 @@ export const getMessages = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(Datalength)
         .limit(10);
+
+      await Message.updateMany(
+        {
+          sender: { $ne: myId },
+          receiver: userToChatId,
+          deletedByUsers: { $ne: myId },
+          members: { $in: myId },
+          "read.user": { $ne: myId }, // Only update unread messages
+        },
+        { $push: { read: { user: myId, seenAt: new Date() } } }
+      );
     } else {
       find = Message.find({
         $or: [
@@ -304,22 +330,23 @@ export const getMessages = async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(Datalength)
         .limit(10);
+
+      await Message.updateMany(
+        {
+          sender: userToChatId,
+          receiver: myId,
+          deletedByUsers: { $ne: myId },
+          "read.user": { $ne: myId }, // Only update unread messages
+        },
+        { $push: { read: { user: myId, seenAt: new Date() } } }
+      );
     }
 
-    await Message.updateMany(
-      {
-        sender: { $ne: myId },
-        receiver: type == "Group" ? userToChatId : myId,
-        deletedByUsers: { $ne: myId },
-        members: { $in: myId },
-        "read.user": { $ne: myId }, // Only update unread messages
-      },
-      { $push: { read: { user: myId, seenAt: new Date() } } }
-    );
     io.to(getUserSocketId(userToChatId)).emit(
       "messagesRead",
-      myId,
+      type,
       userToChatId,
+      myId,
       false
     );
     const message = await find;
@@ -352,6 +379,18 @@ export const sendMessage = async (req, res) => {
     if (ChatType == "Group") {
       const { members } = req.body;
       newMessage.members = [myId, ...members];
+    }
+
+    io.to(getUserSocketId(myId)).emit("newMessage", {
+      newMessage,
+      profilePic,
+      name: fullname,
+      ChatType,
+    });
+
+    if (ChatType == "Group") {
+      const { members } = req.body;
+
       members.forEach((element) => {
         io.to(getUserSocketId(element._id)).emit("newMessage", {
           newMessage,

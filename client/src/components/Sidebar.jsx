@@ -200,7 +200,6 @@ const Sidebar = () => {
                 sender,
                 receiver,
                 lastMessageType,
-                unread,
               } = i;
 
               const secretKey = generateUniqueId(sender, receiver);
