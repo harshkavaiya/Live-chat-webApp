@@ -3,6 +3,14 @@ import http from "http";
 import express from "express";
 import Message from "../models/message.model.js";
 import dotenv from "dotenv";
+import {
+  acceptCall,
+  endCall,
+  missedCall,
+  rejectCall,
+  startCall,
+} from "../controllers/call.controller.js";
+import { isValidObjectId } from "mongoose";
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -42,9 +50,16 @@ io.on("connection", (socket) => {
   });
 
   // Listen for call offer
-  socket.on("callOffer", (data) => {
+  socket.on("callOffer", async (data) => {
+    if (!isValidObjectId(data.from) || !isValidObjectId(data.to)) {
+      console.log("❌ Invalid callerId or receiverId.");
+      return;
+    }
+    const call = await startCall(data.from, data.to, data.callType);
+    if (!call) return;
+
     const receiverSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
-    console.log(receiverSocketId);
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("callOffer", {
         from: data.from,
@@ -59,7 +74,8 @@ io.on("connection", (socket) => {
   });
 
   // Listen for accept call
-  socket.on("acceptCall", (data) => {
+  socket.on("acceptCall", async (data) => {
+    await acceptCall(data.to, data.from);
     const callerSocketId = getUserSocketId(data.to);
     if (callerSocketId) {
       io.to(callerSocketId).emit("callAccepted", { from: data.from });
@@ -68,7 +84,8 @@ io.on("connection", (socket) => {
   });
 
   // Listen for call rejection
-  socket.on("callRejected", (data) => {
+  socket.on("callRejected", async (data) => {
+    await rejectCall(data.to, data.from);
     const callerSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
     if (callerSocketId) {
       io.to(callerSocketId).emit("callRejected", { from: data.to }); // Notify caller that the call was rejected
@@ -79,7 +96,8 @@ io.on("connection", (socket) => {
   });
 
   // Listen for end call
-  socket.on("endCall", (data) => {
+  socket.on("endCall", async (data) => {
+    await endCall(data.to, data.from);
     console.log(`Call ended by ${data.from}`);
     // const receiverSocketId = getUserSocketId(data.from);
     const callerSocketId = getUserSocketId(data.to);
@@ -89,6 +107,11 @@ io.on("connection", (socket) => {
       io.to(callerSocketId).emit("callEnded", { from: data.from });
       console.log(`Call ended notification sent to caller id: ${data.to}`);
     }
+  });
+
+  //Missed Call
+  socket.on("missedCall", async (data) => {
+    await missedCall(data.from, data.to);
   });
 
   socket.on("disconnect", () => {
