@@ -27,9 +27,9 @@ const Share = () => {
     if (!i.type) {
       i.type = "Single";
       i.fullname = i.savedName;
-      (i.lastMessage = null),
-        (i.lastMessageTime = null),
-        (i.lastMessageType = null);
+      i.lastMessage = null;
+      i.lastMessageTime = null;
+      i.lastMessageType = null;
       i.receiver = i._id;
       i.sender = authUser._id;
     }

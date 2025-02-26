@@ -74,7 +74,7 @@ const ChatPage = () => {
     };
   }, [socket, handleVote, handleMessageRead]);
 
-  console.log(data)
+
   return (
     <>
       <div className="relative w-full h-screen mb-52">

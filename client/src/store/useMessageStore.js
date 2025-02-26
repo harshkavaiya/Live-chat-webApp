@@ -211,12 +211,19 @@ const useMessageStore = create((set, get) => ({
     set({ currentChatingUser: false });
   },
   clearChat: async (queryClient) => {
-    const { currentChatingUser } = get();
+    const { currentChatingUser, messagerUser } = get();
 
     await axiosInstance.delete(
       `/message/clearChat/${currentChatingUser._id}?type=${currentChatingUser.type}`
     );
     queryClient.setQueryData([`chat-${currentChatingUser._id}`], { pages: [] });
+
+    messagerUser.forEach((user) => {
+      if (user._id == currentChatingUser._id) {
+        user.lastMessage = null;
+        user.lastMessageType = null;
+      }
+    });
 
     set({ messages: [] });
   },

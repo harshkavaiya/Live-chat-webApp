@@ -511,4 +511,13 @@ export const handleVote = async (req, res) => {
   res.status(200).json({ success: 1 });
 };
 
-//socket.io
+export const DeleteMessage = async (req, res) => {
+  const { messageId } = req.body;
+
+  await Message.updateMany(
+    { _id: { $in: messageId } },
+    { $push: { deletedByUsers: req.user._id } }
+  );
+
+  res.status(200).json({ success: 1 });
+};

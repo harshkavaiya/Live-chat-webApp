@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import CryptoJS from "crypto-js";
 import useAuthStore from "./useAuthStore";
 import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
+import axiosInstance from "../lib/axiosInstance";
 
 const useFunctionStore = create((set, get) => ({
   isLocationLoading: false,
@@ -16,6 +17,7 @@ const useFunctionStore = create((set, get) => ({
   isMessageShare: false,
   isSelectContact: false,
   selectContact: {},
+  isDeletingMessage: false,
 
   getLocation: async () => {
     set({ isLocationLoading: true });
@@ -111,7 +113,7 @@ const useFunctionStore = create((set, get) => ({
       selectMessage[data._id] = data;
     }
 
-    set({ selectMessage: selectMessage });
+    set({ selectMessage });
   },
   handleSelection: (isSelectMessage) => {
     if (!isSelectMessage) {
@@ -170,6 +172,81 @@ const useFunctionStore = create((set, get) => ({
   decryptData: (ciphertext, secretKey) => {
     const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  },
+  deleteSelectedMessage: async (queryClient) => {
+    const { selectMessage } = get();
+    const { currentChatingUser, message, messagerUser, setMessagerUser } =
+      useMessageStore.getState();
+
+    try {
+      set({ isDeletingMessage: true });
+      let res = await axiosInstance.delete(`/message/deleteMessage`, {
+        data: { messageId: Object.keys(selectMessage) },
+      });
+
+      if (res.data.success) {
+        toast.success("Message Deleted Successfully");
+
+        queryClient.setQueryData(
+          [`chat-${currentChatingUser._id}`],
+          (oldData) => {
+            if (!oldData || !oldData.pages?.length) return { pages: [] }; // Ensure valid oldData
+
+            // Remove selected messages from all pages
+            const updatedPages = oldData.pages.map((page) =>
+              page.filter((message) => !selectMessage?.[message._id])
+            );
+
+            // Check if the last message was deleted, ensure proper updates
+            if (
+              updatedPages.length > 0 &&
+              updatedPages[updatedPages.length - 1].length === 0
+            ) {
+              updatedPages.pop(); // Remove empty last page if needed
+            }
+
+            return { ...oldData, pages: updatedPages };
+          }
+        );
+
+        const chatData = queryClient.getQueryData([
+          `chat-${currentChatingUser._id}`,
+        ]);
+        console.log(chatData?.pages?.length);
+        messagerUser.forEach((user) => {
+          if (chatData?.pages?.length) {
+            const lastPage = chatData.pages[chatData.pages.length - 1]; // Get the last page
+            const lastMessage = lastPage.length
+              ? lastPage[lastPage.length - 1]
+              : null; // Get the last message
+            if (user._id === currentChatingUser._id) {
+              if (lastMessage) {
+                const { type, data, createdAt } = lastMessage;
+                user.lastMessage = type == "text" ? data : type || null;
+                user.lastMessageTime = createdAt || null;
+                user.lastMessageType = type || null;
+              }
+            }
+          } else {
+            user.lastMessage = null;
+            user.lastMessageTime = null;
+            user.lastMessageType = null;
+          }
+        });
+        setMessagerUser(messagerUser);
+      } else {
+        toast.error("Message Not Deleted");
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast.error("An error occurred while deleting the message.");
+    } finally {
+      set({ isDeletingMessage: false });
+    }
+
+    // Close the confirmation modal and reset selected messages
+    document.getElementById("message_deleteConfirm")?.close();
+    set({ selectMessage: {}, isSelectMessage: false });
   },
 }));
 

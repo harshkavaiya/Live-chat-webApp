@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MemeberProfilePic } from "../../function/function";
 import { Link } from "react-router-dom";
 import MessageInfo from "../PopUpDialog/MessageInfo";
+import { LuTrash2 } from "react-icons/lu";
 
 const ChatMessage = ({
   isLoading,
@@ -43,6 +44,7 @@ const ChatMessage = ({
     handleSelection,
     decryptData,
     generateUniqueId,
+    setSelectMessage,
   } = useFunctionStore();
   const { authUser } = useAuthStore();
   const myId = authUser._id;
@@ -99,6 +101,7 @@ const ChatMessage = ({
               {isSelectMessage && type != "poll" && (
                 <input
                   type="checkbox"
+                  defaultChecked={selectMessage[_id]}
                   onClick={() => onSelectionMessage(message)}
                   className="checkbox ml-2 checkbox-primary text-primary-content"
                 />
@@ -178,16 +181,18 @@ const ChatMessage = ({
                             Message Info
                           </button>
                           <button
-                          // onClick={() =>
-                          //   removeMember(currentChatingUser._id, item._id)
-                          // }
+                            onClick={() => {
+                              onSelectionMessage(message);
+                              handleSelection(true);
+                            }}
                           >
                             Forward
                           </button>
                           <button
-                          // onClick={() =>
-                          //   removeMember(currentChatingUser._id, item._id)
-                          // }
+                            onClick={() => {
+                              onSelectionMessage(message);
+                              handleSelection(true);
+                            }}
                           >
                             Delete
                           </button>
@@ -281,12 +286,14 @@ const ChatMessage = ({
                   }}
                   className=" btn btn-ghost btn-circle btn-md p-2"
                 />
-                {/* <LuTrash2
+                <LuTrash2
                   onClick={() => {
-                    handleSelectMessage(false), setSelectMessage([]);
+                    document
+                      .getElementById("message_deleteConfirm")
+                      .showModal();
                   }}
                   className="btn btn-ghost btn-circle btn-md p-2"
-                /> */}
+                />
               </div>
             )}
           </div>
@@ -296,6 +303,7 @@ const ChatMessage = ({
         messageInfoData={messageInfoData}
         setMessageInfoData={setMessageInfoData}
       />
+      <DeleteMessageConfirmationModal queryClient={queryClient} />
     </>
   );
 };
@@ -350,4 +358,40 @@ export const renderMessageContent = (
   }
 };
 
+const DeleteMessageConfirmationModal = ({ queryClient }) => {
+  const { deleteSelectedMessage, isDeletingMessage } = useFunctionStore();
+  return (
+    <dialog id="message_deleteConfirm" className="modal">
+      <div className="modal-box bg-base-100 relative w-fit gap-5 p-10 flex items-center flex-col">
+        <span>
+          <p className="text-lg text-center font-semibold">
+            Are you sure you want to delete this contact?
+          </p>
+          <p className="text-xs text-center">
+            This contact will be deleted permanently.
+          </p>
+        </span>
+        <div className="grid grid-cols-1 gap-3 w-full">
+          <button
+            className="btn btn-error disabled:cursor-not-allowed"
+            disabled={isDeletingMessage}
+            onClick={() => deleteSelectedMessage(queryClient)}
+          >
+            {isDeletingMessage ? (
+              <span className="loading loading-spinner loading-md" />
+            ) : (
+              "Yes, sure"
+            )}
+          </button>
+          <button
+            className="btn btn-outline"
+            onClick={() => document.getElementById("deleteConfirm").close()}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </dialog>
+  );
+};
 export default memo(ChatMessage);
