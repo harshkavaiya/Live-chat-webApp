@@ -80,9 +80,7 @@ const ChatPage = () => {
                 hasNextPage={hasNextPage}
               />
             </div>
-            {/* Input Area */}
-            {/* pending */}
-            <div className="w-full absolute bottom-0 h-[10%] z-50">
+            <div className="w-full absolute bottom-0 left-0 h-[10%]">
               {currentChatingUser.type == "Group" ? (
                 currentChatingUser.members.some(
                   (user) => user._id == authUser._id
