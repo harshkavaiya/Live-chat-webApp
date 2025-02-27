@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
 import useFunctionStore from "../store/useFuncationStore";
@@ -26,17 +26,11 @@ const ChatPage = () => {
     locationShare,
     galleryData,
   } = useFunctionStore();
-  const {
-    setMessages,
-    messages,
-    currentChatingUser,
-    handleVote,
-    handleMessageRead,
-  } = useMessageStore();
-  const { socket, authUser } = useAuthStore();
+  const { setMessages, messages, currentChatingUser } = useMessageStore();
+  const { authUser } = useAuthStore();
 
   // Fetch chat message
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage ,isError} =
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: [`chat-${currentChatingUser?._id}`],
       queryFn: async ({ pageParam = 0 }) => {
@@ -62,18 +56,6 @@ const ChatPage = () => {
       setMessages(uniqueMessages.reverse());
     }
   }, [data, setMessages]);
-
-  // Handle socket events
-  useEffect(() => {
-    if (!socket) return;
-    socket.on("vote", handleVote);
-    socket.on("messagesRead", handleMessageRead);
-    return () => {
-      socket.off("vote");
-      socket.off("messagesRead");
-    };
-  }, [socket, handleVote, handleMessageRead]);
-
 
   return (
     <>

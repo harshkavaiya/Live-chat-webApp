@@ -132,7 +132,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("messagesRead", async (type, sender, myId, userToChatId) => {
-    io.to(getUserSocketId(sender)).emit("messagesRead", myId);
     if (userToChatId) {
       if (type == "Group") {
         await Message.updateMany(
@@ -145,6 +144,7 @@ io.on("connection", (socket) => {
           },
           { $push: { read: { user: myId, seenAt: new Date() } } }
         );
+        io.to(getUserSocketId(sender)).emit("messagesRead", myId, userToChatId);
       } else {
         await Message.updateMany(
           {
@@ -155,6 +155,7 @@ io.on("connection", (socket) => {
           },
           { $push: { read: { user: myId, seenAt: new Date() } } }
         );
+        io.to(getUserSocketId(sender)).emit("messagesRead", myId, myId);
       }
     }
   });

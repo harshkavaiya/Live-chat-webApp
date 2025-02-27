@@ -32,7 +32,11 @@ export const sidebarUser = async (req, res) => {
 
     const groupsWithLastMessage = await Promise.all(
       groups.map(async (group) => {
-        const lastMessage = await Message.findOne({ receiver: group._id })
+        const lastMessage = await Message.findOne({
+          receiver: group._id,
+          members: { $in: loggedUserId },
+          deletedByUsers: { $ne: loggedUserId },
+        })
           .sort({ createdAt: -1 })
           .limit(1)
           .select("data type createdAt sender receiver");
@@ -106,14 +110,8 @@ export const sidebarUser = async (req, res) => {
           sender: user._id,
           receiver: loggedUserId,
           "read.user": { $ne: loggedUserId },
+          deletedByUsers: { $ne: loggedUserId },
         }).countDocuments();
-
-        let lastMessageData;
-        if (lastMessage?.type == "text") {
-          lastMessageData = lastMessage.data;
-        } else {
-          lastMessageData = lastMessage?.type;
-        }
 
         return {
           _id: user._id,
@@ -124,7 +122,11 @@ export const sidebarUser = async (req, res) => {
           receiver: lastMessage?.receiver,
           type: "Single",
           unseen,
-          lastMessage: lastMessageData || null,
+          lastMessage: lastMessage
+            ? lastMessage.type == "text"
+              ? lastMessage.data
+              : lastMessage.type
+            : null,
           lastMessageType: lastMessage ? lastMessage.type : null,
           lastMessageTime: lastMessage ? lastMessage.createdAt : null,
         };

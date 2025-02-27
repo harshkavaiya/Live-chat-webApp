@@ -27,7 +27,7 @@ const useMessageStore = create((set, get) => ({
     set({ messages });
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
-  sendMessage: async (receiver, data, notification, queryClient) => {
+  sendMessage: async (receiver, data, notification) => {
     const { messagerUser, notificationSound, messages } = get();
 
     const { _id } = useAuthStore.getState().authUser;
@@ -57,17 +57,6 @@ const useMessageStore = create((set, get) => ({
         user.lastMessageTime = new Date();
       }
     });
-    const qdata = queryClient.getQueryData([`chat-${receiver._id}`]);
-    if (qdata) {
-      queryClient.setQueryData([`chat-${receiver._id}`], (oldData) => {
-        if (!oldData) return { pages: [[res.data]] };
-        return {
-          ...oldData,
-          pages: [[res.data, ...oldData.pages[0]], ...oldData.pages.slice(1)],
-        };
-      });
-    }
-
     set({ messagerUser: updateData });
   },
   handleNewMessage: async (data, queryClient) => {
@@ -304,7 +293,7 @@ const useMessageStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
-  suscribeToMessage: (queryClient) => {
+  suscribeToMessage: () => {
     const { socket, authUser } = useAuthStore.getState();
     const { currentChatingUser, notificationSound, messagerUser } = get();
     if (!socket) return;
@@ -338,27 +327,6 @@ const useMessageStore = create((set, get) => ({
       )
         return;
 
-      queryClient.setQueryData(
-        [
-          `chat-${
-            currentChatingUser.type == "Group"
-              ? currentChatingUser._id
-              : newMessage.sender == authUser._id
-              ? newMessage.receiver
-              : newMessage.sender
-          }`,
-        ],
-        (oldData) => {
-          if (!oldData) return { pages: [[newMessage]] };
-          return {
-            ...oldData,
-            pages: [
-              [newMessage, ...oldData.pages[0]],
-              ...oldData.pages.slice(1),
-            ],
-          };
-        }
-      );
       if (authUser._id == newMessage.sender) return;
 
       socket.emit(
@@ -390,70 +358,92 @@ const useMessageStore = create((set, get) => ({
       members:
         currentChatingUser?.members?.filter((item) => item._id != _id) || [],
     });
-    const reactionItem = messages[index].reaction.find(
-      (item) => item.user.toString() === _id.toString()
+
+    // Clone the message to avoid direct mutation
+    const updatedMessage = { ...messages[index] };
+
+    // Clone the reactions array to ensure immutability
+    const updatedReactions = updatedMessage.reaction.map((item) =>
+      item.user.toString() === _id.toString()
+        ? { id: reaction.id, label: reaction.label, user: _id } // Update existing reaction
+        : item
     );
 
-    if (reactionItem) {
-      reactionItem.id = reaction.id;
-      reactionItem.label = reaction.label;
-    } else {
-      messages[index].reaction.push({
+    // If no existing reaction was found, add a new one
+    if (
+      !updatedReactions.some((item) => item.user.toString() === _id.toString())
+    ) {
+      updatedReactions.push({
         id: reaction.id,
         label: reaction.label,
         user: _id,
       });
     }
+
+    // Update the message with the new reactions array
+    updatedMessage.reaction = updatedReactions;
+
+    // Clone messages array and replace the updated message
+    const updatedMessages = [...messages];
+    updatedMessages[index] = updatedMessage;
+
+    // Update Zustand store
+    set({ messages: updatedMessages });
+
     notificationSound();
-    set({ messages });
   },
   handleMessageReaction: async (id, reaction, queryClient) => {
     const { messages } = get();
-    const { _id: myId } = useAuthStore.getState().authUser;
-    const { label, user, ChatType } = reaction;
-    const data = messages.find((item) => item._id.toString() === id.toString());
+    const { label, user } = reaction;
 
-    if (!data) return;
+    let updatedRecords = []; // To store updated messages
 
-    const reactionItem = data.reaction.find(
-      (item) => item.user.toString() === user.toString()
-    );
-    if (reactionItem) {
-      reactionItem.id = reaction.id;
-      reactionItem.label = label;
-    } else {
-      data.reaction.push({
-        id: reaction.id,
-        label,
-        user,
-      });
-    }
+    const updatedMessages = messages.map((msg) => {
+      if (msg._id.toString() !== id.toString()) return msg;
 
-    set({ messages });
-    queryClient.setQueryData(
-      [
-        ChatType == "Group"
-          ? data.receiver
-          : data.sender == myId
-          ? data.receiver
-          : data.sender,
-      ],
-      (oldData) => {
-        if (!oldData) return oldData;
+      // Clone reactions array to avoid direct mutation
+      const updatedReactions = msg.reaction.map((r) =>
+        r.user.toString() === user.toString()
+          ? { id: reaction.id, label, user }
+          : r
+      );
 
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            messages: page.messages.map((msg) =>
-              msg._id.toString() === id.toString()
-                ? { ...msg, reaction: [...data.reaction] }
-                : msg
-            ),
-          })),
-        };
+      // If no existing reaction was updated, add a new one
+      if (
+        !updatedReactions.some((r) => r.user.toString() === user.toString())
+      ) {
+        updatedReactions.push({ id: reaction.id, label, user });
       }
-    );
+
+      const updatedMessage = { ...msg, reaction: updatedReactions };
+      updatedRecords.push(updatedMessage); // Collect updated records
+
+      return updatedMessage;
+    });
+
+    // Update Zustand store
+    set({ messages: updatedMessages });
+
+    // ✅ Fix the React Query cache update
+    if (updatedRecords.length > 0) {
+      queryClient.setQueryData(
+        [`chat-${updatedRecords[0].receiver}`],
+        (oldData) => {
+          if (!oldData || !oldData.pages) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) =>
+              page.map((msg) =>
+                msg._id.toString() === id.toString()
+                  ? { ...msg, reaction: updatedRecords[0].reaction } // ✅ Corrected return
+                  : msg
+              )
+            ),
+          };
+        }
+      );
+    }
   },
   sendVote: async (pollId, selectedOption, to, data, sender) => {
     const { currentChatingUser } = get();
@@ -500,19 +490,37 @@ const useMessageStore = create((set, get) => ({
       console.error("Playback failed:", error);
     }
   },
-  handleMessageRead: (id) => {
-    const { messages } = get();
+  handleMessageRead: (id, userToChatId, queryClient) => {
+    const { currentChatingUser, messages } = get();
 
-    messages.forEach((element) => {
-      if (
-        !element.read.some((item) => item.user == id) &&
-        element.sender != id
-      ) {
-        element.read.push({ user: id, seenAt: new Date() });
-      }
+    if (currentChatingUser._id == userToChatId) {
+      messages.map((msg) =>
+        msg.sender !== id && !msg.read.some((item) => item.user === id)
+          ? {
+              ...msg,
+              read: [...msg.read, { user: id, seenAt: new Date() }],
+            }
+          : msg
+      );
+      set({ messages });
+    }
+    queryClient.setQueryData([`chat-${userToChatId}`], (oldData) => {
+      if (!oldData) return oldData;
+
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) =>
+          page.map((msg) =>
+            msg.sender !== id && !msg.read.some((item) => item.user === id)
+              ? {
+                  ...msg,
+                  read: [...msg.read, { user: id, seenAt: new Date() }],
+                }
+              : msg
+          )
+        ),
+      };
     });
-
-    set({ messages });
   },
 }));
 

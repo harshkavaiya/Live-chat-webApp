@@ -24,8 +24,13 @@ import AudioCall from "../components/call/AudioCall";
 import toast from "react-hot-toast";
 
 const Home = () => {
-  const { currentChatingUser, handleNewMessage, handleMessageReaction } =
-    useMessageStore();
+  const {
+    currentChatingUser,
+    handleVote,
+    handleMessageRead,
+    handleNewMessage,
+    handleMessageReaction,
+  } = useMessageStore();
   const queryClient = useQueryClient();
   const { socket, authUser, checkAuth } = useAuthStore();
   const {
@@ -49,8 +54,13 @@ const Home = () => {
 
   const hasRegisteredPeerId = useRef(false);
 
-  const { createPeerId, incomingCallAnswere, setIncomming, endCall,setRinging } =
-    useVideoCall();
+  const {
+    createPeerId,
+    incomingCallAnswere,
+    setIncomming,
+    endCall,
+    setRinging,
+  } = useVideoCall();
 
   const { SetActivePage, activePage } = useHomePageNavi();
 
@@ -92,7 +102,11 @@ const Home = () => {
       socket.on("callEnded", endcallhandler);
       socket.on("newStatus", handleUserStatus);
       socket.on("newMessage", (data) => handleNewMessage(data, queryClient));
+      socket.on("vote", handleVote);
       socket.on("seenStatus", hanldeSeenStatus);
+      socket.on("messagesRead", (id, userToChatId) =>
+        handleMessageRead(id, userToChatId, queryClient)
+      );
       socket.on("refreshStatus", hanldeRefreshStatus);
       socket.on("message_reaction", (id, reaction) =>
         handleMessageReaction(id, reaction, queryClient)
@@ -126,6 +140,8 @@ const Home = () => {
         socket.off("callEnded");
         socket.off("callOffer");
         socket.off("newMessage");
+        socket.off("messagesRead")
+        socket.off("vote")
         socket.off("deleteStatus");
         socket.off("message_reaction");
         socket.off("newGroup");

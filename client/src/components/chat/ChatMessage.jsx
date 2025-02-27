@@ -54,9 +54,9 @@ const ChatMessage = ({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    suscribeToMessage(queryClient);
+    suscribeToMessage();
     return () => unsuscribeFromMessage();
-  }, [queryClient]);
+  }, [suscribeToMessage, unsuscribeFromMessage, queryClient]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
@@ -136,7 +136,7 @@ const ChatMessage = ({
                   </div>
                 )}
                 <div
-                  className={`chat-bubble group relative rounded-xl max-w-[70%] px-3 my-1 py-1 ${
+                  className={`chat-bubble group relative rounded-xl max-w-[70%] px-3 pr-4 my-1 py-1 ${
                     sender == myId
                       ? "bg-primary/70 text-primary-content "
                       : "bg-base-300 text-base-content"
@@ -149,18 +149,25 @@ const ChatMessage = ({
                   }`}
                 >
                   {/*See Message Info */}
-                  {sender == myId && (
-                    <div className="dropdown dropdown-bottom dropdown-end absolute top-1 right-1 ">
-                      <IoIosArrowDown
-                        size={20}
-                        role="button"
-                        tabIndex={0}
-                        className="group-focus-within:block group-hover:block hidden"
-                      />
-                      <ul
-                        tabIndex={0}
-                        className="dropdown-content menu text-sm bg-base-100 text-base-content border w-44 rounded-xl z-30 p-2 shadow-lg gap-1"
-                      >
+
+                  <div
+                    className={`dropdown dropdown-bottom ${
+                      sender == myId ? "dropdown-end" : "dropdown-right"
+                    } absolute top-0 right-0`}
+                  >
+                    <IoIosArrowDown
+                      size={20}
+                      role="button"
+                      tabIndex={0}
+                      className={`group-focus-within:block group-hover:block hidden rounded-tr-xl group-hover:${
+                        sender == myId ? "bg-primary/30" : "bg-base-100"
+                      }`}
+                    />
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content menu text-sm bg-base-100 text-base-content border w-44 rounded-xl z-50 p-2 shadow-lg gap-1"
+                    >
+                      {sender == myId && (
                         <li>
                           <button
                             onClick={() => {
@@ -180,26 +187,31 @@ const ChatMessage = ({
                           >
                             Message Info
                           </button>
-                          <button
-                            onClick={() => {
-                              onSelectionMessage(message);
-                              handleSelection(true);
-                            }}
-                          >
-                            Forward
-                          </button>
-                          <button
-                            onClick={() => {
-                              onSelectionMessage(message);
-                              handleSelection(true);
-                            }}
-                          >
-                            Delete
-                          </button>
                         </li>
-                      </ul>
-                    </div>
-                  )}
+                      )}
+                      <li>
+                        <button
+                          onClick={() => {
+                            onSelectionMessage(message);
+                            handleSelection(true);
+                          }}
+                        >
+                          Forward
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => {
+                            onSelectionMessage(message);
+                            handleSelection(true);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+
                   {reaction.length > 0 && (
                     <div
                       className={`badge bg-transparent border-none absolute -bottom-3 p-0.5  ${
@@ -365,10 +377,10 @@ const DeleteMessageConfirmationModal = ({ queryClient }) => {
       <div className="modal-box bg-base-100 relative w-fit gap-5 p-10 flex items-center flex-col">
         <span>
           <p className="text-lg text-center font-semibold">
-            Are you sure you want to delete this contact?
+            Are you sure you want to delete this Messages?
           </p>
           <p className="text-xs text-center">
-            This contact will be deleted permanently.
+            This messages will be deleted permanently.
           </p>
         </span>
         <div className="grid grid-cols-1 gap-3 w-full">

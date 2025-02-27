@@ -9,7 +9,6 @@ import toast, { Toaster } from "react-hot-toast";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
 import { BsCheckSquare } from "react-icons/bs";
-import { useQueryClient } from "@tanstack/react-query";
 
 const GroupLink = ({ img, name, inviteLink }) => {
   const [groupLink] = useState(`https://BaatCheet.com/${inviteLink}`);
@@ -30,7 +29,7 @@ const GroupLink = ({ img, name, inviteLink }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sendData = (receiver, queryClient) => {
+  const sendData = (receiver) => {
     const { profilePic, fullname } = authUser;
     let link = `${import.meta.env.VITE_CLIENT_HOST}/${
       currentChatingUser.inviteLink
@@ -46,8 +45,7 @@ const GroupLink = ({ img, name, inviteLink }) => {
         {
           profilePic,
           fullname,
-        },
-        queryClient
+        }
       );
     });
 
@@ -151,8 +149,7 @@ const GroupLink = ({ img, name, inviteLink }) => {
 };
 
 const Share = ({ sendData }) => {
-  const queryClient = useQueryClient();
-
+  
   const { friends } = useAuthStore();
   const [selectedUser, setSelectedUser] = useState([]);
 
@@ -243,7 +240,7 @@ const Share = ({ sendData }) => {
             </div>
             {selectedUser.length > 0 && (
               <button
-                onClick={() => sendData(selectedUser, queryClient)}
+                onClick={() => sendData(selectedUser)}
                 className="bg-primary p-3 rounded-full"
               >
                 <IoSend size={25} />

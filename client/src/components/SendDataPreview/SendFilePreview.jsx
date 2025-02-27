@@ -13,11 +13,10 @@ import { useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa6";
 import useFunctionStore from "../../store/useFuncationStore";
-import { useQueryClient } from "@tanstack/react-query";
 
 const SendFilePreview = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const queryClient = useQueryClient();
+
   const {
     galleryData,
     sendGalleryData,
@@ -140,7 +139,7 @@ const SendFilePreview = () => {
               />
             </div>
             <button
-              onClick={() => sendGalleryData(galleryData, queryClient)}
+              onClick={() => sendGalleryData(galleryData)}
               className="btn btn-circle btn-primary"
             >
               <IoSend size={24} />

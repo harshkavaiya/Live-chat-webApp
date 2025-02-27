@@ -7,7 +7,6 @@ import useAuthStore from "../../store/useAuthStore";
 
 const CreatePoll = () => {
   const [pollTitle, setPollTitle] = useState("");
-  const queryClient = useQueryClient();
   const { authUser } = useAuthStore();
   const { sendMessage } = useMessageStore();
   const [options, setOptions] = useState([
@@ -27,7 +26,7 @@ const CreatePoll = () => {
         profilePic: authUser.profilePic,
         fullname: authUser.fullname,
       },
-      queryClient
+    
     );
     document.getElementById("Create_poll_model").close();
   };

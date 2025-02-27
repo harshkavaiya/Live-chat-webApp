@@ -39,7 +39,7 @@ const useFunctionStore = create((set, get) => ({
   locationClose: () => {
     set({ location: [] });
   },
-  locationShare: (queryClient) => {
+  locationShare: () => {
     const { profilePic, fullname } = useAuthStore.getState().authUser;
     const { sendMessage, currentChatingUser } = useMessageStore.getState();
 
@@ -52,15 +52,14 @@ const useFunctionStore = create((set, get) => ({
       {
         profilePic,
         fullname,
-      },
-      queryClient
+      }
     );
     get().locationClose();
   },
   handelGalleryData: (e) => {
     set({ galleryData: [...get().galleryData, ...e.target.files] });
   },
-  sendGalleryData: async (data, queryClient) => {
+  sendGalleryData: async (data) => {
     let dataUrl = [];
     try {
       set({ isGalleryDataUpload: true });
@@ -86,8 +85,7 @@ const useFunctionStore = create((set, get) => ({
           data: dataUrl,
         },
 
-        { profilePic, fullname },
-        queryClient
+        { profilePic, fullname }
       );
 
       set({ isGalleryDataUpload: false, galleryData: [] });
@@ -134,7 +132,7 @@ const useFunctionStore = create((set, get) => ({
     set({ isSelectMessage: false });
     set({ isMessageShare });
   },
-  sendSelectionMessage: (receiver, queryClient) => {
+  sendSelectionMessage: (receiver) => {
     const { selectMessage } = get();
     const { profilePic, fullname } = useAuthStore.getState().authUser;
 
@@ -154,8 +152,7 @@ const useFunctionStore = create((set, get) => ({
           {
             profilePic,
             fullname,
-          },
-          queryClient
+          }
         );
       });
     });
@@ -175,7 +172,7 @@ const useFunctionStore = create((set, get) => ({
   },
   deleteSelectedMessage: async (queryClient) => {
     const { selectMessage } = get();
-    const { currentChatingUser, message, messagerUser, setMessagerUser } =
+    const { currentChatingUser, messagerUser, setMessagerUser } =
       useMessageStore.getState();
 
     try {
@@ -212,7 +209,7 @@ const useFunctionStore = create((set, get) => ({
         const chatData = queryClient.getQueryData([
           `chat-${currentChatingUser._id}`,
         ]);
-        console.log(chatData?.pages?.length);
+
         messagerUser.forEach((user) => {
           if (chatData?.pages?.length) {
             const lastPage = chatData.pages[chatData.pages.length - 1]; // Get the last page

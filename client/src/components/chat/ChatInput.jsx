@@ -14,21 +14,18 @@ import axiosInstance from "../../lib/axiosInstance";
 import useFunctionStore from "../../store/useFuncationStore";
 import useMessageStore from "../../store/useMessageStore";
 import useAudioStore from "../../store/useAudioStore";
-import { useQueryClient } from "@tanstack/react-query";
 import useAuthStore from "../../store/useAuthStore";
 
 const ChatInput = () => {
   const [text, setText] = useState("");
   const mediaRecorderRef = useRef(null);
-
-  const queryClient = useQueryClient();
   const { getLocation, handelGalleryData, onSelectContact } =
     useFunctionStore();
   const { authUser } = useAuthStore();
   const { startRecording, isRecording, stopRecording, audioUrl } =
     useAudioStore();
 
-  const { sendMessage ,currentChatingUser} = useMessageStore();
+  const { sendMessage, currentChatingUser } = useMessageStore();
   const handelUploadDocument = useCallback(async (e) => {
     let form = new FormData();
 
@@ -150,8 +147,7 @@ const ChatInput = () => {
                     {
                       profilePic: authUser.profilePic,
                       fullname: authUser.fullname,
-                    },
-                    queryClient
+                    }
                   );
                   setText("");
                 }}

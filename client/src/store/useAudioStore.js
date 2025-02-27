@@ -53,7 +53,7 @@ const useAudioStore = create((set, get) => ({
     get().resetAudio();
     set({ recordingDuration: 0 });
   },
-  sendRecording: async (queryClient) => {
+  sendRecording: async () => {
     const { audioBlob } = get();
     let date = new Date();
     let formData = new FormData();
@@ -79,8 +79,7 @@ const useAudioStore = create((set, get) => ({
       {
         profilePic,
         fullname,
-      },
-      queryClient
+      }
     );
 
     get().deleteRecording();

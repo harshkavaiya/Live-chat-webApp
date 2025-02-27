@@ -4,7 +4,6 @@ import { FiSquare } from "react-icons/fi";
 import { useState } from "react";
 import useFunctionStore from "../../store/useFuncationStore";
 import useAuthStore from "../../store/useAuthStore";
-import { useQueryClient } from "@tanstack/react-query";
 import useMessageStore from "../../store/useMessageStore";
 import useContactList from "../../store/useContactList";
 
@@ -12,7 +11,7 @@ const Share = () => {
   const { handleSelectMessage, sendSelectionMessage, setSelectMessage } =
     useFunctionStore();
   const { messagerUser } = useMessageStore();
-  const queryClient = useQueryClient();
+
   const { authUser } = useAuthStore();
   const { contacts } = useContactList();
 
@@ -119,7 +118,7 @@ const Share = () => {
             </div>
             {selectedUser.length > 0 && (
               <button
-                onClick={() => sendSelectionMessage(selectedUser, queryClient)}
+                onClick={() => sendSelectionMessage(selectedUser)}
                 className="bg-primary p-3 rounded-full"
               >
                 <IoSend size={25} />
