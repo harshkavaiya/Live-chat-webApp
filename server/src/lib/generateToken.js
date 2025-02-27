@@ -7,7 +7,7 @@ export const generateToken = (userId, res) => {
     maxAge: 5 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     sameSite: "strict",
-    secure: false, //this is change after host website or server
+    secure: true, //this is change after host website or server
   });
   return token;
 };
