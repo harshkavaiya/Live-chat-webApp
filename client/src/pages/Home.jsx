@@ -140,8 +140,8 @@ const Home = () => {
         socket.off("callEnded");
         socket.off("callOffer");
         socket.off("newMessage");
-        socket.off("messagesRead")
-        socket.off("vote")
+        socket.off("messagesRead");
+        socket.off("vote");
         socket.off("deleteStatus");
         socket.off("message_reaction");
         socket.off("newGroup");
@@ -207,7 +207,6 @@ const Home = () => {
           w-full sm:w-[35%] 
           relative 
           bg-primary/25 
-          overflow-hidden
           ${currentChatingUser._id && "hidden sm:block"} 
         `}
         >
