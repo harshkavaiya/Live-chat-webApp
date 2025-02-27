@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import useFunctionStore from "./useFuncationStore";
+import { decryptData, generateUniqueId } from "../function/crypto";
 
 const useMediaStore = create((set, get) => ({
   mediaPreview: false,
@@ -12,7 +12,6 @@ const useMediaStore = create((set, get) => ({
     let media = [];
     messages?.forEach((element) => {
       const { type, sender, receiver } = element;
-      const { generateUniqueId, decryptData } = useFunctionStore.getState();
       let secretKey = generateUniqueId(sender, receiver);
       const data = decryptData(element.data, secretKey);
       if (type == "multiple-file") {

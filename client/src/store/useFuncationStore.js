@@ -2,9 +2,8 @@ import { create } from "zustand";
 import useMessageStore from "./useMessageStore";
 import axios from "axios";
 import toast from "react-hot-toast";
-import CryptoJS from "crypto-js";
 import useAuthStore from "./useAuthStore";
-import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
+import { decryptData, generateUniqueId } from "../function/crypto";
 import axiosInstance from "../lib/axiosInstance";
 
 const useFunctionStore = create((set, get) => ({
@@ -162,14 +161,7 @@ const useFunctionStore = create((set, get) => ({
   setSelectMessage: (selectMessage) => {
     set({ selectMessage });
   },
-  generateUniqueId: (senderId, receiverId) => {
-    const sortedIds = [senderId, receiverId].sort().join("_");
-    return CryptoJS.SHA256(sortedIds).toString(CryptoJS.enc.Hex);
-  },
-  decryptData: (ciphertext, secretKey) => {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, secretKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-  },
+
   deleteSelectedMessage: async (queryClient) => {
     const { selectMessage } = get();
     const { currentChatingUser, messagerUser, setMessagerUser } =

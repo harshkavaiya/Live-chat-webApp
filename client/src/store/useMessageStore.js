@@ -9,7 +9,7 @@ import {
   decryptData,
   encryptData,
   generateUniqueId,
-} from "../../../server/src/lib/crypto";
+} from "../function/crypto";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
@@ -345,19 +345,9 @@ const useMessageStore = create((set, get) => ({
     if (!socket) return;
     socket.off("newMessage");
   },
-  SendMessageReaction: async (reaction, index) => {
+  SendMessageReaction: async (reaction, index, queryClient) => {
     const { messages, currentChatingUser, notificationSound } = get();
     const { _id } = useAuthStore.getState().authUser;
-
-    await axiosInstance.post("/message/reaction", {
-      id: messages[index]._id,
-      userId: _id,
-      reaction,
-      to: messages[index].sender,
-      ChatType: currentChatingUser.type,
-      members:
-        currentChatingUser?.members?.filter((item) => item._id != _id) || [],
-    });
 
     // Clone the message to avoid direct mutation
     const updatedMessage = { ...messages[index] };
@@ -389,6 +379,31 @@ const useMessageStore = create((set, get) => ({
 
     // Update Zustand store
     set({ messages: updatedMessages });
+
+    await axiosInstance.post("/message/reaction", {
+      id: messages[index]._id,
+      userId: _id,
+      reaction,
+      to: messages[index].sender,
+      ChatType: currentChatingUser.type,
+      members:
+        currentChatingUser?.members?.filter((item) => item._id != _id) || [],
+    });
+
+    queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
+      if (!oldData || !oldData.pages) return oldData;
+
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) =>
+          page.map((msg) =>
+            msg._id.toString() === messages[index]._id.toString()
+              ? { ...msg, reaction: updatedMessage.reaction }
+              : msg
+          )
+        ),
+      };
+    });
 
     notificationSound();
   },
