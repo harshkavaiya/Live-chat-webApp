@@ -59,11 +59,11 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="w-full h-screen relative">
+      <div className="relative w-full h-screen">
         {mediaPreview ? (
           <ImagePreview />
         ) : (
-          <div className="bg-base-100 h-full">
+          <>
             {/* Header */}
             <div className="w-full h-[10%]">
               <ChatHeader
@@ -72,7 +72,7 @@ const ChatPage = () => {
               />
             </div>
             {/* Chat Messages */}
-            <div className="w-full h-[90%]">
+            <div className="w-full h-[80%]">
               <ChatMessage
                 isLoading={isLoading}
                 isFetchingNextPage={isFetchingNextPage}
@@ -80,7 +80,9 @@ const ChatPage = () => {
                 hasNextPage={hasNextPage}
               />
             </div>
-            <div className="w-full absolute bottom-0 left-0 h-[10%]">
+            {/* Input Area */}
+            {/* pending */}
+            <div className="w-full h-[10%]">
               {currentChatingUser.type == "Group" ? (
                 currentChatingUser.members.some(
                   (user) => user._id == authUser._id
@@ -95,7 +97,7 @@ const ChatPage = () => {
                 <ChatInput />
               )}
             </div>
-          </div>
+          </>
         )}
         {/* Profile */}
         {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}
