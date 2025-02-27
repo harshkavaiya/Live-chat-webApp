@@ -14,7 +14,7 @@ import { MdMenuOpen } from "react-icons/md";
 import useAuthStore from "../store/useAuthStore";
 import { IoQrCodeOutline } from "react-icons/io5";
 import useHomePageNavi from "../store/useHomePageNavi";
-import { decryptData, generateUniqueId } from "../../../server/src/lib/crypto";
+import { decryptData, generateUniqueId } from "../function/crypto";
 
 import QRScanner from "./Group/ScannerQR";
 

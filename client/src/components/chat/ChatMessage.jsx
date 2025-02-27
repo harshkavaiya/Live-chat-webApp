@@ -22,6 +22,7 @@ import { MemeberProfilePic } from "../../function/function";
 import { Link } from "react-router-dom";
 import MessageInfo from "../PopUpDialog/MessageInfo";
 import { LuTrash2 } from "react-icons/lu";
+import { decryptData, generateUniqueId } from "../../function/crypto";
 
 const ChatMessage = ({
   isLoading,
@@ -42,9 +43,6 @@ const ChatMessage = ({
     selectMessage,
     isSelectMessage,
     handleSelection,
-    decryptData,
-    generateUniqueId,
-    setSelectMessage,
   } = useFunctionStore();
   const { authUser } = useAuthStore();
   const myId = authUser._id;

@@ -6,12 +6,14 @@ import e4 from "../assets/emoji/e4.png";
 import e5 from "../assets/emoji/e5.png";
 import e6 from "../assets/emoji/e6.png";
 import useMessageStore from "../store/useMessageStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ReactionEmoji = ({ index }) => {
   const { SendMessageReaction } = useMessageStore();
+  const queryClient=useQueryClient()
 
   const handleReactionSelect = (reaction) => {
-    SendMessageReaction({ id: reaction.id, label: reaction.label }, index);
+    SendMessageReaction({ id: reaction.id, label: reaction.label }, index,queryClient);
   };
 
   return (

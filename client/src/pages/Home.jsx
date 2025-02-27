@@ -140,8 +140,8 @@ const Home = () => {
         socket.off("callEnded");
         socket.off("callOffer");
         socket.off("newMessage");
-        socket.off("messagesRead")
-        socket.off("vote")
+        socket.off("messagesRead");
+        socket.off("vote");
         socket.off("deleteStatus");
         socket.off("message_reaction");
         socket.off("newGroup");
