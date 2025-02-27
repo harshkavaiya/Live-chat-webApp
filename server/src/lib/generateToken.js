@@ -5,7 +5,6 @@ export const generateToken = (userId, res) => {
   });
   res.cookie("token", token, {
     maxAge: 5 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
     sameSite: "strict",
     secure: true, //this is change after host website or server
   });
