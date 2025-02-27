@@ -59,7 +59,7 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="relative w-full h-screen overflow-hidden">
+      <div className="w-full h-screen fixed overflow-hidden bottom-0 left-0">
         {mediaPreview ? (
           <ImagePreview />
         ) : (
