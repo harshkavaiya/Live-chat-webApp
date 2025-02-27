@@ -223,7 +223,7 @@ const Home = () => {
       </div>
 
       {!currentChatingUser._id && authUser && (
-        <div className="flex items-center sm:hidden w-full z-4  0 bottom-0 bg-primary-content h-20 fixed">
+        <div className="flex items-center sm:hidden w-full z-40 bottom-0 bg-primary-content h-20 fixed">
           <BottomBar />
         </div>
       )}

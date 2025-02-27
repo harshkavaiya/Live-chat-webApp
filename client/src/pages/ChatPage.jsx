@@ -59,30 +59,32 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="w-full h-screen fixed overflow-hidden bottom-0 left-0">
+      <div className="w-full h-screen overflow-hidden relative">
         {mediaPreview ? (
           <ImagePreview />
         ) : (
-          <div className="bg-base-100 h-screen">
-            {/* Header */}
-            <div className="w-full h-[10%]">
-              <ChatHeader
-                setIsProfileOpen={setIsProfileOpen}
-                isProfileOpen={isProfileOpen}
-              />
+          <>
+            <div className="bg-base-100 h-screen">
+              {/* Header */}
+              <div className="w-full h-[10%]">
+                <ChatHeader
+                  setIsProfileOpen={setIsProfileOpen}
+                  isProfileOpen={isProfileOpen}
+                />
+              </div>
+              {/* Chat Messages */}
+              <div className="w-full h-[90%]">
+                <ChatMessage
+                  isLoading={isLoading}
+                  isFetchingNextPage={isFetchingNextPage}
+                  fetchNextPage={fetchNextPage}
+                  hasNextPage={hasNextPage}
+                />
+              </div>
+              {/* Input Area */}
+              {/* pending */}
             </div>
-            {/* Chat Messages */}
-            <div className="w-full h-[80%]">
-              <ChatMessage
-                isLoading={isLoading}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-                hasNextPage={hasNextPage}
-              />
-            </div>
-            {/* Input Area */}
-            {/* pending */}
-            <div className="w-full h-[10%]">
+            <div className="w-full absolute bottom-0 h-[10%] z-50">
               {currentChatingUser.type == "Group" ? (
                 currentChatingUser.members.some(
                   (user) => user._id == authUser._id
@@ -97,7 +99,7 @@ const ChatPage = () => {
                 <ChatInput />
               )}
             </div>
-          </div>
+          </>
         )}
         {/* Profile */}
         {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}
