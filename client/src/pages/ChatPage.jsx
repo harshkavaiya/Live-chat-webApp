@@ -78,7 +78,7 @@ const ChatPage = () => {
             </div>
 
             {/* Input Area */}
-            <div className="w-full h-[10%] flex items-center justify-center border-t border-gray-300 p-2">
+            <div className="w-full h-[10%] fixed bottom-0 flex items-center justify-center border-t border-gray-300 p-2">
               {currentChatingUser?.type === "Group" ? (
                 currentChatingUser.members.some((user) => user._id === authUser._id) ? (
                   <ChatInput />
