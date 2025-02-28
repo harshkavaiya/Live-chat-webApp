@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
 import useFunctionStore from "../store/useFuncationStore";
@@ -58,53 +58,53 @@ const ChatPage = () => {
   }, [data, setMessages]);
 
   return (
-    <>
-      <div className="relative w-full h-screen">
-        {mediaPreview ? (
-          <ImagePreview />
-        ) : (
-          <>
-            {/* Header */}
-            <div className="w-full h-[10%]">
-              <ChatHeader
-                setIsProfileOpen={setIsProfileOpen}
-                isProfileOpen={isProfileOpen}
-              />
-            </div>
-            {/* Chat Messages */}
-            <div className="w-full h-[80%]">
-              <ChatMessage
-                isLoading={isLoading}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-                hasNextPage={hasNextPage}
-              />
-            </div>
-            {/* Input Area */}
-            {/* pending */}
-            <div className="w-full h-[10%]">
-              {currentChatingUser.type == "Group" ? (
-                currentChatingUser.members.some(
-                  (user) => user._id == authUser._id
-                ) ? (
-                  <ChatInput />
-                ) : (
-                  <p className="bg-base-100 border-t border-base-300 text-xl w-full h-full flex items-center justify-center text-primary-content ">
-                    You are not a member of this group.
-                  </p>
-                )
-              ) : (
+    <div className="relative w-full h-screen flex flex-col">
+      {mediaPreview ? (
+        <ImagePreview />
+      ) : (
+        <>
+          {/* Header */}
+          <div className="w-full h-[10%] sm:h-[8%] border-b border-gray-300">
+            <ChatHeader
+              setIsProfileOpen={setIsProfileOpen}
+              isProfileOpen={isProfileOpen}
+            />
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto">
+            <ChatMessage
+              isLoading={isLoading}
+              isFetchingNextPage={isFetchingNextPage}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage}
+            />
+          </div>
+
+          {/* Input Area */}
+          <div className="w-full h-[10%] sm:h-[12%] border-t border-gray-300">
+            {currentChatingUser.type === "Group" ? (
+              currentChatingUser.members.some((user) => user._id === authUser._id) ? (
                 <ChatInput />
-              )}
-            </div>
-          </>
-        )}
-        {/* Profile */}
-        {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}
-      </div>
+              ) : (
+                <p className="bg-gray-100 text-center text-lg py-4 text-gray-600">
+                  You are not a member of this group.
+                </p>
+              )
+            ) : (
+              <ChatInput />
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Profile */}
+      {isProfileOpen && <Profile setIsProfileOpen={setIsProfileOpen} />}
 
       {/* Share Data */}
       {isMessageShare && <Share />}
+
+      {/* Location Preview */}
       {!isLocationLoading && location.length > 0 && (
         <Location
           latitude={location[0]}
@@ -113,9 +113,10 @@ const ChatPage = () => {
           shareLocation={locationShare}
         />
       )}
+
       {/* Gallery Data Preview */}
       {galleryData.length > 0 && <SendFilePreview />}
-    </>
+    </div>
   );
 };
 
