@@ -59,7 +59,7 @@ const ChatPage = () => {
 
   return (
     <>
-      <div className="relative w-full h-screen">
+      <div className="h-full">
         {mediaPreview ? (
           <ImagePreview />
         ) : (
@@ -81,20 +81,16 @@ const ChatPage = () => {
               />
             </div>
             {/* Input Area */}
-            {/* pending */}
-            <div className="w-full h-[10%]">
-              {currentChatingUser.type == "Group" ? (
-                currentChatingUser.members.some(
-                  (user) => user._id == authUser._id
-                ) ? (
-                  <ChatInput />
-                ) : (
-                  <p className="bg-base-100 border-t border-base-300 text-xl w-full h-full flex items-center justify-center text-primary-content ">
-                    You are not a member of this group.
-                  </p>
-                )
-              ) : (
+            <div className="h-[10%] w-full ">
+              {currentChatingUser?.type !== "Group" ||
+              currentChatingUser?.members.some(
+                (user) => user._id === authUser._id
+              ) ? (
                 <ChatInput />
+              ) : (
+                <p className="bg-base-100 border-t border-base-300 text-xl w-full h-full flex items-center justify-center text-primary-content">
+                  You are not a member of this group.
+                </p>
               )}
             </div>
           </>
