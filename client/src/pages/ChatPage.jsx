@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
@@ -17,6 +17,7 @@ import SendFilePreview from "../components/SendDataPreview/SendFilePreview";
 const ChatPage = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { mediaPreview } = useMediaStore();
+  const chatContainerRef = useRef(null);
 
   const {
     isMessageShare,
@@ -57,6 +58,13 @@ const ChatPage = () => {
     }
   }, [data, setMessages]);
 
+  // Auto-scroll to latest message
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="relative w-full h-screen flex flex-col">
       {mediaPreview ? (
@@ -72,7 +80,7 @@ const ChatPage = () => {
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto">
+          <div ref={chatContainerRef} className="flex-1 overflow-y-auto" id="chatContainer">
             <ChatMessage
               isLoading={isLoading}
               isFetchingNextPage={isFetchingNextPage}
