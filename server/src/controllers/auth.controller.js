@@ -106,25 +106,49 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
+    const { userName, Email, About, base64Image } = req.body;
     const userId = req.user._id;
-    if (!profilePic) {
+
+    const user = await Users.findById(userId);
+    if (!user) {
       return res
-        .status(200)
-        .json({ success: false, message: "profile picture are required" });
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    const updatedUser = await Users.findByIdAndUpdate(
-      userId,
-      {
-        profilePic,
-      },
-      { new: true }
-    );
+    let updateFields = {};
+
+    if (userName && userName !== user.fullname) {
+      updateFields.fullname = userName;
+    }
+
+    if (Email && Email !== user.email) {
+      updateFields.email = Email;
+    }
+
+    if (About && About !== user.about) {
+      updateFields.about = About;
+    }
+
+    if (base64Image) {
+      const cloudPic = await cloudinary.uploader.upload(base64Image);
+      updateFields.profilePic = cloudPic.secure_url;
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "No changes detected" });
+    }
+
+    const updatedUser = await Users.findByIdAndUpdate(userId, updateFields, {
+      new: true,
+    });
+
     res.status(200).json({ success: true, updatedUser });
   } catch (error) {
-    console.log("error in update-profile controller: ", error.message);
-    res.status(200).json({ success: false, message: "Server error" });
+    console.error("Error in update-profile controller:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

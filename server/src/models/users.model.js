@@ -25,9 +25,9 @@ const usersSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    desc: {
+    about: {
       type: String,
-      default: "",
+      default: "Hi, I'm using BaatCheet!",
     },
     contacts: [
       {
