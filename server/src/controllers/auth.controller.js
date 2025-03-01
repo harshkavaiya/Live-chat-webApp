@@ -170,19 +170,3 @@ export const FetchUser = async (req, res) => {
 
   res.status(200).json({ success: 1, user });
 };
-
-export const UpdateInfo = async (req, res) => {
-  const { fullname, desc } = req.body;
-  const userId = req.user._id;
-
-  const updatedUser = await Users.findByIdAndUpdate(
-    userId,
-    {
-      fullname,
-      desc,
-    },
-    { new: true }
-  );
-
-  res.status(200).json({ success: 1, updatedUser });
-};

@@ -121,7 +121,7 @@ export const getCallLogs = async (UsersId) => {
     const calls = await Call.find({
       $or: [{ callerId: UsersId }, { receiverId: UsersId }],
     })
-      .populate("callerId", "fullname email")
+      .populate("callerId", "fullname email profilePic")
       .populate("receiverId", "fullname email")
       .sort({ startedAt: -1 });
 
@@ -130,4 +130,12 @@ export const getCallLogs = async (UsersId) => {
     console.error("❌ Error fetching call logs:", error);
     return [];
   }
+};
+
+export const GetCalls = async (req, res) => {
+  const myId = req.user._id;
+
+  const find = await getCallLogs(myId);
+
+  res.status(200).json(find);
 };

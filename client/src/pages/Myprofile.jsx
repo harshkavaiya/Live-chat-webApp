@@ -30,7 +30,6 @@ const Myprofile = () => {
 
   const submitData = () => {
     setEdit(!Edit);
-    console.log(loading);
     const isProfileChanged =
       userName !== authUser.fullname ||
       Email !== authUser.email ||
@@ -86,7 +85,7 @@ const Myprofile = () => {
           {!Edit ? (
             <GoPencil size={19} />
           ) : loading ? (
-            <LuLoaderCircle size={20} className="animate-spin" />
+            <LuLoaderCircle size={20} className="animate-spin loading-spinner" />
           ) : (
             <FaCheck size={20} />
           )}
