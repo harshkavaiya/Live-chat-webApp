@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { FaCamera } from "react-icons/fa";
+import { FaFolder } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import { GoPencil } from "react-icons/go";
 import { FaCheck } from "react-icons/fa6";
 import { LuLoaderCircle } from "react-icons/lu";
@@ -17,10 +20,12 @@ const Myprofile = () => {
   const [profileImage, setProfileImage] = useState(authUser?.profilePic);
   const [Basepic, setBasepic] = useState(null);
 
-  const onChangePhoto = (e) => {
-    e.preventDefault();
-    setNewImage(e.target.files[0]);
-    document.getElementById("image_preview_modal").showModal();
+  const fileInputRef = useRef(null);
+
+  const menuHandler = (e) => {
+    const { clientX, clientY } = e;
+    setPosition({ top: clientY, left: clientX });
+    setMenu(!menuOpen);
   };
 
   const submitData = () => {
@@ -55,6 +60,14 @@ const Myprofile = () => {
       }
     }
   };
+
+  // Trigger the file input click using the ref
+  const handleChangeProfilePhotoClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div
       className="flex flex-col h-full overflow-y-auto select-none"
@@ -226,29 +239,6 @@ const Myprofile = () => {
           </span>
         </div>
       </div>
-
-      <dialog id="image_preview_modal" className="modal">
-        <div className="modal-box">
-          <img src={newImage && URL.createObjectURL(newImage)} />
-          <div className="flex items-center justify-end space-x-2 mt-2">
-            <button
-              onClick={() => {
-                setNewImage(null);
-                document.getElementById("image_preview_modal").close();
-              }}
-              className="btn outline-none border-none"
-            >
-              Close
-            </button>
-            <button
-              onClick={handleUploadPhoto}
-              className="btn btn-md btn-primary"
-            >
-              Upload
-            </button>
-          </div>
-        </div>
-      </dialog>
     </div>
   );
 };
