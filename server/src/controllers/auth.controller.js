@@ -113,11 +113,11 @@ export const updateProfile = async (req, res) => {
         .status(200)
         .json({ success: false, message: "profile picture are required" });
     }
-    const cloudPic = await cloudinary.uploader.upload(profilePic);
+
     const updatedUser = await Users.findByIdAndUpdate(
       userId,
       {
-        profilePic: cloudPic.secure_url,
+        profilePic,
       },
       { new: true }
     );
@@ -145,4 +145,20 @@ export const FetchUser = async (req, res) => {
   );
 
   res.status(200).json({ success: 1, user });
+};
+
+export const UpdateInfo = async (req, res) => {
+  const { fullname, desc } = req.body;
+  const userId = req.user._id;
+
+  const updatedUser = await Users.findByIdAndUpdate(
+    userId,
+    {
+      fullname,
+      desc,
+    },
+    { new: true }
+  );
+
+  res.status(200).json({ success: 1, updatedUser });
 };

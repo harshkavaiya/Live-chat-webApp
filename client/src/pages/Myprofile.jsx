@@ -1,119 +1,98 @@
-import { useState, useRef } from "react";
-import { FaCamera } from "react-icons/fa";
-import { FaFolder } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { useState } from "react";
 import { GoPencil } from "react-icons/go";
 import { FaCheck } from "react-icons/fa6";
+import { LuCamera } from "react-icons/lu";
+import useAuthStore from "../store/useAuthStore";
+import axiosInstance from "../lib/axiosInstance";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Myprofile = () => {
-  const [menuOpen, setMenu] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [nameedit, setnameEdit] = useState(false);
+  const { authUser, setAuthUser } = useAuthStore();
+  const [nameedit, setNameEdit] = useState(false);
   const [Aboutedit, setAboutEdit] = useState(false);
-  const [userName, setUserName] = useState("User");
-  const [About, setAbout] = useState("Hi, I'm using this app very happily!");
-  const [profileImage, setProfileImage] = useState(
-    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
-  );
+  const [profilePicture, setProfilePicture] = useState(authUser.profilePic);
+  const [newImage, setNewImage] = useState(null);
+  const [isProfileUploading, setIsProfileUploading] = useState(false);
+  const [userName, setUserName] = useState(authUser.fullname);
+  const [About, setAbout] = useState(authUser.desc || "About You");
 
-  const fileInputRef = useRef(null);
-
-  const menuHandler = (e) => {
-    const { clientX, clientY } = e;
-    setPosition({ top: clientY, left: clientX });
-    setMenu(!menuOpen);
+  const onChangePhoto = (e) => {
+    e.preventDefault();
+    setNewImage(e.target.files[0]);
+    document.getElementById("image_preview_modal").showModal();
   };
 
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
+  const handleUploadPhoto = async () => {
+    setIsProfileUploading(true);
+    let form = new FormData();
 
-    if (file) {
-      if (file.size <= 2 * 1024 * 1024) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setProfileImage(reader.result);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        alert("File size should not exceed 2MB.");
-      }
+    form.append("file", newImage);
+    form.append("upload_preset", `Real-time-chat-image`);
+    let res = await axios.post(
+      `https://api.cloudinary.com/v1_1/dr9twts2b/image/upload`,
+      form
+    );
+
+    let update = await axiosInstance.put(`auth/update-profile`, {
+      profilePic: res.data.secure_url,
+    });
+    if (update.data.success) {
+      document.getElementById("image_preview_modal").close();
+      toast.success("Profile Image is Changed");
+      setProfilePicture(update.data.updatedUser.profilePic);
+      setAuthUser(update.data.updatedUser);
+    } else {
+      toast.error(update.data.message);
+    }
+    setIsProfileUploading(false);
+  };
+
+  const handleUpdateInfo = async () => {
+    let res = await axiosInstance.put(`/auth/update-info`, {
+      fullname: userName,
+      desc: About,
+    });
+    if (res.data.success) {
+      setUserName(res.data.updatedUser.fullname);
+      setAbout(res.data.updatedUser.desc);
+      setAuthUser(res.data.updatedUser);
     }
   };
-
-  // Trigger the file input click using the ref
-  const handleChangeProfilePhotoClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   return (
-    <div
-      className="flex flex-col h-full overflow-y-auto no-select"
-      onClick={menuOpen ? () => setMenu(false) : undefined}
-    >
+    <div className="flex flex-col h-full overflow-y-auto no-select">
       {/* profile text */}
       <div className="p-4">
         <h2 className="text-2xl font-bold">My Profile</h2>
       </div>
       {/* user profile */}
       <div className="flex justify-center border-b pb-10 mb-5 items-center">
-        <div className="rounded-full relative overflow-hidden sm:w-[10rem] sm:h-[10rem] w-[7rem] h-[7rem]">
-          <span
-            className={`w-full h-full flex flex-col hover:opacity-100 items-center justify-center rounded-full bg-opacity-30 bg-secondary cursor-pointer opacity-0 ${
-              menuOpen && "opacity-100"
-            } absolute gap-1 sm:gap-5`}
-            onClick={menuHandler}
-          >
-            <FaCamera size={25} className="text-primary-content" />
-            <p className="sm:text-base text-center font-semibold text-primary-content">
-              CHANGE PROFILE PHOTO
-            </p>
-          </span>
+        <div className="rounded-full relative  sm:w-[10rem] sm:h-[10rem] w-[7rem] h-[7rem]">
           {/* Display the profile image or uploaded image */}
           <img
-            src={profileImage}
+            src={
+              profilePicture ||
+              "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+            }
             alt="myprofile"
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full rounded-full"
+          />
+          <label
+            htmlFor="file-upload"
+            className="absolute bg-primary text-primary-content h-9 w-9 sm:h-10 sm:w-10 z-30 rounded-full  cursor-pointer right-0 bottom-0 flex items-center justify-center"
+          >
+            <LuCamera className="" size={20} />
+          </label>
+
+          <input
+            type="file"
+            id="file-upload"
+            accept="image/*"
+            className="hidden"
+            onChange={onChangePhoto}
           />
         </div>
       </div>
-
-      {/* File input for uploading photo */}
-      {menuOpen && (
-        <ul
-          className="menu z-20 absolute bg-base-200 gap-1 rounded-box w-48"
-          style={{
-            top: position.top + 10,
-            left: position.left - 65,
-          }}
-        >
-          <li>
-            <label
-              htmlFor="file-upload"
-              className="flex items-center cursor-pointer"
-              onClick={handleChangeProfilePhotoClick}
-            >
-              <FaFolder size={20} />
-              Upload photo
-            </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="file-upload"
-              accept="image/*"
-              className="hidden"
-              onChange={handlePhotoUpload}
-            />
-          </li>
-          <li>
-            <a className="text-red-500">
-              <MdDelete size={22} />
-              Remove
-            </a>
-          </li>
-        </ul>
-      )}
 
       {/* inputs field */}
       <div className="flex flex-col gap-10 px-4">
@@ -139,7 +118,9 @@ const Myprofile = () => {
               <GoPencil
                 size={20}
                 className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer"
-                onClick={() => setnameEdit(!nameedit)}
+                onClick={() => {
+                  setNameEdit(!nameedit);
+                }}
               />
             ) : (
               <>
@@ -149,7 +130,10 @@ const Myprofile = () => {
                 <FaCheck
                   size={20}
                   className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer"
-                  onClick={() => setnameEdit(!nameedit)}
+                  onClick={() => {
+                    handleUpdateInfo();
+                    setNameEdit(!nameedit);
+                  }}
                 />
               </>
             )}
@@ -191,13 +175,39 @@ const Myprofile = () => {
                 <FaCheck
                   size={20}
                   className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer"
-                  onClick={() => setAboutEdit(!Aboutedit)}
+                  onClick={() => {
+                    handleUpdateInfo();
+                    setAboutEdit(!Aboutedit);
+                  }}
                 />
               </>
             )}
           </span>
         </div>
       </div>
+
+      <dialog id="image_preview_modal" className="modal">
+        <div className="modal-box">
+          <img src={newImage && URL.createObjectURL(newImage)} />
+          <div className="flex items-center justify-end space-x-2 mt-2">
+            <button
+              onClick={() => {
+                setNewImage(null);
+                document.getElementById("image_preview_modal").close();
+              }}
+              className="btn outline-none border-none"
+            >
+              Close
+            </button>
+            <button
+              onClick={handleUploadPhoto}
+              className="btn btn-md btn-primary"
+            >
+              Upload
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };

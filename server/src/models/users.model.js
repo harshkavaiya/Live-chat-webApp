@@ -25,6 +25,10 @@ const usersSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    desc: {
+      type: String,
+      default: "",
+    },
     contacts: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },

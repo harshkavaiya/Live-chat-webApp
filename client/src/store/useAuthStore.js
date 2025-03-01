@@ -26,7 +26,9 @@ const useAuthStore = create((set, get) => ({
       set({ authUser: null, isLogin: false }); // Clear state if no user in session
     }
   },
-
+  setAuthUser: (authUser) => {
+    set({ authUser });
+  },
   FetchOnlineUsers: () => {
     const { socket, authUser } = get();
 

@@ -215,7 +215,7 @@ const Home = () => {
       )}
       {/* Message Area */}
       <div
-        className={`w-full sm:w-[65%] bg-base-100 ${
+        className={`w-full h-full sm:w-[65%]  bg-base-100 ${
           currentChatingUser._id ? "block" : "hidden sm:block"
         }`}
       >

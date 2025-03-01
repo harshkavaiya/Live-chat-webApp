@@ -78,7 +78,7 @@ const ChatMessage = ({
     <>
       <div
         onScroll={handleScroll}
-        className="flex-1 p-1 space-y-1 overflow-y-auto overflow-x-hidden h-full"
+        className="p-1 overflow-y-auto overflow-x-hidden h-full"
       >
         {isFetchingNextPage && (
           <div className="w-full flex justify-center">
@@ -94,7 +94,7 @@ const ChatMessage = ({
             <div
               ref={messageEndRef}
               key={i}
-              className="flex w-full items-center scroll-smooth "
+              className="flex w-full items-center scroll-smooth"
             >
               {isSelectMessage && type != "poll" && (
                 <input
