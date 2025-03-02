@@ -5,7 +5,6 @@ import Users from "../models/users.model.js";
 /** ✅ Call Start */
 export const startCall = async (callerId, receiverId, callType) => {
   try {
-    // Validate IDs
     if (!isValidObjectId(callerId) || !isValidObjectId(receiverId)) {
       console.log("❌ Invalid callerId or receiverId.");
       return null;
@@ -15,13 +14,19 @@ export const startCall = async (callerId, receiverId, callType) => {
     const receiver = await Users.findById(receiverId);
 
     if (!caller || !receiver) {
-      console.log("Caller or Receiver not found.");
+      console.log("❌ Caller or Receiver not found.");
       return null;
     }
 
-    const newCall = new Call({ callerId, receiverId, callType });
-    await newCall.save();
+    const newCall = new Call({
+      callerId,
+      receiverId,
+      callType,
+      status: "ringing", // 🔹 Default status is 'ringing'
+      startedAt: new Date(),
+    });
 
+    await newCall.save();
     console.log(`📞 Call started: ${callerId} -> ${receiverId}`);
     return newCall;
   } catch (error) {
@@ -34,10 +39,15 @@ export const startCall = async (callerId, receiverId, callType) => {
 export const acceptCall = async (callerId, receiverId) => {
   try {
     const call = await Call.findOneAndUpdate(
-      { callerId, receiverId, status: "ongoing" },
+      { callerId, receiverId, status: "ringing" }, // 🔹 Update from 'ringing' to 'ongoing'
       { status: "ongoing" },
       { new: true }
     );
+
+    if (!call) {
+      console.log("❌ No ringing call found to accept.");
+      return null;
+    }
 
     console.log(`✅ Call accepted: ${callerId} -> ${receiverId}`);
     return call;
@@ -50,10 +60,15 @@ export const acceptCall = async (callerId, receiverId) => {
 /** ✅ Call Reject */
 export const rejectCall = async (callerId, receiverId) => {
   try {
-    await Call.findOneAndUpdate(
-      { callerId, receiverId, status: "ongoing" },
+    const call = await Call.findOneAndUpdate(
+      { callerId, receiverId, status: "ringing" },
       { status: "rejected" }
     );
+
+    if (!call) {
+      console.log("❌ No ringing call found to reject.");
+      return;
+    }
 
     console.log(`🚫 Call rejected: ${callerId} -> ${receiverId}`);
   } catch (error) {
@@ -81,19 +96,15 @@ export const endCall = async (callerId, receiverId) => {
     }
 
     const endTime = new Date();
-    const duration = Math.round((endTime - new Date(call.startedAt)) / 1000); // Convert duration to seconds
+    const duration = Math.round((endTime - new Date(call.startedAt)) / 1000);
 
     const updatedCall = await Call.findByIdAndUpdate(
       call._id,
-      {
-        status: "completed",
-        endedAt: endTime,
-        duration: duration,
-      },
-      { new: true } // Returns the updated document
+      { status: "completed", endedAt: endTime, duration },
+      { new: true }
     );
 
-    console.log(`🔚 Call ended. Duration: ${duration} seconds`, updatedCall);
+    console.log(`🔚 Call ended. Duration: ${duration} seconds`);
     return updatedCall;
   } catch (error) {
     console.error("❌ Error ending call:", error);
@@ -104,10 +115,15 @@ export const endCall = async (callerId, receiverId) => {
 /** ✅ Missed Call */
 export const missedCall = async (callerId, receiverId) => {
   try {
-    await Call.findOneAndUpdate(
-      { callerId, receiverId, status: "ongoing" },
+    const call = await Call.findOneAndUpdate(
+      { callerId, receiverId, status: "ringing" }, // 🔹 Only ringing calls can be missed
       { status: "missed" }
     );
+
+    if (!call) {
+      console.log("❌ No ringing call found to mark as missed.");
+      return;
+    }
 
     console.log(`📵 Missed call: ${callerId} -> ${receiverId}`);
   } catch (error) {
@@ -116,13 +132,13 @@ export const missedCall = async (callerId, receiverId) => {
 };
 
 /** ✅ Fetch Call Logs */
-export const getCallLogs = async (UsersId) => {
+export const getCallLogs = async (userId) => {
   try {
     const calls = await Call.find({
-      $or: [{ callerId: UsersId }, { receiverId: UsersId }],
+      $or: [{ callerId: userId }, { receiverId: userId }],
     })
       .populate("callerId", "fullname email profilePic")
-      .populate("receiverId", "fullname email")
+      .populate("receiverId", "fullname email profilePic") // 🔹 Add profilePic for UI display
       .sort({ startedAt: -1 });
 
     return calls;
@@ -132,10 +148,14 @@ export const getCallLogs = async (UsersId) => {
   }
 };
 
+/** ✅ API: Get Calls */
 export const GetCalls = async (req, res) => {
-  const myId = req.user._id;
-
-  const find = await getCallLogs(myId);
-
-  res.status(200).json(find);
+  try {
+    const myId = req.user._id;
+    const calls = await getCallLogs(myId);
+    res.status(200).json(calls);
+  } catch (error) {
+    console.error("❌ Error fetching calls:", error);
+    res.status(500).json({ message: "Error fetching calls" });
+  }
 };

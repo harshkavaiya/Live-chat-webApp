@@ -122,20 +122,24 @@ const useVideoCall = create((set, get) => ({
   GetLocalStream: async () => {
     const { callType, myVideoRef } = get();
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: callType === "video",
-        audio: true,
-      });
-      set({ localStream: stream });
-      console.log("Local stream initialized");
-      // Set the local video stream for the UI
-      if (myVideoRef) {
-        myVideoRef.srcObject = stream;
-        set({ myVideoRef });
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: callType === "video",
+          audio: true,
+        });
+        set({ localStream: stream });
+
+        if (myVideoRef) {
+          myVideoRef.srcObject = stream;
+          set({ myVideoRef });
+        }
+      } else {
+        console.log("getUserMedia is not supported in this browser.");
       }
+
+      // Set the local video stream for the UI
     } catch (error) {
       console.error("Failed to get local stream:", error);
-      alert("Please allow access to camera and microphone.");
     }
   },
 

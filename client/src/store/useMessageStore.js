@@ -5,11 +5,7 @@ import useAuthStore from "./useAuthStore";
 import useMediaStore from "./useMediaStore";
 import notification from "../assets/audio/notification.mp3";
 import NotificationToast from "../components/NotificationToast";
-import {
-  decryptData,
-  encryptData,
-  generateUniqueId,
-} from "../function/crypto";
+import { decryptData, encryptData, generateUniqueId } from "../function/crypto";
 
 const useMessageStore = create((set, get) => ({
   messages: [],
@@ -478,7 +474,7 @@ const useMessageStore = create((set, get) => ({
 
     await axiosInstance.post(`/message/sendVote/${pollId}`, {
       pollId,
-      to,
+      to:_id==sender?to:sender,
       data: encrypt,
       members:
         currentChatingUser?.members?.filter((item) => item._id != _id) || [],
@@ -488,7 +484,6 @@ const useMessageStore = create((set, get) => ({
   },
   handleVote: (item) => {
     const { data, pollId } = item;
-
     const { messages } = get();
     messages?.forEach((element) => {
       if (element._id == pollId) {

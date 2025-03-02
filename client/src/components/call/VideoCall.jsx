@@ -6,8 +6,14 @@ import useVideoCall from "../../store/useVideoCall";
 import toast from "react-hot-toast";
 
 const VideoCall = ({ name = "Hardik" }) => {
-  const { initializeVideoCall, localStream, isCallInProgress, endCall,Ringing } =
-    useVideoCall();
+  const {
+    initializeVideoCall,
+    localStream,
+    isCallInProgress,
+    endCall,
+    Ringing,
+    setRinging,
+  } = useVideoCall();
   const { socket } = useAuthStore();
 
   const myVideoRef = useRef(null); // Local video

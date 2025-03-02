@@ -84,7 +84,6 @@ const useAuthStore = create((set, get) => ({
         const user = res.data.user;
         set({ authUser: user, isLogin: true, friends: user?.contacts });
         sessionStorage.setItem("authUser", JSON.stringify(user));
-        console.log("User authenticated:", user);
         get().connectSocket(); // Connect socket
       } else {
         set({ authUser: null, isLogin: false, friends: [] });

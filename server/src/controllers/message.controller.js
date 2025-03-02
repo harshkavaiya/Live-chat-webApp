@@ -498,7 +498,6 @@ export const handleVote = async (req, res) => {
   await Message.findByIdAndUpdate(pollId, { data: data });
   members.forEach((element) => {
     const receiverId = getUserSocketId(element._id);
-
     if (receiverId) {
       io.to(receiverId).emit("vote", { data, pollId });
     }
