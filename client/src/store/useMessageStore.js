@@ -221,37 +221,38 @@ const useMessageStore = create((set, get) => ({
       }/${date.getDate()}/${date.getFullYear()}, ${date.getHours()}:${date.getMinutes()} ${
         date.getHours() >= 12 ? "PM" : "AM"
       }`;
-
+      const key = generateUniqueId(msg.sender, msg.receiver);
+      const data = decryptData(msg.data, key);
       // Handle different types of messages
       if (msg.type === "location") {
-        const { latitude, longitude } = msg.data;
+        const { latitude, longitude } = data;
         return `${formattedDate} - ${msg.sender}: Location - Latitude: ${latitude}, Longitude: ${longitude}`;
       }
 
       if (msg.type === "poll") {
-        const optionsText = msg.data.options
+        const optionsText = data.options
           .map((option) => `${option.text} (${option.vote} votes)`)
           .join(", ");
-        return `${formattedDate} - ${msg.sender}: Poll - ${msg.data.pollTitle} | Options: ${optionsText}`;
+        return `${formattedDate} - ${msg.sender}: Poll - ${data.pollTitle} | Options: ${optionsText}`;
       }
 
       if (msg.type === "image") {
-        const imageUrl = msg.data[0].url;
+        const imageUrl = data[0].url;
         return `${formattedDate} - ${msg.sender}: [Image: ${imageUrl}]`;
       }
 
       if (msg.type === "text" || msg.type === "link") {
-        return `${formattedDate} - ${msg.sender}: ${msg.data}`;
+        return `${formattedDate} - ${msg.sender}: ${data}`;
       }
       if (msg.type === "multiple-file") {
-        const filesList = msg.data
+        const filesList = data
           .map((file) => `${file.type.toUpperCase()} - ${file.url}`)
           .join(", ");
         return `${formattedDate} - ${msg.sender}: Multiple files - ${filesList}`;
       }
 
       if (msg.type === "audio") {
-        const { name, size } = msg.data;
+        const { name, size } = data;
         const formattedSize = `${(size / 1024).toFixed(2)} KB`; // Convert bytes to KB
         return `${formattedDate} - ${msg.sender}: Audio - ${name} (${formattedSize})`;
       }
@@ -474,7 +475,7 @@ const useMessageStore = create((set, get) => ({
 
     await axiosInstance.post(`/message/sendVote/${pollId}`, {
       pollId,
-      to:_id==sender?to:sender,
+      to: _id == sender ? to : sender,
       data: encrypt,
       members:
         currentChatingUser?.members?.filter((item) => item._id != _id) || [],

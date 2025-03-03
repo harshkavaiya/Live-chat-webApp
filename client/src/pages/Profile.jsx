@@ -1,12 +1,7 @@
 import { IoChevronDownOutline } from "react-icons/io5";
-import { FiShare2, FiTrash2 } from "react-icons/fi";
+import { FiTrash2 } from "react-icons/fi";
 import { LuTrash2 } from "react-icons/lu";
-import {
-  MdOutlineFileDownload,
-  MdOutlineBlock,
-  MdNotificationsActive,
-  MdDelete,
-} from "react-icons/md";
+import { MdOutlineFileDownload, MdDelete } from "react-icons/md";
 import {
   IoIosArrowDown,
   IoMdLink,
@@ -27,12 +22,9 @@ import useSearch from "../function/SearchFunc";
 import { RxCross2, RxExit } from "react-icons/rx";
 import toast from "react-hot-toast";
 import GroupLink from "../components/GroupLink/GroupLink";
-import useFunctionStore from "../store/useFuncationStore";
 
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
-  const [isdocumentRotate, setIsdocumentRotate] = useState(false);
-
   const {
     removeMember,
     assignAdmin,
@@ -43,16 +35,14 @@ const Profile = ({ setIsProfileOpen }) => {
     RemoveGroupFromChat,
   } = useGroupStore();
   const mediaRef = useRef();
-  const { isGroupLink, setIsGroupLink } = useFunctionStore();
   const { authUser } = useAuthStore();
   const { chatUserMedia, onDynamicMedia } = useMediaStore();
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const queryClient = useQueryClient();
-  const documentRef = useRef();
   const [selectedUsers, setSelectedUsers] = useState([]);
   return (
     <>
-      <div className="w-full sm:w-[50%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
+      <div className="w-full sm:w-[60%] md:w-[30%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
         {/* Header */}
         <div className="relative p-2 border-b text-center border-base-300 ">
           <button className="absolute right-4 top-3">
@@ -85,59 +75,6 @@ const Profile = ({ setIsProfileOpen }) => {
             </p>
           )}
         </div>
-        {/* Shared Documents ..pending */}
-
-        {/* <div className="border-b border-base-300">
-        <button
-          onClick={() => {
-            OpenCloseMenu(documentRef);
-            setIsdocumentRotate(!isdocumentRotate);
-          }}
-          className="flex items-center justify-between w-full p-4"
-        >
-          <div className="flex items-center gap-2 ">
-            <span className="font-medium">Shared Document</span>
-            <span className=" text-xs px-1.5 py-0.5 rounded-full">3</span>
-          </div>
-          <IoChevronDownOutline
-            className={`h-5 w-5 transition-all duration-300 ${
-              isdocumentRotate ? "rotate-180" : "rotate-0"
-            }`}
-          />
-        </button>
-        <div ref={documentRef} className="px-4 pb-4 hidden">
-          <div className="space-y-3 h-[120px] overflow-y-scroll">
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Simple_practice_project.zip
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Word_Map.jpg
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Latest_Design_portfolio.pdf
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Simple_practice_project.zip
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Word_Map.jpg
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Word_Map.jpg
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="">📄</span>
-              Latest_Design_portfolio.pdf
-            </div>
-          </div>
-        </div>
-      </div> */}
 
         {/* Shared Media */}
         <div className="border-b border-base-300  ">
@@ -329,13 +266,6 @@ const Profile = ({ setIsProfileOpen }) => {
         )}
         {/* Actions */}
         <div className="p-4 space-y-4">
-          {/* <ActionMenu icon={<MdOutlineBlock />} label={"Block"} /> */}
-          {/* <ActionMenu icon={<IoVolumeMuteSharp />} label={"Mute"} /> */}
-          {/* <ActionMenu
-            icon={<MdNotificationsActive />}
-            label={"Get Notification"}
-          /> */}
-          {/* <ActionMenu icon={<FiShare2 />} label={"Share Contact"} /> */}
           <ActionMenu
             icon={<MdOutlineFileDownload />}
             onClick={handleExport}
@@ -390,13 +320,7 @@ const Profile = ({ setIsProfileOpen }) => {
           document.getElementById("addUsersDialog").close();
         }}
       />
-      {currentChatingUser.type == "Group" && (
-        <GroupLink
-          img={currentChatingUser.profilePic}
-          name={currentChatingUser.fullname}
-          inviteLink={currentChatingUser.inviteLink}
-        />
-      )}
+      {currentChatingUser.type == "Group" && <GroupLink />}
     </>
   );
 };

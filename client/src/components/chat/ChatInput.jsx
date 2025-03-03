@@ -1,9 +1,8 @@
 import { GrMapLocation } from "react-icons/gr";
-import { TiDocumentAdd } from "react-icons/ti";
 import { GoPlus } from "react-icons/go";
 import { FaMicrophone } from "react-icons/fa6";
 import { GrGallery } from "react-icons/gr";
-import { MdOutlinePermContactCalendar, MdOutlinePoll } from "react-icons/md";
+import { MdOutlinePoll } from "react-icons/md";
 import { FaRegPauseCircle } from "react-icons/fa";
 import { LuCamera } from "react-icons/lu";
 import { memo, useCallback, useRef, useState } from "react";
@@ -19,19 +18,12 @@ import useAuthStore from "../../store/useAuthStore";
 const ChatInput = () => {
   const [text, setText] = useState("");
   const mediaRecorderRef = useRef(null);
-  const { getLocation, handelGalleryData, onSelectContact } =
-    useFunctionStore();
+  const { getLocation, handelGalleryData } = useFunctionStore();
   const { authUser } = useAuthStore();
   const { startRecording, isRecording, stopRecording, audioUrl } =
     useAudioStore();
 
   const { sendMessage, currentChatingUser } = useMessageStore();
-  const handelUploadDocument = useCallback(async (e) => {
-    let form = new FormData();
-
-    form.append("file", e.target.files[0]);
-    await axiosInstance.post("/upload", form);
-  }, []);
 
   return (
     <>
@@ -84,23 +76,7 @@ const ChatInput = () => {
                     />
                   }
                 />
-                <InputMenu
-                  icon={<MdOutlinePermContactCalendar size={20} />}
-                  label="Contact"
-                  button={onSelectContact}
-                />
-                <InputMenu
-                  icon={<TiDocumentAdd size={20} />}
-                  label="Document"
-                  input={
-                    <input
-                      type="file"
-                      className="hidden"
-                      onChange={handelUploadDocument}
-                      accept=".doc,.docx,.docm,.txt,.pdf"
-                    />
-                  }
-                />
+
                 <InputMenu
                   icon={<MdOutlinePoll size={20} />}
                   label="Poll"

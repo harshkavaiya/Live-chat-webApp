@@ -160,7 +160,7 @@ const useGroupStore = create((set, get) => ({
     setMessagerUser(messagerUser);
   },
   handleNewMember: (newMember, id) => {
-    console.log(newMember,id)
+    console.log(newMember, id);
     const { messagerUser, setMessagerUser } = useMessageStore.getState();
     messagerUser.forEach((element) => {
       if (element._id == id) {
@@ -256,6 +256,47 @@ const useGroupStore = create((set, get) => ({
 
     const filteredUsers = messagerUser.filter((user) => user._id !== groupId);
     setMessagerUser(filteredUsers);
+  },
+  isResetLink: false,
+  resetLink: async (groupId) => {
+    const {
+      messagerUser,
+      setMessagerUser,
+      currentChatingUser,
+      setCurrentChatingUser,
+    } = useMessageStore.getState();
+    set({ isResetLink: true });
+    let res = await axiosInstance.put(`/group/resetLink/${groupId}`);
+
+    if (res.data.success) {
+      toast.success("Reset the Group Link");
+      currentChatingUser.inviteLink = res.data.newLink;
+
+      const updateUser = messagerUser.map((user) => {
+        if (user._id === groupId) {
+          return { ...user, inviteLink: res.data.newLink }; // Return updated user object
+        }
+        return user; // Return unchanged user
+      });
+
+      setMessagerUser(updateUser);
+      setCurrentChatingUser({ ...currentChatingUser }); // Ensure state updates properly
+    } else {
+      toast.error(res.data.message);
+    }
+    set({ isResetLink: false });
+  },
+  handleResetLink: (groupId, newLink) => {
+    const { messagerUser, setMessagerUser } = useMessageStore.getState();
+
+    const updateUser = messagerUser.map((user) => {
+      if (user._id === groupId) {
+        return { ...user, inviteLink: newLink }; // Return updated user object
+      }
+      return user; // Return unchanged user
+    });
+
+    setMessagerUser(updateUser);
   },
 }));
 

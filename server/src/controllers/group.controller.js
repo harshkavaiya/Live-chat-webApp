@@ -717,3 +717,38 @@ export const getGroup = async (req, res) => {
     res.status(200).json({ success: false, message: "Server error" });
   }
 };
+
+export const ResetLink = async (req, res) => {
+  const { id: groupId } = req.params;
+  const myId = req.user._id;
+
+  if (!groupId)
+    return res.status(200).json({ message: "Group is Required", success: 0 });
+
+  let find = await Group.findById(groupId);
+
+  if (!find)
+    return res.status(200).json({ message: "Group Not found", success: 0 });
+
+  if (find.admin.toString() !== myId.toString())
+    return res
+      .status(200)
+      .json({ message: "Only Admin Reset the Link", success: 0 });
+
+  const newInviteLink =
+    find.admin.toString().slice(0, 6) + Math.random().toString(36).slice(2, 10);
+
+  find.inviteLink = newInviteLink;
+
+  find.members.map((user) => {
+    if (user.toString() !== myId.toString())
+      io.to(getUserSocketId(user)).emit("resetLink", groupId, newInviteLink);
+  });
+
+  find.save();
+  res.status(200).json({
+    message: "Reset the Group Link",
+    success: 1,
+    newLink: newInviteLink,
+  });
+};

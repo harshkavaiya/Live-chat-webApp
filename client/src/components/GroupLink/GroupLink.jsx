@@ -9,13 +9,15 @@ import toast, { Toaster } from "react-hot-toast";
 import useMessageStore from "../../store/useMessageStore";
 import useAuthStore from "../../store/useAuthStore";
 import { BsCheckSquare } from "react-icons/bs";
+import useGroupStore from "../../store/useGroupStore";
 
-const GroupLink = ({ img, name, inviteLink }) => {
-  const [groupLink] = useState(`https://BaatCheet.com/${inviteLink}`);
+const GroupLink = () => {
   const [copied, setCopied] = useState(false);
   const { authUser } = useAuthStore();
   const { currentChatingUser, sendMessage } = useMessageStore();
+  const { resetLink, isResetLink } = useGroupStore();
   const [animationDelay, setAnimationDelay] = useState(true);
+  const groupLink = `https://BaatCheet.com/${currentChatingUser.inviteLink}`;
 
   useEffect(() => {
     const timer = setTimeout(() => setAnimationDelay(false), 100);
@@ -79,14 +81,16 @@ const GroupLink = ({ img, name, inviteLink }) => {
               <div className="flex items-center gap-3 p-4 rounded-2xl backdrop-blur-sm">
                 <img
                   src={
-                    img ||
+                    currentChatingUser.profilePic ||
                     "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                   }
                   className="h-14 w-14 avatar rounded-full "
                 />
 
                 <div className="flex-1">
-                  <h2 className=" font-medium text-lg mb-1 ">{name}</h2>
+                  <h2 className=" font-medium text-lg mb-1 ">
+                    {currentChatingUser.fullname}
+                  </h2>
                   <Link className="text-sm font-medium text-info-content">
                     {groupLink}
                   </Link>
@@ -114,12 +118,6 @@ const GroupLink = ({ img, name, inviteLink }) => {
                   </span>
                 </button>
 
-                <button className="btn">
-                  <FiShare2 className="h-5 w-5 " />
-
-                  <span className="font-medium">Share link</span>
-                </button>
-
                 <button
                   className="btn"
                   onClick={() =>
@@ -131,17 +129,26 @@ const GroupLink = ({ img, name, inviteLink }) => {
                   <span className="font-medium">QR code</span>
                 </button>
 
-                <button className="btn btn-error">
-                  <FiRefreshCw className="h-5 w-5" />
-
-                  <span className="font-medium ">Reset link</span>
+                <button
+                  className="btn btn-error disabled:btn-disabled"
+                  disabled={isResetLink}
+                  onClick={() => resetLink(currentChatingUser._id)}
+                >
+                  {!isResetLink ? (
+                    <>
+                      <FiRefreshCw className="h-5 w-5" />
+                      <span className="font-medium ">Reset link</span>
+                    </>
+                  ) : (
+                    <span className="loading">Loading </span>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         </div>
       </dialog>
-      <Qrcode name={name} img={img} inviteLink={inviteLink} />
+      <Qrcode />
 
       <Share sendData={sendData} />
     </>
@@ -149,7 +156,6 @@ const GroupLink = ({ img, name, inviteLink }) => {
 };
 
 const Share = ({ sendData }) => {
-  
   const { friends } = useAuthStore();
   const [selectedUser, setSelectedUser] = useState([]);
 

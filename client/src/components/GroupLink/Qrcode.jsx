@@ -2,9 +2,11 @@ import { useState } from "react";
 import { FiShare2, FiMoreVertical } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import QRCode from "react-qr-code";
+import useMessageStore from "../../store/useMessageStore";
 
-const Qrcode = ({ img, name, inviteLink }) => {
-  const [groupLink] = useState(`https://chat.whatsapp.com/${inviteLink}`);
+const Qrcode = () => {
+  const { currentChatingUser } = useMessageStore();
+
 
   return (
     <dialog id="QrCode_Modal" className="modal">
@@ -34,19 +36,21 @@ const Qrcode = ({ img, name, inviteLink }) => {
         <div className="flex flex-col items-center justify-center p-2 space-y-2">
           <img
             src={
-              img ||
+              currentChatingUser.profilePic ||
               "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
             }
             className="h-14 w-14 avatar rounded-full "
           />
 
           <div className="text-center">
-            <h2 className="text-xl font-medium">{name}</h2>
+            <h2 className="text-xl font-medium">
+              {currentChatingUser.fullname}
+            </h2>
             <p className=" text-sm">BaatCheet group</p>
           </div>
           <div className="p-6 rounded-lg">
             <QRCode
-              value={inviteLink}
+              value={currentChatingUser.inviteLink}
               size={200}
               style={{ height: "auto", maxWidth: "100%", width: "100%" }}
               viewBox={`0 0 256 256`}

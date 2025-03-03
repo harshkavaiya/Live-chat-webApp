@@ -118,15 +118,6 @@ const useFunctionStore = create((set, get) => ({
     }
     set({ isSelectMessage });
   },
-  onSelectContact: async () => {
-    if ("contacts" in navigator) {
-      const supportedProperties = await navigator.contacts.getProperties();
-      console.log(supportedProperties);
-    } else {
-      console.log("Not Select");
-      toast.error("Not Select Contact in this Devices");
-    }
-  },
   handleSelectMessage: (isMessageShare) => {
     set({ isSelectMessage: false });
     set({ isMessageShare });

@@ -49,7 +49,7 @@ const Home = () => {
     handleremoveMember,
     handleLeaveGroup,
     handleRemoveAdmin,
-    hanldeDeleteGroup,
+    hanldeDeleteGroup,handleResetLink
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -66,7 +66,6 @@ const Home = () => {
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
-      
       socket.emit("registerPeerId", authUser._id);
       createPeerId(authUser._id);
       hasRegisteredPeerId.current = true;
@@ -81,7 +80,6 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       const callofferHanlder = (data) => {
-       
         incomingCallAnswere(data.from, data.callType);
       };
 
@@ -111,6 +109,7 @@ const Home = () => {
       socket.on("leaveGroup", handleLeaveGroup);
       socket.on("removeAdmin", handleRemoveAdmin);
       socket.on("deleteGroup", hanldeDeleteGroup);
+      socket.on("resetLink", handleResetLink);
 
       socket.on("callRejected", (data) => {
         setRinging(false); // Stop ringing
@@ -123,7 +122,6 @@ const Home = () => {
         setRinging(false); // Stop ringing
         document.getElementById("video_call_modal").close();
         endCall();
-       
       });
       return () => {
         socket.off("newStatus");
@@ -145,6 +143,7 @@ const Home = () => {
         socket.off("deleteGroup");
         socket.off("callEnded");
         socket.off("callRejected");
+        socket.off("resetLink");
       };
     }
   }, [

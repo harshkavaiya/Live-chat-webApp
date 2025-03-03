@@ -9,7 +9,7 @@ import {
   leaveGroup,
   getGroup,
   removeMember,
-  toggleMessagePermission,RemoveAdmin
+  toggleMessagePermission,RemoveAdmin,ResetLink
 } from "../controllers/group.controller.js";
 import mongoose from "mongoose";
 
@@ -36,5 +36,6 @@ router.post("/delete", AuthRoute, validateGroupId, deleteGroup);
 router.post("/removeMember", AuthRoute, validateGroupId, removeMember); ///not properly implemented
 router.post("/leave", AuthRoute, validateGroupId, leaveGroup); ///not properly implemented
 router.get("/getGroup", AuthRoute, getGroup);
+router.put("/resetLink/:id",AuthRoute,ResetLink)
 
 export default router;
