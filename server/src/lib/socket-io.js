@@ -85,7 +85,8 @@ io.on("connection", (socket) => {
 
   // Listen for call rejection
   socket.on("callRejected", async (data) => {
-    await rejectCall(data.to, data.from);
+   
+    await rejectCall(data.from, data.to);
     const callerSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
     if (callerSocketId) {
       io.to(callerSocketId).emit("callRejected", { from: data.to }); // Notify caller that the call was rejected

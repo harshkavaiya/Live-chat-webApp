@@ -15,7 +15,7 @@ const callSchema = new mongoose.Schema(
     callType: { type: String, enum: ["audio", "video"], required: true },
     status: {
       type: String,
-      enum: ["ongoing", "completed", "missed", "rejected"],
+      enum: ["ongoing", "completed", "missed", "rejected","ringing"],
       default: "ongoing",
     },
     startedAt: { type: Date, default: Date.now },
