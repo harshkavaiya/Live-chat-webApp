@@ -110,6 +110,7 @@ const useAuthStore = create((set, get) => ({
       toast.error(res.data.message);
     }
   },
+  
   logout: async () => {
     try {
       await axiosInstance.get("/auth/logout");

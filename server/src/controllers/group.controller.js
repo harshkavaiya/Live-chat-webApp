@@ -60,7 +60,7 @@ export const createGroup = async (req, res) => {
       type: "Group",
       lastMessage: null,
       lastMessageType: null,
-      lastMessageTime: new Date(),
+      lastMessageTime: null,
     };
 
     groupMember.members.map((user) => {
@@ -163,7 +163,7 @@ export const joinGroup = async (req, res) => {
       type: "Group",
       lastMessage: null,
       lastMessageType: null,
-      lastMessageTime: new Date(),
+      lastMessageTime: null,
     };
 
     res.status(200).json({
@@ -260,7 +260,7 @@ export const addMember = async (req, res) => {
             type: "Group",
             lastMessage: null,
             lastMessageType: null,
-            lastMessageTime: new Date(),
+            lastMessageTime: null,
           });
         }
       })

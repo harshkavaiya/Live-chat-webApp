@@ -8,20 +8,24 @@ import { useQuery } from "@tanstack/react-query";
 import useVideoCall from "../store/useVideoCall";
 import axiosInstance from "../lib/axiosInstance";
 import useAuthStore from "../store/useAuthStore";
-import useSearch from "../function/SearchFunc";
+import { useEffect } from "react";
 
 const Calls = () => {
   const { authUser } = useAuthStore();
   const { startCall } = useVideoCall();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: [`call-${authUser._id}`],
     queryFn: async () => {
       let res = await axiosInstance.get(`/call/get`);
       return res.data || [];
     },
-    staleTime: Infinity,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [startCall]);
+
   return (
     <div className="flex flex-col h-screen">
       {/* user message */}
@@ -106,7 +110,7 @@ const Calls = () => {
                         {callerId.fullname}
                       </p>
                       <div className="text-xs flex items-center gap-1 text-gray-500">
-                        {authUser._id == callerId._id ? (
+                        {authUser._id != callerId._id ? (
                           <FiPhoneIncoming
                             size={14}
                             className={`${

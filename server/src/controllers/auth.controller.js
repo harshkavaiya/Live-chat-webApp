@@ -10,11 +10,7 @@ export const signup = async (req, res) => {
     return res
       .status(200)
       .json({ success: false, message: "all fields required" });
-
-  if (password.length <= 5) {
-    return res.status(200).send("Password must be at least 6 character");
-  }
-
+      
   try {
     const user = await Users.findOne({ phone });
     if (user) {
