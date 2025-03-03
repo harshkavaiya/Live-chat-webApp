@@ -42,7 +42,7 @@ export const acceptCall = async (callerId, receiverId) => {
       { callerId, receiverId, status: "ringing" }, // 🔹 Update from 'ringing' to 'ongoing'
       { status: "ongoing" },
       { new: true }
-    );
+    ).sort({ createdAt: -1 });
 
     if (!call) {
       console.log("❌ No ringing call found to accept.");
@@ -60,10 +60,11 @@ export const acceptCall = async (callerId, receiverId) => {
 /** ✅ Call Reject */
 export const rejectCall = async (callerId, receiverId) => {
   try {
+
     const call = await Call.findOneAndUpdate(
       { callerId, receiverId, status: "ringing" },
       { status: "rejected" }
-    );
+    ).sort({createdAt: -1});
 
     if (!call) {
       console.log("❌ No ringing call found to reject.");
@@ -88,8 +89,8 @@ export const endCall = async (callerId, receiverId) => {
       callerId,
       receiverId,
       status: "ongoing",
-    });
-
+    }).sort({ createdAt: -1 });
+console.log(call)
     if (!call) {
       console.log("❌ No ongoing call found.");
       return;

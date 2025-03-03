@@ -174,7 +174,7 @@ const useVideoCall = create((set, get) => ({
 
     // Set a timeout to automatically reject the call after 10 seconds
     const callTimeout = setTimeout(() => {
-      socket.emit("callRejected", { to: remotePeerId });
+      socket.emit("callRejected", { to: remotePeerId, from: peerId });
       set({ incomingCall: null });
       get().endCall();
       toast.error("Call timed out - No response received.");
