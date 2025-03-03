@@ -78,7 +78,7 @@ const ChatMessage = ({
     <>
       <div
         onScroll={handleScroll}
-        className="flex-1 p-1 space-y-1 overflow-y-auto overflow-x-hidden h-full"
+        className="p-1 overflow-y-auto overflow-x-hidden h-full"
       >
         {isFetchingNextPage && (
           <div className="w-full flex justify-center">
@@ -94,7 +94,7 @@ const ChatMessage = ({
             <div
               ref={messageEndRef}
               key={i}
-              className="flex w-full items-center scroll-smooth "
+              className="flex w-full items-center scroll-smooth"
             >
               {isSelectMessage && type != "poll" && (
                 <input
@@ -230,7 +230,7 @@ const ChatMessage = ({
                     data,
                     sender,
                     handleMediaPreview,
-                    _id
+                    _id,receiver
                   )}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
@@ -323,7 +323,7 @@ export const renderMessageContent = (
   data,
   sender,
   handleMediaPreview,
-  _id
+  _id,receiver
 ) => {
   switch (type) {
     case "text":
@@ -355,7 +355,7 @@ export const renderMessageContent = (
       );
 
     case "poll":
-      return <Poll id={_id} data={data} sender={sender} />;
+      return <Poll id={_id} data={data} sender={sender} receiver={receiver}/>;
 
     case "location":
       return <LocationPreview data={data} />;

@@ -39,3 +39,7 @@ body {
 * {
   box-sizing: border-box;
 }
+
+footer {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}

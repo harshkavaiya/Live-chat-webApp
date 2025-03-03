@@ -25,6 +25,10 @@ const usersSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    about: {
+      type: String,
+      default: "Hi, I'm using BaatCheet!",
+    },
     contacts: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },

@@ -6,6 +6,7 @@ import {
   signup,
   updateProfile,
   FetchUser,
+  
 } from "../controllers/auth.controller.js";
 import { AuthRoute } from "../middleware/auth.middleware.js";
 const router = expres.Router();

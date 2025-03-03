@@ -66,7 +66,7 @@ const Home = () => {
 
   useEffect(() => {
     if (authUser && socket && !hasRegisteredPeerId.current) {
-      console.log("Registering Peer ID:", authUser._id);
+      
       socket.emit("registerPeerId", authUser._id);
       createPeerId(authUser._id);
       hasRegisteredPeerId.current = true;
@@ -80,22 +80,14 @@ const Home = () => {
   useEffect(() => {
     // Handle incoming call offers
     if (socket) {
-      console.log("Setting up socket listeners for Home page");
       const callofferHanlder = (data) => {
-        console.log(
-          "Incoming call offer from:",
-          data.from,
-          "calltype : ",
-          data.callType
-        );
+       
         incomingCallAnswere(data.from, data.callType);
       };
 
       const endcallhandler = (data) => {
-        console.log("Call ended by:", data.from);
         endCall();
         setIncomming(null);
-        console.log("cleaning resources");
       };
 
       socket.on("callOffer", callofferHanlder);
@@ -131,7 +123,7 @@ const Home = () => {
         setRinging(false); // Stop ringing
         document.getElementById("video_call_modal").close();
         endCall();
-        console.log("cleaning resources");
+       
       });
       return () => {
         socket.off("newStatus");
@@ -215,7 +207,7 @@ const Home = () => {
       )}
       {/* Message Area */}
       <div
-        className={`w-full sm:w-[65%] bg-base-100 ${
+        className={`w-full h-full sm:w-[65%]  bg-base-100 ${
           currentChatingUser._id ? "block" : "hidden sm:block"
         }`}
       >
@@ -223,7 +215,7 @@ const Home = () => {
       </div>
 
       {!currentChatingUser._id && authUser && (
-        <div className="flex items-center sm:hidden w-full z-4  0 bottom-0 bg-primary-content h-20 fixed">
+        <div className="flex items-center sm:hidden w-full z-40 bottom-0 bg-primary-content h-20 fixed">
           <BottomBar />
         </div>
       )}

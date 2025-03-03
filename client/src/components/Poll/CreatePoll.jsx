@@ -15,7 +15,7 @@ const CreatePoll = () => {
   ]);
 
   const handleCreatPoll = (data) => {
-    const {currentChatingUser}=useMessageStore.getState()
+    const { currentChatingUser } = useMessageStore.getState();
     sendMessage(
       currentChatingUser,
       {
@@ -25,14 +25,16 @@ const CreatePoll = () => {
       {
         profilePic: authUser.profilePic,
         fullname: authUser.fullname,
-      },
-    
+      }
     );
     document.getElementById("Create_poll_model").close();
   };
 
   const addOption = () => {
-    setOptions([...options, { id: Date.now().toString(), text: "" }]);
+    setOptions([
+      ...options,
+      { id: (options.length + 1).toString(), text: "", vote: 0 },
+    ]);
   };
 
   const removeOption = (id) => {
