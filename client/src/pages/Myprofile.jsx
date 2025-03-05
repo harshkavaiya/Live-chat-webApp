@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaCross } from "react-icons/fa";
 import { FaFolder } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { GoPencil } from "react-icons/go";
 import { FaCheck } from "react-icons/fa6";
 import { LuLoaderCircle } from "react-icons/lu";
+import { IoMdClose } from "react-icons/io";
 import useAuthStore from "../store/useAuthStore";
 import useProfileUpdate from "../store/useProfileUpdate";
 
@@ -51,7 +52,8 @@ const Myprofile = () => {
         setProfileImage(previewUrl);
         const reader = new FileReader();
         reader.onloadend = () => {
-          setBasepic(reader.result);
+          // setBasepic(reader.result);
+          compressImage(reader.result);
         };
         reader.readAsDataURL(file);
       } else {
@@ -60,11 +62,38 @@ const Myprofile = () => {
     }
   };
 
+  const compressImage = async (base64Str) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const maxWidth = 500; // Set max width
+      const scaleSize = maxWidth / img.width;
+      canvas.width = maxWidth;
+      canvas.height = img.height * scaleSize;
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7); // Reduce quality
+      setBasepic(compressedBase64);
+    };
+  };
+
   // Trigger the file input click using the ref
   const handleChangeProfilePhotoClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+  const closeEdit = () => {
+    setEdit(false);
+    setUserName(authUser.fullname);
+    setEmail(authUser.email);
+    setAbout(authUser.about);
+    setProfileImage(authUser.profilePic);
+    setBasepic(null);
   };
 
   return (
@@ -75,21 +104,35 @@ const Myprofile = () => {
       {/* profile text */}
       <div className="p-2 flex items-center  justify-between">
         <h2 className="text-2xl font-bold">My Profile</h2>
-        <button
-          className={`btn p-2 rounded-full min-h-0 h-10 w-10 border-none ${
-            Edit ? "btn-circle bg-secondary/80" : "btn-ghost"
-          }`}
-          onClick={submitData}
-          disabled={loading}
-        >
-          {!Edit ? (
-            <GoPencil size={19} />
-          ) : loading ? (
-            <LuLoaderCircle size={20} className="animate-spin loading-spinner" />
-          ) : (
-            <FaCheck size={20} />
+        <div className="flex items-center gap-2">
+          {Edit && (
+            <button
+              className={`btn p-2 rounded-full min-h-0 h-10 w-10 border-none btn-circle bg-secondary/80
+              `}
+              onClick={closeEdit}
+            >
+              <IoMdClose size={20} />
+            </button>
           )}
-        </button>
+          <button
+            className={`btn p-2 rounded-full min-h-0 h-10 w-10 border-none ${
+              Edit ? "btn-circle bg-secondary/80" : "btn-ghost"
+            }`}
+            onClick={submitData}
+            disabled={loading}
+          >
+            {!Edit ? (
+              <GoPencil size={19} />
+            ) : loading ? (
+              <LuLoaderCircle
+                size={20}
+                className="animate-spin loading-spinner"
+              />
+            ) : (
+              <FaCheck size={20} />
+            )}
+          </button>
+        </div>
       </div>
       {/* user profile */}
       <div className="flex justify-center border-b pb-4 mb-4 items-center">

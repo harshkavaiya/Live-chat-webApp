@@ -98,7 +98,7 @@ const Calls = () => {
                           "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
-                        className="object-cover"
+                        className="object-cover object-center w-full h-full"
                       />
                     </div>
                     <div className="flex flex-col ml-3 gap-1">
