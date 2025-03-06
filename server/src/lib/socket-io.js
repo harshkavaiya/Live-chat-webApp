@@ -11,6 +11,7 @@ import {
   rejectCall,
   startCall,
 } from "../controllers/call.controller.js";
+import Users from "../models/users.model.js";
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +52,7 @@ io.on("connection", (socket) => {
 
   // Listen for call offer
   socket.on("callOffer", async (data) => {
+    
     if (!isValidObjectId(data.from) || !isValidObjectId(data.to)) {
       console.log("❌ Invalid callerId or receiverId.");
       return;
@@ -61,9 +63,21 @@ io.on("connection", (socket) => {
     const receiverSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
 
     if (receiverSocketId) {
+      const user = await Users.findById(data.to).select(
+        "fullname profilePic contacts"
+      );
+      if (user) {
+        user.contacts = user.contacts.map((contact) => {
+          if (contact.userId == data.from) {
+            user.fullname = contact.savedName;
+          }
+        });
+      }
+      const userdata = { fullname: user.fullname, photo: user.profilePic };
       io.to(receiverSocketId).emit("callOffer", {
         from: data.from,
         callType: data.callType,
+        userdata,
       });
       console.log(
         `Call offer sent from ${data.from} to ${data.to} - ${socket.id}`
@@ -85,7 +99,6 @@ io.on("connection", (socket) => {
 
   // Listen for call rejection
   socket.on("callRejected", async (data) => {
-   
     await rejectCall(data.from, data.to);
     const callerSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
     if (callerSocketId) {
