@@ -8,12 +8,15 @@ import { HiArrowSmallLeft, HiPhone } from "react-icons/hi2";
 import { IoMdClose } from "react-icons/io";
 
 const IncomingCallDialog = () => {
-  const { answerCall, rejectCall, callType } = useVideoCall.getState();
+  const { answerCall, rejectCall, callType,userInfo } = useVideoCall.getState();
+ 
 
   const incomingCall = useVideoCall((state) => state.incomingCall);
+
   const dialogRef = useRef(null);
 
   useEffect(() => {
+    console.log("user data is --->>",userInfo);
     if (incomingCall) {
       console.log("IncomingCallDialog: Opening dialog for", incomingCall);
       if (dialogRef.current) {
@@ -24,7 +27,7 @@ const IncomingCallDialog = () => {
         dialogRef.current.close();
       }
     }
-  }, [incomingCall]);
+  }, [incomingCall,userInfo]);
 
   if (!incomingCall) return null;
 
@@ -63,12 +66,12 @@ const IncomingCallDialog = () => {
           <div className="flex flex-col items-center mb-12">
             <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-800">
               <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSc74iwal7QiOS_hvo6cdhH-5g4AHSqzmTTuBVZfdJ1EHWpx7mArp30GfR5BkGCg_WTkk&usqp=CAU"
+                src={ userInfo.photo ? userInfo.photo:  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSc74iwal7QiOS_hvo6cdhH-5g4AHSqzmTTuBVZfdJ1EHWpx7mArp30GfR5BkGCg_WTkk&usqp=CAU"}
                 alt="profile photo"
                 className="w-full h-full object-cover object-center"
               />
             </div>
-            <p className="mt-4 text-lg font-semibold">John Doe</p>
+            <p className="mt-4 text-lg font-semibold">{userInfo.fullname}</p>
           </div>
 
           {/* Action Buttons */}

@@ -18,6 +18,7 @@ const useVideoCall = create((set, get) => ({
   callTimeout: null,
   callType: null,
   Ringing: false,
+  userInfo: null,
   setRinging: (Ringing) => {
     set({ Ringing });
   },
@@ -150,6 +151,12 @@ const useVideoCall = create((set, get) => ({
       get().GetLocalStream();
     }
     set({ incomingCall: CallerPeerId });
+  },
+
+  setcallInfo: (data) => {
+    // console.log(data);
+    set({ userInfo: data });
+    console.log(get().userInfo);
   },
 
   startCall: async (remotePeerId, callType) => {

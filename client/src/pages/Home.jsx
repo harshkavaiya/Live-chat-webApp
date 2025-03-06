@@ -59,6 +59,7 @@ const Home = () => {
     createPeerId,
     incomingCallAnswere,
     setIncomming,
+    setcallInfo,
     endCall,
     setRinging,
   } = useVideoCall();
@@ -81,6 +82,7 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       const callofferHanlder = (data) => {
+        setcallInfo(data.userdata);
         incomingCallAnswere(data.from, data.callType);
       };
 
