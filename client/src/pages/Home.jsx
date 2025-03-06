@@ -22,6 +22,7 @@ import useGroupStore from "../store/useGroupStore";
 import VideoCall from "../components/call/VideoCall";
 import AudioCall from "../components/call/AudioCall";
 import toast from "react-hot-toast";
+import IncomingDesign from "../components/PopUpDialog/IncomingDesign";
 
 const Home = () => {
   const {
@@ -49,7 +50,8 @@ const Home = () => {
     handleremoveMember,
     handleLeaveGroup,
     handleRemoveAdmin,
-    hanldeDeleteGroup,handleResetLink
+    hanldeDeleteGroup,
+    handleResetLink,
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -187,6 +189,7 @@ const Home = () => {
     <div className="h-screen w-screen overflow-hidden flex gap-0 transition-all duration-200">
       {/* incoming dialog */}
       <IncomingCallDialog />
+      {/* <IncomingDesign /> */}
       {/* user setting */}
       <div className="w-[4rem] hidden sm:block bg-primary-content">
         <SideSetting />

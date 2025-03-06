@@ -4,6 +4,8 @@ import useAuthStore from "../../store/useAuthStore";
 import useVideoCall from "../../store/useVideoCall";
 import VideoCall from "../call/VideoCall";
 import AudioCall from "../call/AudioCall";
+import { HiArrowSmallLeft, HiPhone } from "react-icons/hi2";
+import { IoMdClose } from "react-icons/io";
 
 const IncomingCallDialog = () => {
   const { answerCall, rejectCall, callType } = useVideoCall.getState();
@@ -47,15 +49,49 @@ const IncomingCallDialog = () => {
       ) : (
         <AudioCall name={"hk"} />
       )}
-      <dialog id="incomingDialog" ref={dialogRef} className={`modal `}>
-        <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
-          <p>call from : {incomingCall}</p>
-          <button className="btn" onClick={AcceptAnswere}>
-            accept
-          </button>
-          <button className="btn" onClick={RejectCall}>
-            reject
-          </button>
+      <dialog id="incomingDialog" ref={dialogRef} className="modal">
+        <div className="sm:modal-box w-full select-none h-full bg-base-100 relative flex flex-col items-center justify-center gap-6 sm:max-w-lg">
+          {/* Header */}
+          <div className="absolute top-4 left-4">
+            <HiArrowSmallLeft size={24} className="cursor-pointer" />
+          </div>
+          <p className="absolute top-4 left-1/2 transform -translate-x-1/2 text-lg font-semibold">
+            Incoming {callType === "video" ? "Video" : "Voice"} Call
+          </p>
+
+          {/* Profile Photo & Name */}
+          <div className="flex flex-col items-center mb-12">
+            <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-800">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSc74iwal7QiOS_hvo6cdhH-5g4AHSqzmTTuBVZfdJ1EHWpx7mArp30GfR5BkGCg_WTkk&usqp=CAU"
+                alt="profile photo"
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+            <p className="mt-4 text-lg font-semibold">John Doe</p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-6 fixed bottom-10">
+            <span className="flex flex-col items-center gap-1">
+              <button
+                onClick={AcceptAnswere}
+                className="btn w-16 h-16 flex items-center justify-center rounded-full bg-green-500 hover:bg-green-700 text-white shadow-lg"
+              >
+                <HiPhone size={28} />
+              </button>
+              <p>Confirm</p>
+            </span>
+            <span className="flex flex-col items-center gap-1">
+              <button
+                onClick={RejectCall}
+                className="btn w-16 h-16 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-700 text-white shadow-lg"
+              >
+                <IoMdClose size={28} />
+              </button>
+              <p>Reject</p>
+            </span>
+          </div>
         </div>
       </dialog>
     </>
