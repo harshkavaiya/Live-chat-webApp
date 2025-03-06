@@ -28,6 +28,7 @@ import messageRoute from "./routes/message.route.js";
 import statusRoute from "./routes/status.route.js";
 import groupRoute from "./routes/group.route.js";
 import callRoute from "./routes/call.route.js";
+import adminRoute from "./routes/admin.route.js"
 import { connDB } from "./lib/db.js";
 
 const PORT = process.env.PORT || 4000;
@@ -44,6 +45,7 @@ app.use("/message", messageRoute);
 app.use("/group", groupRoute);
 app.use("/status", statusRoute);
 app.use("/call", callRoute);
+app.use("/admin",adminRoute)
 app.post("/audio/upload", async (req, res) => {
   if (!req.files)
     return res.status(200).json({ message: "Audio Not Receive", success: 0 });
