@@ -8,10 +8,15 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuthAdmin();
+
+  // Handle sign in when the user clicks the button
   const Signin = () => {
-  
-    setUsername();
-    setPassword();
+    if (username && password) {
+      login(username, password);
+    } else {
+      // Optional: Show an error if username or password is empty
+      alert("Please enter both username and password.");
+    }
   };
 
   return (
@@ -74,7 +79,7 @@ const LoginPage = () => {
             <button
               type="button"
               className="w-full py-2.5 px-4 text-sm font-semibold tracking-wider rounded-full text-white bg-gray-800 hover:bg-[#222] focus:outline-none"
-              onClick={()=>  login(username, password)}
+              onClick={Signin} // Call Signin function
             >
               Sign in
             </button>
