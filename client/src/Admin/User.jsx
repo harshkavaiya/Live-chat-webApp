@@ -1,62 +1,71 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FiEye } from "react-icons/fi";
-import { useUsersStore } from "./store/useUsersStore";
+import useUsersStore from "./store/useUsersStore";
+import SignleUser from "./SignleUser";
 
 const User = () => {
-  const { fetchUsers } = useUsersStore();
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const {  users, currentSee, setCurrentSee } = useUsersStore();
+
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Users</h1>
-      <div className="mt-5 border rounded-md">
-        {/* table */}
-        <table className="table">
-          {/* head */}
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Mobile No</th>
-              <th>Time</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* row 1 */}
-            <tr>
-              <td>
-                <div className="flex items-center gap-3">
-                  <div className="avatar">
-                    <div className="mask mask-squircle h-12 w-12">
-                      <img
-                        src="https://img.daisyui.com/images/profile/demo/2@94.webp"
-                        alt="Avatar Tailwind CSS Component"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold">Hart Hagerty</div>
-                    <div className="text-sm opacity-50">United States</div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                Zemlak, Daniel and Leannon
-                <br />
-                <span className="badge badge-ghost badge-sm">
-                  Desktop Support Technician
-                </span>
-              </td>
-              <td>Purple</td>
-              <th>
-                <FiEye size={20} className="text-sky-600 cursor-pointer" />
-              </th>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div className="px-5 py-6">
+      {currentSee ? (
+        <SignleUser />
+      ) : (
+        <>
+          <h1 className="text-4xl font-bold">Users</h1>
+          <div className="mt-5 border rounded-md">
+            {/* table */}
+            <table className="table">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Mobile No</th>
+                  <th>Time</th>
+                  <th>View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((item, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="avatar">
+                            <div className="mask mask-squircle h-12 w-12">
+                              <img
+                                src={
+                                  item.profilePic ||
+                                  "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                                }
+                                alt="Avatar Tailwind CSS Component"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <div className="font-bold">{item.fullname}</div>
+                            <div className="text-sm opacity-50">India</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{item.phone}</td>
+                      <td> {new Date(item?.createdAt).toLocaleDateString()}</td>
+                      <th>
+                        <FiEye
+                          onClick={() => setCurrentSee(item)}
+                          size={20}
+                          className="text-sky-600 cursor-pointer"
+                        />
+                      </th>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 };

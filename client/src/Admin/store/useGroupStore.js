@@ -2,12 +2,16 @@ import { create } from "zustand";
 import  axiosInstance  from "../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 
-export const useGroupStore = create((set) => ({
+const useGroupStore = create((set) => ({
   groups: [],
   setGroups: (groups) => set({ groups }),
+  currentSee:null,
+  setCurrentSee:(currentSee)=>{
+    set({currentSee})
+  },
   fetchGroups: async () => {
     const res = await axiosInstance.get("/Admin/groups");
-    console.log(res.data.groups);
+  
     if (res.data.success) {
       set({ groups: res.data.groups });
     } else {
@@ -33,3 +37,5 @@ export const useGroupStore = create((set) => ({
     }
   },
 }));
+
+export default useGroupStore

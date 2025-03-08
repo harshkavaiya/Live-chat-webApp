@@ -1,51 +1,54 @@
-import { IoMenu } from "react-icons/io5";
-import { FaUserFriends } from "react-icons/fa";
-import { HiMiniUserGroup } from "react-icons/hi2";
+import { FaBell, FaComments } from "react-icons/fa";
 
-const Navbar = ({setCurrentTab}) => {
+const Navbar = () => {
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm">
-        <div className="flex-none">
-          <label htmlFor="my-drawer" className="btn btn-square btn-ghost">
-            <IoMenu size={25} />
-          </label>
-        </div>
-        <div className="flex-1">
-          <a className="btn btn-ghost text-xl">daisyUI</a>
-        </div>
-      </div>
-      <div className="drawer z-40">
-        <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-
-        <div className="drawer-side">
+      <div className="navbar bg-base-100 border-b shadow-sm">
+        <div className="navbar-start">
           <label
-            htmlFor="my-drawer"
-            aria-label="close sidebar"
-            className="drawer-overlay"
-          ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4 gap-2">
-            <li className="">
-              <label
-                htmlFor="my-drawer"
-                onClick={() => setCurrentTab("Users")}
-                className="flex items-center w-full justify-start"
-              >
-                <FaUserFriends size={20} />
-                <p>Users</p>
-              </label>
-            </li>
-            <li className="flex items-center w-full justify-start">
-              <label
-                htmlFor="my-drawer"
-                onClick={() => setCurrentTab("Groups")}
-                className="flex items-center w-full justify-start"
-              >
-                <HiMiniUserGroup size={20} />
-                <p>Groups</p>
-              </label>
-            </li>
-          </ul>
+            htmlFor="drawer-toggle"
+            className="btn btn-square btn-ghost drawer-button lg:hidden"
+          >
+            <FaComments size={20} />
+          </label>
+          <div className="flex-1 px-2 mx-2 lg:hidden">
+            <span className="text-lg font-bold">BaatCheet</span>
+          </div>
+        </div>
+
+        <div className="navbar-end">
+          <button className="btn btn-ghost btn-circle">
+            <div className="indicator">
+              <FaBell size={18} />
+              <span className="badge badge-xs badge-primary indicator-item"></span>
+            </div>
+          </button>
+          <div className="dropdown dropdown-end">
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+              <div className="w-10 rounded-full">
+                <img
+                  src="/placeholder-user.jpg"
+                  width={40}
+                  height={40}
+                  alt="User"
+                />
+              </div>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <a>Profile</a>
+              </li>
+              <li>
+                <a>Settings</a>
+              </li>
+              <li>
+                <a>Logout</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </>
