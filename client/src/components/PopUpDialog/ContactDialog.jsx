@@ -131,7 +131,7 @@ const ContactDialog = () => {
                     </div>
                     <div className="flex flex-col gap-px">
                       <p className="font-semibold">{i.savedName}</p>
-                      <p className="text-sm">bio</p>
+                      <p className="text-sm">{i.about}</p>
                     </div>
                   </div>
                   <div className="sm:mr-3" onClick={() => deleteContact(i._id)}>

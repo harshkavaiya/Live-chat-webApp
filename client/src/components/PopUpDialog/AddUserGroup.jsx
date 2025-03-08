@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdSearch } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import useContactList from "../../store/useContactList";
@@ -79,7 +79,7 @@ const AddUserGroup = ({
                     />
                   </div>
                   <div className="flex flex-col gap-px">
-                    <p className="font-semibold">{contact.fullname}</p>
+                    <p className="font-semibold">{contact.savedName}</p>
                     <p className="text-sm">bio</p>
                   </div>
                 </div>
