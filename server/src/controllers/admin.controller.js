@@ -45,11 +45,16 @@ export const Login = async (req, res) => {
 };
 
 export const GetUsers = async (req, res) => {
-  const users = await Users.find();
+  const users = await Users.find().populate(
+    "contacts.userId",
+    "profilePic fullname email phone"
+  );
   res.status(200).json({ users, success: 1 });
 };
 
 export const GetGroups = async (req, res) => {
-  const groups = await Group.find();
+  const groups = await Group.find()
+    .populate("admin", "profilePic fullname email")
+    .populate("members", "profilePic fullname email");
   res.status(200).json({ groups, success: 1 });
 };

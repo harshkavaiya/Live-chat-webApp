@@ -2,9 +2,13 @@ import { create } from "zustand";
 import  axiosInstance  from "../../lib/axiosInstance";
 import { toast } from "react-hot-toast";
 
-export const useUsersStore = create((set) => ({
+const useUsersStore = create((set) => ({
   users: [],
   setUsers: (users) => set({ users }),
+  currentSee:null,
+  setCurrentSee:(currentSee)=>{
+    set({currentSee})
+  },
   fetchUsers: async () => {
     const res = await axiosInstance.get("/Admin/users");
     console.log(res.data.users);
@@ -33,3 +37,5 @@ export const useUsersStore = create((set) => ({
     }
   },
 }));
+
+export default useUsersStore
