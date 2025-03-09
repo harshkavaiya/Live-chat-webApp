@@ -76,7 +76,7 @@ const useContactList = create((set, get) => ({
         return;
       }
 
-      toast.success(res.data.message,{ id: "add" });
+      toast.success(res.data.message, { id: "add" });
       getContactsList(); // Refresh contact list
       clearInputFields(); // Reset fields
       document.getElementById("AddContactDialog").close();

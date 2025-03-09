@@ -163,7 +163,7 @@ export const contactList = async (req, res) => {
 
     const connectedUsers = await Users.find({
       _id: { $in: userIds },
-    }).select("phone email fullname profilePic");
+    }).select("phone email fullname profilePic about");
 
     const usersWithSavedNames = connectedUsers.map((user) => {
       const contact = contactsWithUserIds.find(
