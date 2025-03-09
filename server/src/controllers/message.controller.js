@@ -90,9 +90,10 @@ export const sidebarUser = async (req, res) => {
       ),
     ];
 
-    const connectedUsers = await Users.find({ _id: { $in: userIds } }).select(
-      "fullname _id profilePic phone"
-    );
+    const connectedUsers = await Users.find({
+      _id: { $in: userIds },
+      ban: false,
+    }).select("fullname _id profilePic phone");
 
     const usersWithLastMessage = await Promise.all(
       connectedUsers.map(async (user) => {

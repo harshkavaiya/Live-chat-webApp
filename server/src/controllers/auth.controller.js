@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
     return res
       .status(200)
       .json({ success: false, message: "all fields required" });
-      
+
   try {
     const user = await Users.findOne({ phone });
     if (user) {
@@ -73,6 +73,12 @@ export const login = async (req, res) => {
       return res
         .status(200)
         .json({ success: false, message: "phone or Password uncorrect" });
+    }
+
+    if (user.ban) {
+      return res
+        .status(200)
+        .json({ success: false, message: "User is banned" });
     }
 
     generateToken(user._id, res);

@@ -35,7 +35,12 @@ const usersSchema = new mongoose.Schema(
         savedName: { type: String, required: true },
       },
     ],
+    ban: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   {
     timestamps: true,
   }

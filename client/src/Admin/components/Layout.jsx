@@ -1,7 +1,7 @@
 import { Toaster } from "react-hot-toast";
-import Home from "./Home";
-import LoginPage from "./Login";
-import useAuthAdmin from "./store/useAuthAdmin";
+import Home from "../Home";
+import LoginPage from "../Login";
+import useAuthAdmin from "../store/useAuthAdmin";
 
 const Layout = () => {
   const { user } = useAuthAdmin();

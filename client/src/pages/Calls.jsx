@@ -94,7 +94,7 @@ const Calls = () => {
                     <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                       <img
                         src={
-                          callerId.profilePic ||
+                          callerId?.profilePic ||
                           "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
@@ -107,10 +107,10 @@ const Calls = () => {
                           status == "missed" && " text-red-500"
                         }`}
                       >
-                        {callerId.fullname}
+                        {callerId?.fullname}
                       </p>
                       <div className="text-xs flex items-center gap-1 text-gray-500">
-                        {authUser._id != callerId._id ? (
+                        {authUser?._id != callerId?._id ? (
                           <FiPhoneIncoming
                             size={14}
                             className={`${

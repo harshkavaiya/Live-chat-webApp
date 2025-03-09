@@ -3,6 +3,8 @@ import Users from "../models/users.model.js";
 import Group from "../models/group.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { getUserSocketId, io } from "../lib/socket-io.js";
+import Message from "../models/message.model.js";
 
 export const Register = async (req, res) => {
   const { username, password } = req.body;
@@ -45,7 +47,7 @@ export const Login = async (req, res) => {
 };
 
 export const GetUsers = async (req, res) => {
-  const users = await Users.find().populate(
+  const users = await Users.find({ ban: false }).populate(
     "contacts.userId",
     "profilePic fullname email phone"
   );
@@ -57,4 +59,26 @@ export const GetGroups = async (req, res) => {
     .populate("admin", "profilePic fullname email")
     .populate("members", "profilePic fullname email");
   res.status(200).json({ groups, success: 1 });
+};
+
+export const DeleteUser = async (req, res) => {
+  const { id } = req.params;
+  await Users.findByIdAndUpdate(id, { ban: true });
+  res.status(200).json({ message: "User deleted successfully", success: 1 });
+};
+
+export const DeleteGroup = async (req, res) => {
+  const { id } = req.params;
+  let group = await Group.findById(id);
+
+  group?.members?.forEach((user) => {
+    let socketId = getUserSocketId(user);
+    if (socketId) {
+      io.to(socketId).emit("deleteGroup", id);
+    }
+  });
+
+  await Message.deleteMany({ receiver: id });
+  await Group.findByIdAndDelete(id);
+  res.status(200).json({ message: "Group deleted successfully", success: 1 });
 };

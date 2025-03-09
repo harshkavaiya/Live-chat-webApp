@@ -1,10 +1,11 @@
 import { FaEllipsisV, FaUser, FaUsers } from "react-icons/fa";
-import useUsersStore from "./store/useUsersStore";
-import useGroupStore from "./store/useGroupStore";
+import useUsersStore from "../store/useUsersStore";
+import useGroupStore from "../store/useGroupStore";
+import { calculateIncrease } from "../function/function";
 
 const Dashboard = () => {
-  const { users } = useUsersStore();
-  const { groups } = useGroupStore();
+  const { users, thisMonthUser } = useUsersStore();
+  const { groups, thisMonthGroup } = useGroupStore();
   return (
     <main className="p-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">
@@ -17,7 +18,7 @@ const Dashboard = () => {
         <StatCard
           title="Total Users"
           value={users.length}
-          change="+21%"
+          thisMonth={thisMonthUser}
           icon={<FaUser className="text-white text-2xl" />}
           color="from-purple-500 to-indigo-600"
         />
@@ -26,6 +27,7 @@ const Dashboard = () => {
         <StatCard
           title="Total Groups"
           value={groups.length}
+          thisMonth={thisMonthGroup}
           change="+21%"
           icon={<FaUsers className="text-white text-2xl" />}
           color="from-pink-500 to-rose-600"
@@ -43,7 +45,7 @@ const Dashboard = () => {
               <FaEllipsisV className="text-gray-500" />
             </button>
           </div>
-          {/* <div className="overflow-x-auto">
+          <div className="overflow-x-auto">
             <table className="table w-full">
               <thead>
                 <tr>
@@ -85,7 +87,7 @@ const Dashboard = () => {
                 />
               </tbody>
             </table>
-          </div> */}
+          </div>
           <div className="flex justify-center mt-6">
             {/* <button className="btn btn-outline btn-primary">
               View All Activities
@@ -97,7 +99,7 @@ const Dashboard = () => {
   );
 };
 
-function StatCard({ title, value, change, icon, color }) {
+function StatCard({ title, value, thisMonth, icon, color }) {
   return (
     <div className="card bg-white shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
       <div className="card-body p-6">
@@ -108,7 +110,7 @@ function StatCard({ title, value, change, icon, color }) {
               {value}
             </p>
             <p className="text-green-500 text-sm mt-1">
-              {change} more than last month
+              {calculateIncrease(value, thisMonth)} more than last month
             </p>
           </div>
           <div className={`bg-gradient-to-r ${color} p-3 rounded-lg shadow-lg`}>

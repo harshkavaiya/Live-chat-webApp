@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import Sidebar from "./Sidebar";
-import Dashboard from "./Dashboard";
-import Users from "./User";
-import Groups from "./Group";
-import Navbar from "./Navbar";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./components/Dashboard";
+import Users from "./components/User";
+import Groups from "./components/Group";
+import Navbar from "./components/Navbar";
 import useHomeStore  from "./store/useHomeStore";
 import useGroupStore from "./store/useGroupStore";
 import useUsersStore from "./store/useUsersStore";

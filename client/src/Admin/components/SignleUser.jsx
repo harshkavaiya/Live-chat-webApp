@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import  useUsersStore  from "./store/useUsersStore";
-import {
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
+import useUsersStore from "../store/useUsersStore";
+import { FaSearch, FaTrash } from "react-icons/fa";
+import DeleteConfirm from "./DeleteConfirm";
 
 const SignleUser = () => {
-  const { setCurrentSee, currentSee } = useUsersStore();
+  const { setCurrentSee, currentSee, isDeleting, deleteUser } = useUsersStore();
   const [activeTab, setActiveTab] = useState("about");
   return (
     <div>
@@ -55,7 +53,14 @@ const SignleUser = () => {
               <div className="divider"></div>
 
               <div className="card-actions justify-end w-full mt-6">
-                <div className="btn btn-error flex items-center">
+                <div
+                  onClick={() =>
+                    document
+                      .getElementById("message_delete_Confirm")
+                      .showModal()
+                  }
+                  className="btn btn-error flex items-center"
+                >
                   <FaTrash className="mr-2" size={14} />
                   Delete User
                 </div>
@@ -74,10 +79,10 @@ const SignleUser = () => {
               About
             </a>
             <a
-              className={`tab ${activeTab === "members" ? "tab-active" : ""}`}
-              onClick={() => setActiveTab("members")}
+              className={`tab ${activeTab === "Contacts" ? "tab-active" : ""}`}
+              onClick={() => setActiveTab("Contacts")}
             >
-              Members
+              Contacts
             </a>
           </div>
 
@@ -93,8 +98,8 @@ const SignleUser = () => {
             </div>
           )}
 
-          {/* Members Tab */}
-          {activeTab === "members" && (
+          {/* Contacts Tab */}
+          {activeTab === "Contacts" && (
             <div className="card bg-base-200 shadow-xl">
               <div className="card-body">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -124,40 +129,40 @@ const SignleUser = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentSee.contacts.map((member) => {
-                        const { _id, savedName } = member;
-                        const { email, fullname, phone, profilePic } =
-                          member.userId;
+                      {currentSee.contacts.length > 0 &&
+                        currentSee?.contacts?.map((member) => {
+                          const { _id, savedName } = member;
+                          
 
-                        return (
-                          <tr key={_id}>
-                            <td>
-                              <div className="flex items-center space-x-3">
-                                <div className="avatar">
-                                  <div className="mask mask-squircle w-10 h-10">
-                                    <img
-                                      src={
-                                        profilePic ||
-                                        "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
-                                      }
-                                      alt={savedName}
-                                      width={40}
-                                      height={40}
-                                    />
+                          return (
+                            <tr key={_id}>
+                              <td>
+                                <div className="flex items-center space-x-3">
+                                  <div className="avatar">
+                                    <div className="mask mask-squircle w-10 h-10">
+                                      <img
+                                        src={
+                                          member?.userId?.profilePic ||
+                                          "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                                        }
+                                        alt={savedName || "img"}
+                                        width={40}
+                                        height={40}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="font-bold">
+                                      {member?.userId?.savedName || member?.userId?.fullname}
+                                    </div>
                                   </div>
                                 </div>
-                                <div>
-                                  <div className="font-bold">
-                                    {savedName || fullname}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>{email}</td>
-                            <td>{phone}</td>
-                          </tr>
-                        );
-                      })}
+                              </td>
+                              <td>{member?.userId?.email}</td>
+                              <td>{member?.userId?.phone}</td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>
@@ -166,6 +171,14 @@ const SignleUser = () => {
           )}
         </div>
       </div>
+      <DeleteConfirm
+        isDeleting={isDeleting}
+        title={"User"}
+        deleteData={() => {
+          deleteUser(currentSee._id);
+          setCurrentSee(null);
+        }}
+      />
     </div>
   );
 };

@@ -1,12 +1,11 @@
-import {
-  FaSearch,
-  FaTrash,
-} from "react-icons/fa";
-import  useGroupStore  from "./store/useGroupStore";
+import { FaSearch, FaTrash } from "react-icons/fa";
+import useGroupStore from "../store/useGroupStore";
 import { useState } from "react";
+import DeleteConfirm from "./DeleteConfirm";
 
 const SignleGroup = () => {
-  const { setCurrentSee, currentSee } = useGroupStore();
+  const { setCurrentSee, currentSee, deleteGroup, isDeleting } =
+    useGroupStore();
   const [activeTab, setActiveTab] = useState("about");
 
   return (
@@ -47,7 +46,7 @@ const SignleGroup = () => {
                 <div className="stat place-items-center">
                   <div className="stat-title">Members</div>
                   <div className="stat-value text-primary">
-                    {currentSee?.members.length}
+                    {currentSee?.members?.length}
                   </div>
                 </div>
               </div>
@@ -57,7 +56,9 @@ const SignleGroup = () => {
               <div className="w-full">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-semibold text-left">Created By:</div>
-                  <div className="text-right">{currentSee?.admin.fullname}</div>
+                  <div className="text-right">
+                    {currentSee?.admin?.fullname}
+                  </div>
 
                   <div className="font-semibold text-left">Created Date:</div>
                   <div className="text-right">
@@ -70,9 +71,16 @@ const SignleGroup = () => {
               </div>
 
               <div className="card-actions justify-end w-full mt-6">
-                <div className="btn btn-error flex items-center">
+                <div
+                  onClick={() =>
+                    document
+                      .getElementById("message_delete_Confirm")
+                      .showModal()
+                  }
+                  className="btn btn-error flex items-center"
+                >
                   <FaTrash className="mr-2" size={14} />
-                  Delete User
+                  Delete Group
                 </div>
               </div>
             </div>
@@ -221,6 +229,15 @@ const SignleGroup = () => {
           )}
         </div>
       </div>
+
+      <DeleteConfirm
+        isDeleting={isDeleting}
+        title={"Group"}
+        deleteData={() => {
+          deleteGroup(currentSee._id);
+          setCurrentSee(null);
+        }}
+      />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import Group from "../models/group.model.js";
 import Users from "../models/users.model.js";
 import { getUserSocketId, io } from "../lib/socket-io.js";
 import Message from "../models/message.model.js";
+
 export const createGroup = async (req, res) => {
   try {
     const { name, description, type, photo, members } = req.body;
