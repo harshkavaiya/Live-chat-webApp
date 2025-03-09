@@ -52,7 +52,6 @@ io.on("connection", (socket) => {
 
   // Listen for call offer
   socket.on("callOffer", async (data) => {
-    
     if (!isValidObjectId(data.from) || !isValidObjectId(data.to)) {
       console.log("❌ Invalid callerId or receiverId.");
       return;
@@ -116,7 +115,7 @@ io.on("connection", (socket) => {
     // const receiverSocketId = getUserSocketId(data.from);
     const callerSocketId = getUserSocketId(data.to);
 
-    console.log(callerSocketId);
+    console.log("callersocket", callerSocketId);
     if (callerSocketId) {
       io.to(callerSocketId).emit("callEnded", { from: data.from });
       console.log(`Call ended notification sent to caller id: ${data.to}`);
