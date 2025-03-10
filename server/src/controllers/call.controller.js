@@ -141,6 +141,21 @@ export const getCallLogs = async (userId) => {
       .populate("receiverId", "fullname email profilePic") // 🔹 Add profilePic for UI display
       .sort({ startedAt: -1 });
 
+      const userContact=await Users.findById(userId
+      ).populate("contacts","savedName");
+   console.log(userContact.contacts);
+      calls.forEach((call) => {
+      if(call.callerId._id!=userId){
+  
+        call.callerId.fullname=userContact.contacts.find((contact)=>contact.userId==call.callerId._id).savedName;
+      }
+
+      if(call.receiverId._id!=userId){
+        call.receiverId.fullname=userContact.contacts.find((contact)=>contact.userId==call.receiverId._id).savedName;
+      }
+    }
+    );
+
     return calls;
   } catch (error) {
     console.error("❌ Error fetching call logs:", error);
