@@ -96,6 +96,7 @@ const NewCallDialog = () => {
                       onClick={() => {
                         startCall(i._id, "audio");
                         document.getElementById("audio_call_modal").showModal();
+                        document.getElementById("newCall").close();
                       }}
                     >
                       <BiSolidPhoneCall size={18} />
@@ -106,6 +107,7 @@ const NewCallDialog = () => {
                       onClick={() => {
                         startCall(i._id, "video");
                         document.getElementById("video_call_modal").showModal();
+                        document.getElementById("newCall").close();
                       }}
                     >
                       <FaVideo size={15} />
