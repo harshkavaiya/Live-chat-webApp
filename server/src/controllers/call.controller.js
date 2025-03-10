@@ -141,20 +141,31 @@ export const getCallLogs = async (userId) => {
       .populate("receiverId", "fullname email profilePic") // 🔹 Add profilePic for UI display
       .sort({ startedAt: -1 });
 
-      const userContact=await Users.findById(userId
-      ).populate("contacts","savedName");
-   console.log(userContact.contacts);
-      calls.forEach((call) => {
-      if(call.callerId._id!=userId){
-  
-        call.callerId.fullname=userContact.contacts.find((contact)=>contact.userId==call.callerId._id).savedName;
-      }
-
-      if(call.receiverId._id!=userId){
-        call.receiverId.fullname=userContact.contacts.find((contact)=>contact.userId==call.receiverId._id).savedName;
-      }
-    }
+    const userContact = await Users.findById(userId).populate(
+      "contacts",
+      "savedName"
     );
+
+    // Create a Map for faster lookups
+    const contactsMap = new Map(
+      userContact?.contacts?.map((contact) => [
+        contact.userId.toString(),
+        contact.savedName,
+      ]) || []
+    );
+
+    calls.forEach((call) => {
+      if (call.callerId._id.toString() !== userId.toString()) {
+        call.callerId.fullname =
+          contactsMap.get(call.callerId._id.toString()) ||
+          call.callerId.fullname;
+      }
+      if (call.receiverId._id.toString() !== userId.toString()) {
+        call.receiverId.fullname =
+          contactsMap.get(call.receiverId._id.toString()) ||
+          call.receiverId.fullname;
+      }
+    });
 
     return calls;
   } catch (error) {

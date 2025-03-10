@@ -8,28 +8,36 @@ export const sidebarUser = async (req, res) => {
   try {
     const loggedUserId = req.user._id;
 
-    // Find the groups where the user is a member or an admin
+    // Fetch groups where the user is a member
     let groups = await Group.find({ members: loggedUserId }).populate(
       "members",
       "fullname profilePic _id messagePermission"
     );
 
-    const userContacts = await Users.findById(loggedUserId).select("contacts");
+    // Fetch user contacts
+    const user = await Users.findById(loggedUserId).select("contacts");
+    const contactsMap = new Map(
+      user?.contacts?.map((contact) => [
+        contact.userId.toString(),
+        contact.savedName,
+      ]) || []
+    );
 
+    // Update group members' names based on contacts
     for (const group of groups) {
       for (const member of group.members) {
-        const contact = userContacts.contacts.find(
-          (contact) => contact.userId.toString() === member._id.toString()
-        );
-        const displayName = contact ? contact.savedName : member.fullname;
-        member.fullname = displayName;
+        if (contactsMap.has(member._id.toString())) {
+          member.fullname = contactsMap.get(member._id.toString());
+        }
       }
     }
 
+    // Fetch messages where the user is involved
     const messages = await Message.find({
       $or: [{ sender: loggedUserId }, { receiver: loggedUserId }],
     });
 
+    // Process group data with last messages
     const groupsWithLastMessage = await Promise.all(
       groups.map(async (group) => {
         const lastMessage = await Message.findOne({
@@ -41,37 +49,28 @@ export const sidebarUser = async (req, res) => {
           .limit(1)
           .select("data type createdAt sender receiver");
 
-        let unseen = await Message.find({
+        const unseen = await Message.countDocuments({
           receiver: group._id,
           sender: { $ne: loggedUserId },
           "read.user": { $ne: loggedUserId },
           members: { $in: loggedUserId },
-        }).countDocuments();
-        const {
-          _id,
-          name,
-          photo,
-          members,
-          admins,
-          admin,
-          inviteLink,
-          messagePermission,
-        } = group;
+        });
+
         return {
-          _id,
-          fullname: name,
-          profilePic: photo,
-          members,
-          admins,
-          admin,
+          _id: group._id,
+          fullname: group.name,
+          profilePic: group.photo,
+          members: group.members,
+          admins: group.admins,
+          admin: group.admin,
           unseen,
-          inviteLink,
-          messagePermission,
+          inviteLink: group.inviteLink,
+          messagePermission: group.messagePermission,
           sender: lastMessage?.sender,
           receiver: group._id,
           type: "Group",
           lastMessage:
-            lastMessage?.type == "text"
+            lastMessage?.type === "text"
               ? lastMessage.data
               : lastMessage?.type || null,
           lastMessageType: lastMessage?.type || null,
@@ -80,6 +79,7 @@ export const sidebarUser = async (req, res) => {
       })
     );
 
+    // Get unique user IDs from messages
     const userIds = [
       ...new Set(
         messages.map((msg) =>
@@ -90,11 +90,13 @@ export const sidebarUser = async (req, res) => {
       ),
     ];
 
+    // Fetch connected users
     const connectedUsers = await Users.find({
       _id: { $in: userIds },
       ban: false,
     }).select("fullname _id profilePic phone");
 
+    // Process user data with last messages
     const usersWithLastMessage = await Promise.all(
       connectedUsers.map(async (user) => {
         const lastMessage = await Message.findOne({
@@ -107,16 +109,16 @@ export const sidebarUser = async (req, res) => {
           .limit(1)
           .select("data type createdAt sender receiver");
 
-        let unseen = await Message.find({
+        const unseen = await Message.countDocuments({
           sender: user._id,
           receiver: loggedUserId,
           "read.user": { $ne: loggedUserId },
           deletedByUsers: { $ne: loggedUserId },
-        }).countDocuments();
+        });
 
         return {
           _id: user._id,
-          fullname: user.fullname,
+          fullname: contactsMap.get(user._id.toString()) || user.fullname, // Check if contact exists
           profilePic: user.profilePic,
           phone: user.phone,
           sender: lastMessage?.sender,
@@ -124,24 +126,25 @@ export const sidebarUser = async (req, res) => {
           type: "Single",
           unseen,
           lastMessage: lastMessage
-            ? lastMessage.type == "text"
+            ? lastMessage.type === "text"
               ? lastMessage.data
               : lastMessage.type
             : null,
-          lastMessageType: lastMessage ? lastMessage.type : null,
-          lastMessageTime: lastMessage ? lastMessage.createdAt : null,
+          lastMessageType: lastMessage?.type || null,
+          lastMessageTime: lastMessage?.createdAt || null,
         };
       })
     );
 
+    // Merge and sort by last message time
     const merge = [...usersWithLastMessage, ...groupsWithLastMessage].sort(
       (a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime)
     );
 
     res.status(200).json({ success: true, usersWithLastMessage: merge });
   } catch (error) {
-    console.log("error in sidebarUser controller: ", error.message);
-    res.status(200).json({ message: "Server error" });
+    console.error("Error in sidebarUser controller:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
