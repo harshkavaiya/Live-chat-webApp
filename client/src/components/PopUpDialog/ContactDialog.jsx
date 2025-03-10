@@ -107,7 +107,7 @@ const ContactDialog = () => {
                       _id: i._id,
                       phone: i.phone,
                       email: i.email,
-                      fullname: i.fullname,
+                      fullname: i.savedName,
                       profilePic: i.profilePic,
                       savedName: i.savedName,
                       sender: authUser._id,

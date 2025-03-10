@@ -120,7 +120,7 @@ const Calls = () => {
                             status == "missed" && " text-red-500"
                           }`}
                         >
-                          {callerId.fullname}
+                          {authUser._id ==callerId._id ?receiverId.fullname:callerId.fullname}
                         </p>
                         <div className="text-xs flex items-center gap-1 text-gray-500">
                           {authUser._id != callerId._id ? (
