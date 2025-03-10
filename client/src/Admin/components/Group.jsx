@@ -3,6 +3,7 @@ import useGroupStore from "../store/useGroupStore";
 import SingleGroup from "./SignleGroup";
 import { FiRefreshCw } from "react-icons/fi";
 import DeleteConfirm from "./DeleteConfirm";
+import { useState } from "react";
 
 const Group = () => {
   const {
@@ -14,6 +15,8 @@ const Group = () => {
     isLoading,
     isDeleting,
   } = useGroupStore();
+
+  const [deleteId, setdeleteId] = useState(null)
   return (
     <div className="p-4 md:p-6">
       {currentSee ? (
@@ -88,29 +91,33 @@ const Group = () => {
                           <button
                             className="btn btn-error text-base-100 btn-sm"
                             onClick={() =>
+                            {
+                              setdeleteId(group._id)
                               document
                                 .getElementById("message_delete_Confirm")
                                 .showModal()
+                            }
                             }
                           >
                             <FaTrash />
                           </button>
                         </div>
                       </div>
-                      <DeleteConfirm
-                        title={"Group"}
+                     
+                    </div>
+                  ))}
+            </div>
+          </div>
+          <DeleteConfirm
+                        title={`${deleteId}`}
                         isDeleting={isDeleting}
                         deleteData={() => {
-                          deleteGroup(group._id);
+                          deleteGroup(deleteId);
                           document
                             .getElementById("message_delete_Confirm")
                             .close();
                         }}
                       />
-                    </div>
-                  ))}
-            </div>
-          </div>
         </>
       )}
     </div>

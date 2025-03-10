@@ -37,6 +37,7 @@ const useGroupStore = create((set) => ({
   deleteGroup: async (id) => {
     set({ isDeleting: true });
     const res = await axiosInstance.delete(`/admin/deleteGroup/${id}`);
+
     if (res.data.success) {
       set((state) => ({
         groups: state.groups.filter((u) => u._id !== id),

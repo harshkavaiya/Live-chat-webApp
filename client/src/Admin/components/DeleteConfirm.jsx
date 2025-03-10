@@ -1,4 +1,5 @@
 const DeleteConfirm = ({ isDeleting, deleteData,title }) => {
+  
   return (
     <dialog id="message_delete_Confirm" className="modal z-50">
       <div className="modal-box bg-base-100 relative w-fit gap-5 p-10 flex items-center flex-col">
