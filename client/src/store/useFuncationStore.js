@@ -167,42 +167,26 @@ const useFunctionStore = create((set, get) => ({
       if (res.data.success) {
         toast.success("Message Deleted Successfully");
 
-        queryClient.setQueryData(
-          [`chat-${currentChatingUser._id}`],
-          (oldData) => {
-            if (!oldData || !oldData.pages?.length) return { pages: [] }; // Ensure valid oldData
-
-            // Remove selected messages from all pages
-            const updatedPages = oldData.pages.map((page) =>
-              page.filter((message) => !selectMessage?.[message._id])
-            );
-
-            // Check if the last message was deleted, ensure proper updates
-            if (
-              updatedPages.length > 0 &&
-              updatedPages[updatedPages.length - 1].length === 0
-            ) {
-              updatedPages.pop(); // Remove empty last page if needed
-            }
-
-            return { ...oldData, pages: updatedPages };
-          }
-        );
-
-        const chatData = queryClient.getQueryData([
-          `chat-${currentChatingUser._id}`,
-        ]);
-
+        queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
+          if (!oldData) return [];
+    
+          // Remove selected messages
+          const updatedMessages = oldData.filter(
+            (message) => !selectMessage?.[message._id]
+          );
+    
+          return updatedMessages;
+        });
+    
+        const chatData = queryClient.getQueryData([`chat-${currentChatingUser._id}`]);
+    
         messagerUser.forEach((user) => {
-          if (chatData?.pages?.length) {
-            const lastPage = chatData.pages[chatData.pages.length - 1]; // Get the last page
-            const lastMessage = lastPage.length
-              ? lastPage[lastPage.length - 1]
-              : null; // Get the last message
+          if (chatData?.length) {
+            const lastMessage = chatData[chatData.length - 1] || null;
             if (user._id === currentChatingUser._id) {
               if (lastMessage) {
                 const { type, data, createdAt } = lastMessage;
-                user.lastMessage = type == "text" ? data : type || null;
+                user.lastMessage = type === "text" ? data : type || null;
                 user.lastMessageTime = createdAt || null;
                 user.lastMessageType = type || null;
               }

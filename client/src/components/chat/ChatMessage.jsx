@@ -24,12 +24,7 @@ import MessageInfo from "../PopUpDialog/MessageInfo";
 import { LuTrash2 } from "react-icons/lu";
 import { decryptData, generateUniqueId } from "../../function/crypto";
 
-const ChatMessage = ({
-  isLoading,
-  fetchNextPage,
-  isFetchingNextPage,
-  hasNextPage,
-}) => {
+const ChatMessage = ({ isLoading }) => {
   const {
     messages,
     suscribeToMessage,
@@ -64,27 +59,9 @@ const ChatMessage = ({
 
   if (isLoading) return <MessageLoadingSkeleton />;
 
-  const handleScroll = (event) => {
-    if (
-      event.target.scrollTop === 0 &&
-      !isFetchingNextPage &&
-      hasNextPage &&
-      !isLoading
-    ) {
-      fetchNextPage();
-    }
-  };
   return (
     <>
-      <div
-        onScroll={handleScroll}
-        className="p-1 overflow-y-auto overflow-x-hidden h-full"
-      >
-        {isFetchingNextPage && (
-          <div className="w-full flex justify-center">
-            <span className="text-center loading loading-dots loading-lg" />
-          </div>
-        )}
+      <div className="p-1 overflow-y-auto overflow-x-hidden h-full">
         {messages?.map((message, i) => {
           const { _id, sender, receiver, type, read, createdAt, reaction } =
             message;
@@ -230,7 +207,8 @@ const ChatMessage = ({
                     data,
                     sender,
                     handleMediaPreview,
-                    _id,receiver
+                    _id,
+                    receiver
                   )}
                   <p
                     className={`text-[10px] text-end flex items-end justify-end ${
@@ -323,7 +301,8 @@ export const renderMessageContent = (
   data,
   sender,
   handleMediaPreview,
-  _id,receiver
+  _id,
+  receiver
 ) => {
   switch (type) {
     case "text":
@@ -355,7 +334,7 @@ export const renderMessageContent = (
       );
 
     case "poll":
-      return <Poll id={_id} data={data} sender={sender} receiver={receiver}/>;
+      return <Poll id={_id} data={data} sender={sender} receiver={receiver} />;
 
     case "location":
       return <LocationPreview data={data} />;
