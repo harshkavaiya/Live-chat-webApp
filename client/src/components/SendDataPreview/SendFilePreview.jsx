@@ -130,14 +130,8 @@ const SendFilePreview = () => {
         {/* Bottom section */}
         <div className="h-24">
           {/* Caption input */}
-          <div className="flex items-center gap-4 p-2">
-            <div className="flex-1 bg-white/10 rounded-full px-4 py-2 border border-primary">
-              <input
-                type="text"
-                placeholder="Add a caption..."
-                className="w-full bg-transparent  outline-none"
-              />
-            </div>
+          <div className="flex items-center justify-end gap-4 p-2">
+            
             <button
               onClick={() => sendGalleryData(galleryData)}
               className="btn btn-circle btn-primary"

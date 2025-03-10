@@ -134,22 +134,17 @@ const useMessageStore = create((set, get) => ({
       queryClient.setQueryData(
         [
           `chat-${
-            ChatType == "Group"
+            ChatType === "Group"
               ? newMessage.receiver
-              : newMessage.sender == myId
+              : newMessage.sender === myId
               ? newMessage.receiver
               : newMessage.sender
           }`,
         ],
         (oldData) => {
-          if (!oldData) return { pages: [[newMessage]] };
-          return {
-            ...oldData,
-            pages: [
-              [newMessage, ...oldData.pages[0]],
-              ...oldData.pages.slice(1),
-            ],
-          };
+          if (!oldData || !Array.isArray(oldData)) return [newMessage];
+
+          return [...oldData, newMessage]; // Add new message at the beginning
         }
       );
     }
@@ -201,7 +196,7 @@ const useMessageStore = create((set, get) => ({
     await axiosInstance.delete(
       `/message/clearChat/${currentChatingUser._id}?type=${currentChatingUser.type}`
     );
-    queryClient.setQueryData([`chat-${currentChatingUser._id}`], { pages: [] });
+    queryClient.setQueryData([`chat-${currentChatingUser._id}`], []);
 
     messagerUser.forEach((user) => {
       if (user._id == currentChatingUser._id) {
@@ -388,18 +383,13 @@ const useMessageStore = create((set, get) => ({
     });
 
     queryClient.setQueryData([`chat-${currentChatingUser._id}`], (oldData) => {
-      if (!oldData || !oldData.pages) return oldData;
+      if (!oldData || !Array.isArray(oldData)) return oldData;
 
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page) =>
-          page.map((msg) =>
-            msg._id.toString() === messages[index]._id.toString()
-              ? { ...msg, reaction: updatedMessage.reaction }
-              : msg
-          )
-        ),
-      };
+      return oldData.map((msg) =>
+        msg._id.toString() === messages[index]._id.toString()
+          ? { ...msg, reaction: updatedMessage.reaction }
+          : msg
+      );
     });
 
     notificationSound();
@@ -441,18 +431,13 @@ const useMessageStore = create((set, get) => ({
       queryClient.setQueryData(
         [`chat-${updatedRecords[0].receiver}`],
         (oldData) => {
-          if (!oldData || !oldData.pages) return oldData;
+          if (!oldData || !Array.isArray(oldData)) return oldData;
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) =>
-              page.map((msg) =>
-                msg._id.toString() === id.toString()
-                  ? { ...msg, reaction: updatedRecords[0].reaction } // ✅ Corrected return
-                  : msg
-              )
-            ),
-          };
+          return oldData.map((msg) =>
+            msg._id.toString() === id.toString()
+              ? { ...msg, reaction: updatedRecords[0].reaction } // ✅ Corrected update
+              : msg
+          );
         }
       );
     }
@@ -516,21 +501,16 @@ const useMessageStore = create((set, get) => ({
       set({ messages });
     }
     queryClient.setQueryData([`chat-${userToChatId}`], (oldData) => {
-      if (!oldData) return oldData;
+      if (!oldData || !Array.isArray(oldData)) return oldData;
 
-      return {
-        ...oldData,
-        pages: oldData.pages.map((page) =>
-          page.map((msg) =>
-            msg.sender !== id && !msg.read.some((item) => item.user === id)
-              ? {
-                  ...msg,
-                  read: [...msg.read, { user: id, seenAt: new Date() }],
-                }
-              : msg
-          )
-        ),
-      };
+      return oldData.map((msg) =>
+        msg.sender !== id && !msg.read.some((item) => item.user === id)
+          ? {
+              ...msg,
+              read: [...msg.read, { user: id, seenAt: new Date() }],
+            }
+          : msg
+      );
     });
   },
 }));

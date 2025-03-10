@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {  useQuery } from "@tanstack/react-query";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
 import useFunctionStore from "../store/useFuncationStore";
@@ -30,30 +30,23 @@ const ChatPage = () => {
   const { authUser } = useAuthStore();
 
   // Fetch chat message
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: [`chat-${currentChatingUser?._id}`],
-      queryFn: async ({ pageParam = 0 }) => {
-        if (!currentChatingUser?._id) return [];
-        const res = await axiosInstance.get(
-          `/message/chat/${currentChatingUser._id}?lastMessageId=${pageParam}&Datalength=${messages.length}&type=${currentChatingUser.type}`
-        );
-        return res.data || [];
-      },
-      enabled: !!currentChatingUser?._id,
-      staleTime: Infinity,
-      getNextPageParam: (lastPage) => {
-        return lastPage?.length ? lastPage[0]?._id : false;
-      },
-    });
+  const { data, isLoading } = useQuery({
+    queryKey: [`chat-${currentChatingUser?._id}`],
+    queryFn: async () => {
+      if (!currentChatingUser?._id) return [];
+      const res = await axiosInstance.get(
+        `/message/chat/${currentChatingUser._id}?type=${currentChatingUser.type}`
+      );
+      return res.data || [];
+    },
+    enabled: !!currentChatingUser?._id,
+    staleTime: Infinity,
+  });
 
   // Update messages when data changes
   useEffect(() => {
-    if (data?.pages) {
-      const uniqueMessages = [
-        ...new Map(data.pages.flat().map((msg) => [msg._id, msg])).values(),
-      ];
-      setMessages(uniqueMessages.reverse());
+    if (data) {
+      setMessages(data);
     }
   }, [data, setMessages]);
 
@@ -75,9 +68,7 @@ const ChatPage = () => {
             <div className="w-full h-[80%]">
               <ChatMessage
                 isLoading={isLoading}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-                hasNextPage={hasNextPage}
+               
               />
             </div>
             {/* Input Area */}

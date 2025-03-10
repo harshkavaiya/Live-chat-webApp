@@ -295,7 +295,7 @@ export const deleteContact = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   const myId = req.user._id;
-  const { Datalength, type } = req.query;
+  const { type } = req.params;
   if (!myId)
     return res.status(200).json({ message: "Server error", success: 0 });
 
@@ -307,10 +307,7 @@ export const getMessages = async (req, res) => {
         receiver: userToChatId,
         deletedByUsers: { $ne: myId },
         members: { $in: myId },
-      })
-        .sort({ createdAt: -1 })
-        .skip(Datalength)
-        .limit(10);
+      });
 
       await Message.updateMany(
         {
@@ -329,10 +326,7 @@ export const getMessages = async (req, res) => {
           { sender: userToChatId, receiver: myId },
         ],
         deletedByUsers: { $ne: myId },
-      })
-        .sort({ createdAt: -1 })
-        .skip(Datalength)
-        .limit(10);
+      });
 
       await Message.updateMany(
         {
