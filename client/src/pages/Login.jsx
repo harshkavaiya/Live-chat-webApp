@@ -17,10 +17,21 @@ const LoginPage = () => {
   const [confirmpassword, setConfirmpassword] = useState("");
   const { login, authUser } = useAuthStore();
   const [page, setPage] = useState("Login");
-  const Signin = () => {
-    login({ phone, password });
-    setPhone();
-    setPassword();
+  const Signin = async () => {
+
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+      toast.error("Enter Valid Mobile Number");
+
+      return;
+    }
+    
+    let res = await login({ phone, password });
+
+    if (res) {
+      setPhone("");
+      setPassword("");
+    }
   };
 
   const SignUp = async () => {

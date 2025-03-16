@@ -33,68 +33,6 @@ const Dashboard = () => {
           color="from-pink-500 to-rose-600"
         />
       </div>
-
-      {/* Recent Activity */}
-      <div className="card bg-white shadow-xl overflow-hidden hover:shadow-2xl transition-shadow">
-        <div className="card-body p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Recent Activity
-            </h2>
-            <button className="btn btn-ghost btn-sm btn-circle">
-              <FaEllipsisV className="text-gray-500" />
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="table w-full">
-              <thead>
-                <tr>
-                  <th className="bg-gray-50">User</th>
-                  <th className="bg-gray-50">Activity</th>
-                  <th className="bg-gray-50">Date</th>
-                  <th className="bg-gray-50">Status</th>
-                  <th className="bg-gray-50">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <ActivityRow
-                  name="John Doe"
-                  location="United States"
-                  activity="Created a new post"
-                  date="Today, 2:30 PM"
-                  status="completed"
-                />
-                <ActivityRow
-                  name="Jane Smith"
-                  location="Canada"
-                  activity="Updated profile"
-                  date="Yesterday, 5:15 PM"
-                  status="in-progress"
-                />
-                <ActivityRow
-                  name="Robert Johnson"
-                  location="United Kingdom"
-                  activity="Joined group"
-                  date="Mar 15, 2023"
-                  status="pending"
-                />
-                <ActivityRow
-                  name="Emily Davis"
-                  location="Australia"
-                  activity="Uploaded files"
-                  date="Mar 12, 2023"
-                  status="completed"
-                />
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-center mt-6">
-            {/* <button className="btn btn-outline btn-primary">
-              View All Activities
-            </button> */}
-          </div>
-        </div>
-      </div>
     </main>
   );
 };

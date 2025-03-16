@@ -253,9 +253,8 @@ const ChatMessage = ({ isLoading }) => {
           );
         })}
       </div>
-
       {isSelectMessage && (
-        <div className=" absolute bg-base-100 w-full h-[10%] z-10 left-0 bottom-0">
+        <div className="bg-base-100 h-[10%] z-10 fixed bottom-0 w-full sm:w-[63%] overflow-hidden">
           <div className="w-full h-full bg-primary/80  flex items-center text-primary-content overflow-hidden">
             <IoClose
               onClick={() => handleSelection(false)}

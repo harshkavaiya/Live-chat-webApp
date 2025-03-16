@@ -298,6 +298,18 @@ const useGroupStore = create((set, get) => ({
 
     setMessagerUser(updateUser);
   },
+  handleUpdateGroupPic: (groupId, newPic) => {
+    const { messagerUser, setMessagerUser } = useMessageStore.getState();
+
+    const updateUser = messagerUser.map((user) => {
+      if (user._id === groupId) {
+        return { ...user, groupPic: newPic }; // Return updated user object
+      }
+      return user; // Return unchanged user
+    });
+
+    setMessagerUser(updateUser);
+  },
 }));
 
 export default useGroupStore;

@@ -22,6 +22,8 @@ import useSearch from "../function/SearchFunc";
 import { RxCross2, RxExit } from "react-icons/rx";
 import toast from "react-hot-toast";
 import GroupLink from "../components/GroupLink/GroupLink";
+import { GoPencil } from "react-icons/go";
+import axiosInstance from "../lib/axiosInstance";
 
 const Profile = ({ setIsProfileOpen }) => {
   const { clearChat, handleExport, currentChatingUser } = useMessageStore();
@@ -40,6 +42,23 @@ const Profile = ({ setIsProfileOpen }) => {
   const [ismediaRotate, setIsmediaRotate] = useState(false);
   const queryClient = useQueryClient();
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [newImg, setNewImg] = useState(null);
+
+  const handleFileChange = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setNewImg(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+      document.getElementById("Profile_preview_modal").showModal();
+    }
+  };
   return (
     <>
       <div className="w-full sm:w-[60%] md:w-[30%] p-2  border border-base-300 h-full mx-auto z-20  overflow-y-scroll bg-base-100 text-base-content/80 font-medium absolute right-0 top-0">
@@ -53,13 +72,22 @@ const Profile = ({ setIsProfileOpen }) => {
 
         {/* Profile Section */}
         <div className="p-6 flex flex-col items-center border-b border-base-300 ">
-          <div className="avatar w-36 h-36">
+          <div className="avatar w-36 h-36 relative">
             <img
               src={
                 currentChatingUser.profilePic ||
                 "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
               }
               className="object-contain rounded-full"
+            />
+            <label htmlFor="selectfile">
+              <GoPencil className="absolute cursor-pointer right-0 bottom-3 h-8 w-8 bg-primary text-primary-content rounded-full p-1.5" />
+            </label>
+            <input
+              onChange={handleFileChange}
+              type="file"
+              className="hidden"
+              id="selectfile"
             />
           </div>
 
@@ -190,7 +218,7 @@ const Profile = ({ setIsProfileOpen }) => {
                     </div>
                     <div className="flex flex-col gap-px">
                       <p className="font-semibold">{item.fullname}</p>
-                      <p className="text-sm">{item.description || "..."}</p>
+                      <p className="text-sm">{item.phone || "..."}</p>
                     </div>
                     {isAdmin && (
                       <div className="absolute group-hover:bg-transparent z-0 group-hover:text-primary-content right-1 top-1 text-[10px] bg-base-100 text-primary">
@@ -320,6 +348,7 @@ const Profile = ({ setIsProfileOpen }) => {
           document.getElementById("addUsersDialog").close();
         }}
       />
+      <ProfilePreview img={newImg} id={currentChatingUser._id} />
       {currentChatingUser.type == "Group" && <GroupLink />}
     </>
   );
@@ -344,13 +373,13 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
     }
   }, [contacts, getContactsList]);
 
-  const handleUserClick = (userId, userFullname) => {
+  const handleUserClick = (userId, userFullname, phone) => {
     if (selectedUsers.some((user) => user._id === userId)) {
       setSelectedUsers(selectedUsers.filter((user) => user._id !== userId));
     } else {
       setSelectedUsers([
         ...selectedUsers,
-        { _id: userId, fullname: userFullname },
+        { _id: userId, fullname: userFullname, phone },
       ]);
     }
   };
@@ -362,7 +391,6 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
       toast.error("Please Select User");
     }
   };
-
   return (
     <dialog id="addUsersDialog" className="modal">
       <div className="modal-box w-[90%] h-full sm:h-[75%] flex p-5 bg-base-300 flex-col">
@@ -399,7 +427,9 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
                 disabled={
                   members?.find((user) => user._id === contact._id) || false
                 }
-                onClick={() => handleUserClick(contact._id, contact.fullname)}
+                onClick={() =>
+                  handleUserClick(contact._id, contact.fullname, contact.phone)
+                }
                 className="flex items-center border border-base-100  disabled:bg-primary/50 disabled:hover:bg-primary/50 disabled:cursor-not-allowed w-full justify-between cursor-pointer sm:hover:bg-primary/5 sm:rounded-lg p-1 sm:p-2 pr-4"
               >
                 <div className="flex items-center gap-2">
@@ -457,6 +487,78 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
   );
 };
 
-AddUserGroup;
+const ProfilePreview = ({ img, id }) => {
+  const {
+    messagerUser,
+    setMessagerUser,
+    currentChatingUser,
+    setCurrentChatingUser,
+  } = useMessageStore();
+  const [isLoading, setIsLoading] = useState(false);
 
+  const upload = async () => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("photo", img); // `img` should be a File object
+
+    let res = await axiosInstance.put(`/group/updatePic/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    document.getElementById("Profile_preview_modal").close();
+    if (res.data.success) {
+      let update = messagerUser.map((item) => {
+        if (item._id == id) {
+          return { ...item, profilePic: res.data.photo }; // Fixing state update
+        }
+        return item;
+      });
+      currentChatingUser.profilePic = res.data.photo;
+      setCurrentChatingUser(currentChatingUser);
+      setMessagerUser(update);
+      toast.success("Profile Pic Updated");
+    } else {
+      toast.error(res.data.message);
+    }
+    setIsLoading(false);
+  };
+  return (
+    <dialog id="Profile_preview_modal" className="modal">
+      <div className="modal-box bg-base-300 flex-col p-2">
+        {/* header */}
+        <div className="flex justify-between items-center ">
+          <h3 className="font-bold text-lg">Profile Preview</h3>
+          <RxCross2
+            size={25}
+            className="cursor-pointer"
+            onClick={() =>
+              document.getElementById("Profile_preview_modal").close()
+            }
+          />
+        </div>
+        <div className="flex justify-center items-center">
+          <img src={img} className="object-cover w-60 h-60 rounded-xl" />
+        </div>
+        <div className="flex items-center justify-center mt-2 gap-2">
+          <button
+            disabled={isLoading}
+            className="btn btn-success disabled:cursor-no-drop"
+            onClick={upload}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-x-2">
+                <span className="loading loading-spinner"></span> Uploading
+              </div>
+            ) : (
+              "Upload"
+            )}
+          </button>
+        </div>
+      </div>
+      <form method="dialog" className="modal-backdrop">
+        <button></button>
+      </form>
+    </dialog>
+  );
+};
 export default Profile;

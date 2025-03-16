@@ -11,7 +11,7 @@ export const sidebarUser = async (req, res) => {
     // Fetch groups where the user is a member
     let groups = await Group.find({ members: loggedUserId }).populate(
       "members",
-      "fullname profilePic _id messagePermission"
+      "fullname profilePic _id messagePermission phone"
     );
 
     // Fetch user contacts

@@ -44,7 +44,7 @@ export const createGroup = async (req, res) => {
     await newGroup.save();
     let groupMember = await newGroup.populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     const groupInfo = {
@@ -114,7 +114,7 @@ export const joinGroup = async (req, res) => {
 
     const groupMember = await group.populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     const userContacts = await Users.findById(memberId).select("contacts");
@@ -224,7 +224,7 @@ export const addMember = async (req, res) => {
 
     const groupMembers = await Group.findById(groupId)
       .select("members")
-      .populate("members", "fullname profilePic _id");
+      .populate("members", "fullname profilePic _id phone");
 
     await Promise.all(
       uniqueMembers.map(async (user) => {
@@ -678,7 +678,7 @@ export const getGroup = async (req, res) => {
     // Find the groups where the user is a member or an admin
     let groups = await Group.find({ members: userId }).populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     if (groups.length === 0) {
@@ -752,4 +752,50 @@ export const ResetLink = async (req, res) => {
     success: 1,
     newLink: newInviteLink,
   });
+};
+
+export const updatePic = async (req, res) => {
+  const { id: groupId } = req.params;
+  const { photo } = req.body;
+  const myId = req.user._id;
+
+  if (!groupId)
+    return res.status(200).json({ message: "Group is Required", success: 0 });
+
+  if (!photo)
+    return res.status(200).json({ message: "Photo is required", success: 0 });
+
+  let find = await Group.findById(groupId);
+
+  if (!find)
+    return res.status(200).json({ message: "Group Not Found", success: 0 });
+
+  if (find.admin.toString() !== myId.toString())
+    return res
+      .status(200)
+      .json({ message: "Only Admin Can Update Pic", success: 0 });
+  try {
+    const cloudPic = await cloudinary.uploader.upload(photo);
+
+    find.photo = cloudPic.secure_url;
+
+    find.members.forEach((user) => {
+      if (user.toString() !== myId.toString()) {
+        const socketId = getUserSocketId(user);
+        if (socketId)
+          io.to(socketId).emit("updatePic", groupId, cloudPic.secure_url);
+      }
+    });
+
+    await find.save();
+
+    res.status(200).json({
+      message: "Group Pic Updated",
+      success: 1,
+      photo: cloudPic.secure_url,
+    });
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    res.status(200).json({ message: "Image upload failed", success: 0 });
+  }
 };
