@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 import expressFileupload from "express-fileupload";
+import bodyParser from "body-parser";
+
 dotenv.config();
 import { app, server } from "./lib/socket-io.js";
 
@@ -17,6 +19,9 @@ app.use(
     credentials: true,
   })
 );
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(expressFileupload());
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
@@ -28,7 +33,7 @@ import messageRoute from "./routes/message.route.js";
 import statusRoute from "./routes/status.route.js";
 import groupRoute from "./routes/group.route.js";
 import callRoute from "./routes/call.route.js";
-import adminRoute from "./routes/admin.route.js"
+import adminRoute from "./routes/admin.route.js";
 import { connDB } from "./lib/db.js";
 
 const PORT = process.env.PORT || 4000;
@@ -45,7 +50,7 @@ app.use("/message", messageRoute);
 app.use("/group", groupRoute);
 app.use("/status", statusRoute);
 app.use("/call", callRoute);
-app.use("/admin",adminRoute)
+app.use("/admin", adminRoute);
 app.post("/audio/upload", async (req, res) => {
   if (!req.files)
     return res.status(200).json({ message: "Audio Not Receive", success: 0 });

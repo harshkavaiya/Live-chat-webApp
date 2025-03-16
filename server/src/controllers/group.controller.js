@@ -753,3 +753,49 @@ export const ResetLink = async (req, res) => {
     newLink: newInviteLink,
   });
 };
+
+export const updatePic = async (req, res) => {
+  const { id: groupId } = req.params;
+  const { photo } = req.body;
+  const myId = req.user._id;
+
+  if (!groupId)
+    return res.status(200).json({ message: "Group is Required", success: 0 });
+
+  if (!photo)
+    return res.status(200).json({ message: "Photo is required", success: 0 });
+
+  let find = await Group.findById(groupId);
+
+  if (!find)
+    return res.status(200).json({ message: "Group Not Found", success: 0 });
+
+  if (find.admin.toString() !== myId.toString())
+    return res
+      .status(200)
+      .json({ message: "Only Admin Can Update Pic", success: 0 });
+  try {
+    const cloudPic = await cloudinary.uploader.upload(photo);
+
+    find.photo = cloudPic.secure_url;
+
+    find.members.forEach((user) => {
+      if (user.toString() !== myId.toString()) {
+        const socketId = getUserSocketId(user);
+        if (socketId)
+          io.to(socketId).emit("updatePic", groupId, cloudPic.secure_url);
+      }
+    });
+
+    await find.save();
+
+    res.status(200).json({
+      message: "Group Pic Updated",
+      success: 1,
+      photo: cloudPic.secure_url,
+    });
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    res.status(200).json({ message: "Image upload failed", success: 0 });
+  }
+};

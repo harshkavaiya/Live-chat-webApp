@@ -132,7 +132,6 @@ const SignleUser = () => {
                       {currentSee.contacts.length > 0 &&
                         currentSee?.contacts?.map((member) => {
                           const { _id, savedName } = member;
-                          
 
                           return (
                             <tr key={_id}>
@@ -153,7 +152,8 @@ const SignleUser = () => {
                                   </div>
                                   <div>
                                     <div className="font-bold">
-                                      {member?.userId?.savedName || member?.userId?.fullname}
+                                      {member?.userId?.savedName ||
+                                        member?.userId?.fullname}
                                     </div>
                                   </div>
                                 </div>

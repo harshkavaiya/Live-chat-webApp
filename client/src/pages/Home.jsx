@@ -50,7 +50,7 @@ const Home = () => {
     handleLeaveGroup,
     handleRemoveAdmin,
     hanldeDeleteGroup,
-    handleResetLink,
+    handleResetLink,handleUpdateGroupPic
   } = useGroupStore();
 
   const hasRegisteredPeerId = useRef(false);
@@ -113,7 +113,7 @@ const Home = () => {
       socket.on("removeAdmin", handleRemoveAdmin);
       socket.on("deleteGroup", hanldeDeleteGroup);
       socket.on("resetLink", handleResetLink);
-
+      socket.on("updatePic",handleUpdateGroupPic)
       socket.on("callRejected", (data) => {
         setRinging(false); // Stop ringing
         document.getElementById("video_call_modal").close();
@@ -147,6 +147,7 @@ const Home = () => {
         socket.off("callEnded");
         socket.off("callRejected");
         socket.off("resetLink");
+        socket.off("updatePic")
       };
     }
   }, [

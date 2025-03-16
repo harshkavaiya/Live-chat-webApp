@@ -18,6 +18,7 @@ const GroupDialog = () => {
   const [photo, setPhoto] = useState(null);
   const [groupType, setGroupType] = useState("");
   const [isOpen, setIsOpenDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const closeDialog = () => {
     setFormData({ groupName: "", description: "", selectedUsers: [] });
@@ -75,14 +76,16 @@ const GroupDialog = () => {
     };
 
     try {
+      setIsLoading(true);
       const response = await axiosInstance.post("/group/create", data, {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       if (!response.data.success) {
         toast.error(response.data.message);
         return;
       }
 
+      setIsLoading(false);
       setMessagerUser([response.data.groupInfo, ...messagerUser]);
       closeDialog();
     } catch (error) {
@@ -195,17 +198,26 @@ const GroupDialog = () => {
 
         {/* Buttons */}
         <div className="flex bg-base-100 items-center gap-5 fixed w-full left-0 px-5 pb-5 pt-1 bottom-0">
-          <button className="btn btn-error flex-1" onClick={closeDialog}>
+          <button disabled={isLoading} className="btn btn-error flex-1" onClick={closeDialog}>
             Cancel
           </button>
-          <button className="btn btn-outline flex-1" onClick={userDialog}>
+          <button disabled={isLoading} className="btn btn-outline flex-1" onClick={userDialog}>
             Add Users
           </button>
+          
           <button
             className="btn btn-primary flex-1"
+            disabled={isLoading}
             onClick={handleCreateGroup}
           >
-            Create Group
+             {isLoading ? (
+              <div className="flex items-center justify-center gap-x-2">
+                <span className="loading loading-spinner"></span> Creating
+              </div>
+            ) : (
+              "Create Group"
+            )}
+            
           </button>
         </div>
       </div>
