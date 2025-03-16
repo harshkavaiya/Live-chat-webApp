@@ -45,34 +45,6 @@ const useAuthStore = create((set, get) => ({
       };
     }
   },
-
-  // checkAuth: async () => {
-  //   try {
-  //     set({ isCheckingAuth: true });
-  //     if (get().authUser) return; // if already logged in
-
-  //     const res = await axiosInstance.get("/auth/check");
-  //     if (!res.data.success) {
-  //       set({ authUser: null, isLogin: false });
-  //       console.log("User in checkAuth not ", res.data);
-  //       // sessionStorage.removeItem("authUser");
-  //       return;
-  //     }
-
-  //     console.log("User in checkAuth", res.data.user);
-  //     set({ authUser: res.data.user, isLogin: true });
-  //     // sessionStorage.setItem("authUser", JSON.stringify(res.data.user));
-  //     get().connectSocket();
-  //   } catch (error) {
-  //     console.error("Error in checkAuth:", error);
-  //     set({ authUser: null, isLogin: false });
-  //     get().diconnectSocket();
-  //     sessionStorage.removeItem("authUser");
-  //   } finally {
-  //     set({ isCheckingAuth: false });
-  //   }
-  // },
-
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
@@ -106,11 +78,13 @@ const useAuthStore = create((set, get) => ({
       set({ authUser: res.data, isLogin: true });
       sessionStorage.setItem("authUser", JSON.stringify(res.data));
       get().connectSocket();
+      return 1;
     } else {
       toast.error(res.data.message);
+      return 0;
     }
   },
-  
+
   logout: async () => {
     try {
       await axiosInstance.get("/auth/logout");

@@ -4,22 +4,6 @@ import { memo, useEffect } from "react";
 
 const CurrentImage = () => {
   const { currentMedia, onNextMedia, onPrevMedia } = useMediaStore();
-  // useEffect(() => {
-  //   document.addEventListener(
-  //     "keydown",
-  //     (e) => {
-  //       if (e.key === "ArrowRight") {
-  //         console.log(e.key);
-  //         onNextMedia();
-  //       } else if (e.key === "ArrowLeft") {
-  //         onPrevMedia();
-  //         console.log(e.key);
-  //         return;
-  //       }
-  //     },
-  //     { once: true }
-  //   );
-  // });
   return (
     <div className="flex items-center h-[80%] justify-between">
       {currentMedia.prev != null && (

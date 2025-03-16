@@ -56,29 +56,25 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { phone, password } = req.body;
   if (!phone || !password) {
-    return res
-      .status(200)
-      .json({ success: false, message: "All field required" });
+    return res.status(200).json({ success: 0, message: "All field required" });
   }
   try {
     const user = await Users.findOne({ phone });
     if (!user) {
       return res
         .status(200)
-        .json({ success: false, message: "phone or Password uncorrect" });
+        .json({ success: 0, message: "phone or Password uncorrect" });
     }
 
     const pass = await bcrypt.compare(password, user.password);
     if (!pass) {
       return res
         .status(200)
-        .json({ success: false, message: "phone or Password uncorrect" });
+        .json({ success: 0, message: "phone or Password uncorrect" });
     }
 
     if (user.ban) {
-      return res
-        .status(200)
-        .json({ success: false, message: "User is banned" });
+      return res.status(200).json({ success: 0, message: "User is banned" });
     }
 
     generateToken(user._id, res);
@@ -88,11 +84,11 @@ export const login = async (req, res) => {
       phone: user.phone,
       email: user.email,
       profilePic: user.profilePic,
-      success: true,
+      success: 1,
     });
   } catch (error) {
     console.log("error in login controller: ", error.message);
-    res.status(200).json({ success: false, message: "Server error" });
+    res.status(200).json({ success: 0, message: "Server error" });
   }
 };
 

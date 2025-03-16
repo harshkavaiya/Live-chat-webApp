@@ -18,6 +18,7 @@ router.get("/:id", AuthRoute, getUserStatus);
 router.post("/friendStatus", AuthRoute, FriendStatus);
 router.post("/seen/:id", AuthRoute, handleStatusSeen);
 router.delete("/delete/:id", AuthRoute, DeleteStatus);
+
 cron.schedule("*/10 * * * * *", async () => {
   try {
     const find = await Status.find(); // Fetch all statuses
@@ -26,7 +27,7 @@ cron.schedule("*/10 * * * * *", async () => {
       let length = sts.length;
       // Filter out expired status entries
       sts.status = sts.status.filter((element) => {
-        return element.time >= new Date(Date.now() - 30 * 1000);
+        return element.time >= new Date(Date.now() - 10 * 1000);
       });
 
       if (sts.status.length === 0) {
