@@ -44,7 +44,7 @@ export const createGroup = async (req, res) => {
     await newGroup.save();
     let groupMember = await newGroup.populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     const groupInfo = {
@@ -114,7 +114,7 @@ export const joinGroup = async (req, res) => {
 
     const groupMember = await group.populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     const userContacts = await Users.findById(memberId).select("contacts");
@@ -224,7 +224,7 @@ export const addMember = async (req, res) => {
 
     const groupMembers = await Group.findById(groupId)
       .select("members")
-      .populate("members", "fullname profilePic _id");
+      .populate("members", "fullname profilePic _id phone");
 
     await Promise.all(
       uniqueMembers.map(async (user) => {
@@ -678,7 +678,7 @@ export const getGroup = async (req, res) => {
     // Find the groups where the user is a member or an admin
     let groups = await Group.find({ members: userId }).populate(
       "members",
-      "fullname profilePic _id"
+      "fullname profilePic _id phone"
     );
 
     if (groups.length === 0) {

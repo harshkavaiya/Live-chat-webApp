@@ -190,7 +190,7 @@ const Profile = ({ setIsProfileOpen }) => {
                     </div>
                     <div className="flex flex-col gap-px">
                       <p className="font-semibold">{item.fullname}</p>
-                      <p className="text-sm">{item.description || "..."}</p>
+                      <p className="text-sm">{item.phone || "..."}</p>
                     </div>
                     {isAdmin && (
                       <div className="absolute group-hover:bg-transparent z-0 group-hover:text-primary-content right-1 top-1 text-[10px] bg-base-100 text-primary">
@@ -344,13 +344,13 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
     }
   }, [contacts, getContactsList]);
 
-  const handleUserClick = (userId, userFullname) => {
+  const handleUserClick = (userId, userFullname, phone) => {
     if (selectedUsers.some((user) => user._id === userId)) {
       setSelectedUsers(selectedUsers.filter((user) => user._id !== userId));
     } else {
       setSelectedUsers([
         ...selectedUsers,
-        { _id: userId, fullname: userFullname },
+        { _id: userId, fullname: userFullname, phone },
       ]);
     }
   };
@@ -362,7 +362,7 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
       toast.error("Please Select User");
     }
   };
-
+  console.log(filteredData);
   return (
     <dialog id="addUsersDialog" className="modal">
       <div className="modal-box w-[90%] h-full sm:h-[75%] flex p-5 bg-base-300 flex-col">
@@ -399,7 +399,9 @@ const AddUserGroup = ({ selectedUsers, setSelectedUsers, onDone, members }) => {
                 disabled={
                   members?.find((user) => user._id === contact._id) || false
                 }
-                onClick={() => handleUserClick(contact._id, contact.fullname)}
+                onClick={() =>
+                  handleUserClick(contact._id, contact.fullname, contact.phone)
+                }
                 className="flex items-center border border-base-100  disabled:bg-primary/50 disabled:hover:bg-primary/50 disabled:cursor-not-allowed w-full justify-between cursor-pointer sm:hover:bg-primary/5 sm:rounded-lg p-1 sm:p-2 pr-4"
               >
                 <div className="flex items-center gap-2">
