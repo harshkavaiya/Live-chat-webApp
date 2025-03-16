@@ -4,6 +4,8 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import useAuthStore from "../store/useAuthStore";
 import toast from "react-hot-toast";
 import axiosInstance from "../lib/axiosInstance";
+import { FaUser } from "react-icons/fa6";
+import { IoMdCall } from "react-icons/io";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -152,7 +154,7 @@ const LoginPage = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                <MdOutlineMail className="text-xl cursor-pointer" />
+                <FaUser className="text-xl cursor-pointer" />
               </div>
               <div className="mt-6 relative flex items-center">
                 <input
@@ -179,7 +181,7 @@ const LoginPage = () => {
                     if (value.length <= 10) setPhone(value); // Limit length to 15 digits
                   }}
                 />
-                <MdOutlineMail className="text-xl cursor-pointer" />
+                <IoMdCall className="text-xl cursor-pointer" />
               </div>
 
               <div className="mt-6">
