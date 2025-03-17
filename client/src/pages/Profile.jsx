@@ -80,9 +80,9 @@ const Profile = ({ setIsProfileOpen }) => {
               }
               className="object-contain rounded-full"
             />
-            <label htmlFor="selectfile">
+           {currentChatingUser.type=="Group" &&  currentChatingUser.admin == authUser._id && <label htmlFor="selectfile">
               <GoPencil className="absolute cursor-pointer right-0 bottom-3 h-8 w-8 bg-primary text-primary-content rounded-full p-1.5" />
-            </label>
+            </label>}
             <input
               onChange={handleFileChange}
               type="file"

@@ -32,20 +32,11 @@ const StatusPreview = () => {
       {/* Main Image */}
       <div className="relative w-full">
         {/* Top toolbar */}
-        <div className="top-0 left-0 right-0 h-14 p-2 flex items-center justify-between">
+
+        <div className="flex items-center justify-end w-full gap-1 mt-2">
           <button className="btn btn-circle">
             <FaTimes onClick={() => setStatus([])} size={20} />
           </button>
-
-          <div className="flex items-center gap-1">
-            <button className="btn btn-circle">
-              <MdOutlineCrop size={20} />
-            </button>
-
-            <button className="btn btn-circle">
-              <RiText size={20} />
-            </button>
-          </div>
         </div>
 
         {/* middle Image Slider */}

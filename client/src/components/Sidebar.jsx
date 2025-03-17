@@ -225,7 +225,7 @@ const Sidebar = () => {
                           "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                         }
                         alt="user"
-                        className="object-cover"
+                        className="object-cover h-full w-full"
                       />
                     </div>
                     <div className="flex flex-col w-2/3 ml-3 gap-1">

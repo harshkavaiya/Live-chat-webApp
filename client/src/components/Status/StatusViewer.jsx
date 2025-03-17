@@ -11,7 +11,6 @@ const StatusViewer = ({
   isStatusViewer = false,
   isMyStatus = false,
 }) => {
-  console.log(isMyStatus);
   const videoRef = useRef();
   const [duration, setDuration] = useState(15);
   const { isProcess, setIsProcess, friendStatus, currentUserRunningStatus } =
@@ -19,7 +18,7 @@ const StatusViewer = ({
 
   useEffect(() => {
     if (!isStatusViewer) {
-      if (currentRunningStatus[currentStatusIndex].type == "video") {
+      if (currentRunningStatus[currentStatusIndex]?.type == "video") {
         videoRef.current.play();
       }
       const interval = setInterval(() => {
@@ -36,7 +35,7 @@ const StatusViewer = ({
         clearInterval(interval);
       };
     } else {
-      if (currentRunningStatus[currentStatusIndex].type == "video") {
+      if (currentRunningStatus[currentStatusIndex]?.type == "video") {
         videoRef.current.pause();
       }
     }
@@ -56,9 +55,9 @@ const StatusViewer = ({
   };
   return (
     <div className="relative h-full w-full">
-      {currentRunningStatus[currentStatusIndex].type == "video" ? (
+      {currentRunningStatus[currentStatusIndex]?.type == "video" ? (
         <video
-          src={currentRunningStatus[currentStatusIndex].url}
+          src={currentRunningStatus[currentStatusIndex]?.url}
           autoPlay
           ref={videoRef}
           onLoadedMetadataCapture={handleMetadataCapture}
@@ -66,8 +65,8 @@ const StatusViewer = ({
         />
       ) : (
         <img
-          src={currentRunningStatus
-            [currentStatusIndex].url || "/placeholder.svg"
+          src={
+            currentRunningStatus[currentStatusIndex]?.url || "/placeholder.svg"
           }
           alt="Status"
           className="w-full h-full object-contain"
@@ -90,11 +89,11 @@ const StatusViewer = ({
             </div>
             <div className="">
               <h2 className="font-semibold">
-                {currentRunningStatus[currentStatusIndex].user}
+                {currentRunningStatus[currentStatusIndex]?.user}
               </h2>
               <ReactTimeAgo
                 className="text-sm opacity-75"
-                date={currentRunningStatus[currentStatusIndex].time}
+                date={currentRunningStatus[currentStatusIndex]?.time}
               />
             </div>
           </div>

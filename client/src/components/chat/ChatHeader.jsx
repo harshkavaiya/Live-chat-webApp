@@ -34,7 +34,7 @@ const ChatHeader = ({ setIsProfileOpen }) => {
                     "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                   }
                   alt="user"
-                  className="object-cover"
+                  className="object-cover h-full w-full"
                 />
               </div>
             </div>
