@@ -36,7 +36,7 @@ const IncomingCallDialog = () => {
     answerCall();
     if (callType === "video") {
       document.getElementById("video_call_modal").showModal();
-    } else if (callType === "voice") {
+    } else {
       document.getElementById("audio_call_modal").showModal();
     }
   };

@@ -19,6 +19,11 @@ const useVideoCall = create((set, get) => ({
   callType: null,
   Ringing: false,
   userInfo: null,
+  callStartTime: null,
+
+  // Call start time set
+  setCallStartTime: () => set({ callStartTime: Date.now() }),
+
   setRinging: (Ringing) => {
     set({ Ringing });
   },
@@ -72,6 +77,7 @@ const useVideoCall = create((set, get) => ({
       clearTimeout(get().callTimeout); // Clear the timeout if the call is accepted
       const call = get().peer.call(data.from, get().localStream);
       set({ currentCall: call, isCallInProgress: true });
+      get().setCallStartTime();
 
       call.on("stream", (remoteStream) => {
         if (peerVideoRef) {
@@ -116,6 +122,7 @@ const useVideoCall = create((set, get) => ({
     });
 
     set({ currentCall: call, isCallInProgress: true });
+    get().setCallStartTime();
     socket.emit("acceptCall", { to: incomingCall, from: peer.id });
     clearTimeout(get().callTimeout);
   },
@@ -226,6 +233,7 @@ const useVideoCall = create((set, get) => ({
       currentCall: null,
       incomingCall: null,
       isCallInProgress: false,
+      callStartTime: null,
       peerVideoRef,
       myVideoRef,
     });
