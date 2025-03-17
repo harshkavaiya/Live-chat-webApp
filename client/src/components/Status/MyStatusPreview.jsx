@@ -117,13 +117,13 @@ const MyStatusPreview = () => {
 
             {/* Floating Action Buttons */}
             <div className="absolute bottom-6 right-6 flex flex-col items-center gap-4">
-              <button className="btn btn-circle bg-primary/60  hover:bg-primary h-12 w-12 shadow-lg transition-all duration-300 hover:scale-110">
-                <MdModeEdit className="h-6 w-6" />
-              </button>
-              <label htmlFor="selectfile" className="btn btn-circle bg-primary-content/80 hover:bg-primary-content h-16 w-16 shadow-lg transition-all duration-300 hover:scale-110">
+              <label
+                htmlFor="selectfile"
+                className="btn btn-primary h-16 w-16 shadow-lg transition-all duration-300 hover:scale-110"
+              >
                 <MdOutlinePhotoCamera className="h-8 w-8" />
 
-            <SelectFile/>
+                <SelectFile />
               </label>
             </div>
           </div>
