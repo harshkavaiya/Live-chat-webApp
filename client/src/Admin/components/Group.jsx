@@ -16,7 +16,7 @@ const Group = () => {
     isDeleting,
   } = useGroupStore();
 
-  const [deleteId, setdeleteId] = useState(null)
+  const [deleteId, setdeleteId] = useState(null);
   return (
     <div className="p-4 md:p-6">
       {currentSee ? (
@@ -90,34 +90,29 @@ const Group = () => {
                           </button>
                           <button
                             className="btn btn-error text-base-100 btn-sm"
-                            onClick={() =>
-                            {
-                              setdeleteId(group._id)
+                            onClick={() => {
+                              setdeleteId(group._id);
                               document
                                 .getElementById("message_delete_Confirm")
-                                .showModal()
-                            }
-                            }
+                                .showModal();
+                            }}
                           >
                             <FaTrash />
                           </button>
                         </div>
                       </div>
-                     
                     </div>
                   ))}
             </div>
           </div>
           <DeleteConfirm
-                        title={`${deleteId}`}
-                        isDeleting={isDeleting}
-                        deleteData={() => {
-                          deleteGroup(deleteId);
-                          document
-                            .getElementById("message_delete_Confirm")
-                            .close();
-                        }}
-                      />
+            title={`Group`}
+            isDeleting={isDeleting}
+            deleteData={() => {
+              deleteGroup(deleteId);
+              document.getElementById("message_delete_Confirm").close();
+            }}
+          />
         </>
       )}
     </div>

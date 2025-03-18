@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import Home from "./Home";
-import LoginPage from "../pages/Login";
+import AuthPage from "../pages/AuthPage";
 import { ThemeContext } from "../GlobalStates/ThemeContext";
 import useAuthStore from "../store/useAuthStore";
 
@@ -32,7 +32,7 @@ const Layout = () => {
           },
         }}
       />
-      {authUser != null ? <Home /> : <LoginPage />}
+      {authUser != null ? <Home /> : <AuthPage />}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import {  useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import useMediaStore from "../store/useMediaStore";
 import useMessageStore from "../store/useMessageStore";
 import useFunctionStore from "../store/useFuncationStore";
@@ -25,6 +25,7 @@ const ChatPage = () => {
     locationClose,
     locationShare,
     galleryData,
+    handleSelection,
   } = useFunctionStore();
   const { setMessages, messages, currentChatingUser } = useMessageStore();
   const { authUser } = useAuthStore();
@@ -50,6 +51,11 @@ const ChatPage = () => {
     }
   }, [data, setMessages]);
 
+  useEffect(() => {
+    handleSelection(false);
+    setIsProfileOpen(false)
+  }, [currentChatingUser]);
+
   return (
     <>
       <div className="h-full">
@@ -66,10 +72,7 @@ const ChatPage = () => {
             </div>
             {/* Chat Messages */}
             <div className="w-full h-[80%]">
-              <ChatMessage
-                isLoading={isLoading}
-               
-              />
+              <ChatMessage isLoading={isLoading} />
             </div>
             {/* Input Area */}
             <div className="h-[10%] w-full ">
