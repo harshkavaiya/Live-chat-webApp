@@ -20,7 +20,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-primary/10 text-black font-[sans-serif] p-4">
+    <div
+      data-theme="light"
+      className="w-full h-screen flex justify-center items-center bg-primary/10 text-black font-[sans-serif] p-4"
+    >
       <div className="max-w-md w-full mx-auto">
         <div className="bg-opacity-70 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-3px_rgba(6,81,237,0.3)]">
           <div className="mb-12">
