@@ -5,7 +5,7 @@ import useVideoCall from "../../store/useVideoCall";
 import toast from "react-hot-toast";
 import useAuthStore from "../../store/useAuthStore";
 
-const AudioCall = ({ name = "Hardik" }) => {
+const AudioCall = () => {
   const caller = [1, 2];
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0); // Time tracking state
@@ -14,6 +14,8 @@ const AudioCall = ({ name = "Hardik" }) => {
     endCall,
     isCallInProgress,
     incomingCall,
+    Username,
+    Userphoto,
     callStartTime,
   } = useVideoCall.getState();
   const { socket } = useAuthStore();
@@ -100,13 +102,17 @@ const AudioCall = ({ name = "Hardik" }) => {
             <div className="w-full flex flex-col items-center justify-center gap-2 sm:gap-0 sm:justify-evenly">
               <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black rounded-full overflow-hidden">
                 <img
-                  src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?t=st=1735533673~exp=1735537273~hmac=84847f1fa605ea9435463f9b4ef4bb57da7a30b64601b1076f57fef7e0e73d85&w=360"
-                  alt=""
+                  src={
+                    index === 1
+                      ? Userphoto && Userphoto
+                      : "https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?t=st=1735533673~exp=1735537273~hmac=84847f1fa605ea9435463f9b4ef4bb57da7a30b64601b1076f57fef7e0e73d85&w=360"
+                  }
+                  alt="profile_pic"
                   className="object-cover w-full h-full object-center"
                 />
               </div>
               <h3 className="sm:text-lg sm:font-semibold capitalize">
-                {index === 0 ? "hardik" : name}
+                {index === 0 ? "You" : Username}
               </h3>
 
               {/* Timer Show section */}

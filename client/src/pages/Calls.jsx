@@ -9,14 +9,14 @@ import useVideoCall from "../store/useVideoCall";
 import axiosInstance from "../lib/axiosInstance";
 import useAuthStore from "../store/useAuthStore";
 import { MdAddIcCall } from "react-icons/md";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useHomePageNavi from "../store/useHomePageNavi";
 import NewCallDialog from "../components/PopUpDialog/NewCallDialog";
 import useContactList from "../store/useContactList";
 
 const Calls = () => {
   const { authUser } = useAuthStore();
-  const { startCall } = useVideoCall();
+  const { startCall, setUserDetail } = useVideoCall();
   const { activePage } = useHomePageNavi.getState();
 
   const { data, isLoading, refetch } = useQuery({
@@ -27,6 +27,7 @@ const Calls = () => {
     },
   });
   const { setDialogOpen } = useContactList();
+
   const Opendialog = () => {
     setDialogOpen(true);
 
@@ -85,7 +86,7 @@ const Calls = () => {
                 </span>
                 <input
                   type="search"
-                  // value={searchQuery}
+                  // value={}
                   // onChange={handleSearchChange}
                   className="input input-primary h-9 w-full pl-10"
                   placeholder="Search messages..."
@@ -107,8 +108,10 @@ const Calls = () => {
                       <div className="bg-base-300 grid w-14 h-14 border-2 border-primary place-items-center rounded-full overflow-hidden">
                         <img
                           src={
-                            callerId.profilePic ||
-                            "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                            authUser._id.toString() === callerId._id.toString()
+                              ? receiverId.profilePic
+                              : callerId.profilePic ||
+                                "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
                           }
                           alt="user"
                           className="object-cover object-center w-full h-full"
@@ -154,12 +157,23 @@ const Calls = () => {
                           size={20}
                           className="cursor-pointer"
                           onClick={() => {
+                            setUserDetail(
+                              authUser._id.toString() ===
+                                callerId._id.toString()
+                                ? receiverId.fullname
+                                : callerId.fullname,
+                              authUser._id.toString() ===
+                                callerId._id.toString()
+                                ? receiverId.profilePic
+                                : callerId.profilePic
+                            );
                             startCall(
                               callerId._id == authUser._id
                                 ? receiverId._id
                                 : callerId._id,
                               callType
                             );
+
                             document
                               .getElementById("video_call_modal")
                               .showModal();
@@ -170,6 +184,16 @@ const Calls = () => {
                           size={20}
                           className="cursor-pointer"
                           onClick={() => {
+                            setUserDetail(
+                              authUser._id.toString() ===
+                                callerId._id.toString()
+                                ? receiverId.fullname
+                                : callerId.fullname,
+                              authUser._id.toString() ===
+                                callerId._id.toString()
+                                ? receiverId.profilePic
+                                : callerId.profilePic
+                            );
                             startCall(
                               callerId._id == authUser._id
                                 ? receiverId._id
