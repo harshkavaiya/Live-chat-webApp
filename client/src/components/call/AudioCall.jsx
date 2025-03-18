@@ -102,12 +102,14 @@ const AudioCall = ({ name = "Hardik" }) => {
                 <img
                   src="https://img.freepik.com/free-vector/smiling-young-man-illustration_1308-174669.jpg?t=st=1735533673~exp=1735537273~hmac=84847f1fa605ea9435463f9b4ef4bb57da7a30b64601b1076f57fef7e0e73d85&w=360"
                   alt=""
-                  className="object-cover"
+                  className="object-cover w-full h-full object-center"
                 />
               </div>
-              <h3 className="sm:text-lg sm:font-semibold capitalize">{name}</h3>
+              <h3 className="sm:text-lg sm:font-semibold capitalize">
+                {index === 0 ? "hardik" : name}
+              </h3>
 
-              {/* Timer Show karne wala section */}
+              {/* Timer Show section */}
               <div
                 className={`justify-center p-2 rounded-full flex items-center bg-base-300 absolute top-2 right-2 sm:top-5 sm:right-5 ${
                   index === 1 ? "hidden" : "block"
