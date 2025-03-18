@@ -1,5 +1,4 @@
 import { CiSearch } from "react-icons/ci";
-import { FaAngleDown, FaAngleRight } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import { GoPencil } from "react-icons/go";
 import { useEffect, useState } from "react";
@@ -172,16 +171,7 @@ const Sidebar = () => {
             >
               Groups
             </div>
-            {/* <div
-              className={`badge badge-lg cursor-pointer border-none ${
-                activeTab == "unread"
-                  ? "badge-primary"
-                  : "bg-base-100/40 text-opacity-70"
-              }`}
-              onClick={() => setActiveTab("unread")}
-            >
-              Unread
-            </div> */}
+        
           </div>
         </div>
 
@@ -255,11 +245,6 @@ const Sidebar = () => {
                         >
                           {i.unseen || ""}
                         </div>
-
-                        <FaAngleDown
-                          className="cursor-pointer  group-hover:block hidden"
-                          size={20}
-                        />
                       </div>
                     </div>
                   </div>
