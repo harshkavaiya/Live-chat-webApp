@@ -61,18 +61,37 @@ io.on("connection", (socket) => {
 
     const receiverSocketId = getUserSocketId(data.to); // Find socket ID for 'to' Peer ID
 
-    if (receiverSocketId) {
-      const user = await Users.findById(data.to).select(
-        "fullname profilePic contacts"
-      );
-      if (user) {
-        user.contacts = user.contacts.map((contact) => {
-          if (contact.userId == data.from) {
-            user.fullname = contact.savedName;
-          }
-        });
-      }
-      const userdata = { fullname: user.fullname, photo: user.profilePic };
+    const callerUser = await Users.findById(data.from).select(
+      "fullname profilePic"
+    );
+
+    if (callerUser) {
+      // if contacts custom use saved name
+      const receiverUser = await Users.findById(data.to).select("contacts");
+      receiverUser.contacts.forEach((contact) => {
+        if (contact.userId == data.from) {
+          callerUser.fullname = contact.savedName;
+        }
+      });
+
+      // Correct data send to receiver
+      const userdata = {
+        fullname: callerUser.fullname,
+        photo: callerUser.profilePic,
+      };
+
+      // if (receiverSocketId) {
+      //   const user = await Users.findById(data.to).select(
+      //     "fullname profilePic contacts"
+      //   );
+      //   if (user) {
+      //     user.contacts = user.contacts.map((contact) => {
+      //       if (contact.userId == data.from) {
+      //         user.fullname = contact.savedName;
+      //       }
+      //     });
+      //   }
+      //   const userdata = { fullname: user.fullname, photo: user.profilePic };
       io.to(receiverSocketId).emit("callOffer", {
         from: data.from,
         callType: data.callType,

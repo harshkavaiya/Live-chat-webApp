@@ -20,6 +20,13 @@ const useVideoCall = create((set, get) => ({
   Ringing: false,
   userInfo: null,
   callStartTime: null,
+  Username: null,
+  Userphoto: null,
+
+  setUserDetail: (Username, Userphoto) => {
+    set({ Userphoto, Username });
+    console.log("user data is --->>", Userphoto, Username);
+  },
 
   // Call start time set
   setCallStartTime: () => set({ callStartTime: Date.now() }),
@@ -163,6 +170,7 @@ const useVideoCall = create((set, get) => ({
   setcallInfo: (data) => {
     // console.log(data);
     set({ userInfo: data });
+    set({ Username: data.fullname, Userphoto: data.photo });
     console.log(get().userInfo);
   },
 

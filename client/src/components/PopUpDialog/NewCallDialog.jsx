@@ -10,7 +10,7 @@ import VideoCall from "../call/VideoCall";
 import AudioCall from "../call/AudioCall";
 import useVideoCall from "../../store/useVideoCall";
 
-const NewCallDialog = () => {
+const NewCallDialog = ({ Username, setUsername }) => {
   const { getContactsList, isOpenDialog, setDialogOpen, contacts, isloading } =
     useContactList();
   const { searchQuery, filteredData, handleSearchChange } = useSearch(contacts);
@@ -27,8 +27,8 @@ const NewCallDialog = () => {
   const { startCall } = useVideoCall();
   return (
     <>
-      <VideoCall />
-      <AudioCall />
+      <VideoCall Username={Username} />
+      <AudioCall Username={Username} />
       <dialog id="newCall" className="modal z-0">
         <div className="sm:modal-box w-full h-full bg-base-100 relative gap-2 overflow-hidden sm:max-w-xl p-5 flex flex-col">
           {/* header */}

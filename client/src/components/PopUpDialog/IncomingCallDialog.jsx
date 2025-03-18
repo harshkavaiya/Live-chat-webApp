@@ -48,9 +48,9 @@ const IncomingCallDialog = () => {
   return (
     <>
       {incomingCall && callType === "video" ? (
-        <VideoCall name={"harsh"} />
+        <VideoCall Username={userInfo.fullname} />
       ) : (
-        <AudioCall name={"hk"} />
+        <AudioCall Username={userInfo.fullname} photo={userInfo.photo}/>
       )}
       <dialog id="incomingDialog" ref={dialogRef} className="modal">
         <div className="sm:modal-box w-full select-none h-full bg-base-100 relative flex flex-col items-center justify-center gap-6 sm:max-w-lg">

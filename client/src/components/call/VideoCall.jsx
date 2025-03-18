@@ -5,7 +5,7 @@ import { GoDotFill } from "react-icons/go";
 import useVideoCall from "../../store/useVideoCall";
 import toast from "react-hot-toast";
 
-const VideoCall = ({ name = "Hardik" }) => {
+const VideoCall = () => {
   const {
     initializeVideoCall,
     localStream,
@@ -13,6 +13,7 @@ const VideoCall = ({ name = "Hardik" }) => {
     endCall,
     Ringing,
     setRinging,
+    Username,
   } = useVideoCall();
   const { socket } = useAuthStore();
 
@@ -62,7 +63,7 @@ const VideoCall = ({ name = "Hardik" }) => {
         {/* Video Screen */}
         <div className="w-full h-full sm:h-screen flex sm:gap-1">
           <div className="w-auto sm:h-10 h-7 bg-base-100 z-[11] shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
-            <h3 className="font-bold sm:text-base text-xs">{name}</h3>
+            <h3 className="font-bold sm:text-base text-xs">{"You"}</h3>
           </div>
           {Ringing && (
             <div className="flex items-center justify-center absolute z-20 top-4 left-1/2 transform -translate-x-1/2 gap-2 bg-primary bg-opacity-20 shadow-lg rounded-btn w-auto h-10 p-3">
@@ -91,7 +92,13 @@ const VideoCall = ({ name = "Hardik" }) => {
                 : "w-full h-full scale-100"
             }  sm:rounded-r-box object-cover`}
           />
-
+          <div
+            className={`w-auto sm:h-10 h-7 bg-base-100 z-[11] shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 right-7 ${
+              !isCallInProgress ? "hidden" : "sm:block hidden"
+            } `}
+          >
+            <h3 className="font-bold sm:text-base text-xs">{Username}</h3>
+          </div>
           <video
             // Video 2
             ref={peerVideoRef}
