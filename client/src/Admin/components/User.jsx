@@ -4,6 +4,7 @@ import SignleUser from "./SignleUser";
 import DeleteConfirm from "./DeleteConfirm";
 import { BiTrashAlt } from "react-icons/bi";
 import UserTable from "../skeleton/userTable";
+import { useState } from "react";
 
 const User = () => {
   const {
@@ -16,6 +17,7 @@ const User = () => {
     fetchUsers,
   } = useUsersStore();
 
+  const [deleteData, setDeleteData] = useState(null);
   return (
     <div className="px-5 py-6">
       {currentSee ? (
@@ -93,26 +95,17 @@ const User = () => {
                                 className="text-sky-600 cursor-pointer"
                               />
                               <BiTrashAlt
-                                onClick={() =>
+                                onClick={() => {
                                   document
                                     .getElementById("message_delete_Confirm")
-                                    .showModal()
-                                }
+                                    .showModal();
+                                  setDeleteData(item?._id);
+                                }}
                                 size={20}
                                 className="text-error cursor-pointer"
                               />
                             </div>
                           </th>
-                          <DeleteConfirm
-                            title={"User"}
-                            isDeleting={isDeleting}
-                            deleteData={() => {
-                              deleteUser(item._id);
-                              document
-                                .getElementById("message_delete_Confirm")
-                                .close();
-                            }}
-                          />
                         </tr>
                       );
                     })}
@@ -121,6 +114,18 @@ const User = () => {
             </div>
           </div>
         </>
+      )}
+
+      {deleteUser && (
+        <DeleteConfirm
+          title={"User"}
+          isDeleting={isDeleting}
+          deleteData={() => {
+            deleteUser(deleteData);
+            setDeleteData(null);
+            document.getElementById("message_delete_Confirm").close();
+          }}
+        />
       )}
     </div>
   );

@@ -77,13 +77,17 @@ const Sidebar = () => {
 
         <div className="absolute bottom-0 w-full border-t p-4">
           <div className="flex items-center gap-4">
-            <div className="avatar">
-              <FaUser size={24} />
-            </div>
-            <div>
-              <div className="font-bold">Admin User</div>
-              <div className="text-sm opacity-70">admin@example.com</div>
-            </div>
+            {!collapsed && (
+              <div className="avatar">
+                <FaUser size={24} />
+              </div>
+            )}
+            {!collapsed && (
+              <div>
+                <div className="font-bold">Admin User</div>
+                <div className="text-sm opacity-70">admin@example.com</div>
+              </div>
+            )}
             <button
               onClick={logout}
               className="btn btn-ghost btn-circle ml-auto"
