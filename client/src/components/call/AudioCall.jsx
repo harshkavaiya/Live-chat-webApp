@@ -8,54 +8,57 @@ import useAuthStore from "../../store/useAuthStore";
 const AudioCall = ({ name = "Hardik" }) => {
   const caller = [1, 2];
   const [isAudioActive, setIsAudioActive] = useState(false);
-  const [callDuration, setCallDuration] = useState(0); // Time tracking ke liye state
-  const { initializeVideoCall, endCall, isCallInProgress } =
-    useVideoCall.getState();
+  const [callDuration, setCallDuration] = useState(0); // Time tracking state
+  const {
+    initializeVideoCall,
+    endCall,
+    isCallInProgress,
+    incomingCall,
+    callStartTime,
+  } = useVideoCall.getState();
   const { socket } = useAuthStore();
 
   const myVideoRef = useRef(null); // Local audio
   const peerVideoRef = useRef(null);
-  const timerRef = useRef(null); // Timer ke liye reference
+  const timerRef = useRef(null); // Timer reference
 
   const handleAudioActivity = (isActive) => {
     setIsAudioActive(isActive);
   };
 
-  // Timer ko start karne wala function
-  const startCallTimer = () => {
-    timerRef.current = setInterval(() => {
-      setCallDuration((prev) => prev + 1);
-    }, 1000); // Har second me increment karega
-  };
+  // Timer calculation based on shared callStartTime
+  useEffect(() => {
+    if (callStartTime) {
+      timerRef.current = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+        setCallDuration(elapsed);
+      }, 1000);
+    } else {
+      clearInterval(timerRef.current);
+      setCallDuration(0);
+    }
 
-  // Timer ko reset karne wala function
-  const stopCallTimer = () => {
-    clearInterval(timerRef.current);
-    setCallDuration(0);
-  };
+    return () => clearInterval(timerRef.current);
+  }, [callStartTime]);
 
-  // Seconds ko HH:MM:SS format me convert karne wala function
+  // Timer ko format karna (HH:MM:SS)
   const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    const remainingSeconds = seconds % 60;
-    return `${hours > 0 ? `${hours}:` : ""}${String(remainingMinutes).padStart(
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours > 0 ? `${hours}:` : ""}${String(minutes).padStart(
       2,
       "0"
-    )}:${String(remainingSeconds).padStart(2, "0")}`;
+    )}:${String(secs).padStart(2, "0")}`;
   };
 
   useEffect(() => {
     if (myVideoRef.current) {
       initializeVideoCall(myVideoRef.current, peerVideoRef.current);
       console.log("Initialized with audio refs");
-      startCallTimer(); // Call start hote hi timer start
     } else {
       console.error("myVideoRef is null during initialization");
     }
-
-    return () => stopCallTimer(); // Component unmount hone pe timer stop
   }, []);
 
   useEffect(() => {
@@ -64,7 +67,6 @@ const AudioCall = ({ name = "Hardik" }) => {
       socket.on("callRejected", (data) => {
         document.getElementById("audio_call_modal").close();
         endCall();
-        stopCallTimer();
         toast.error(`Call rejected by ${data.from}`);
       });
 
@@ -73,7 +75,6 @@ const AudioCall = ({ name = "Hardik" }) => {
         console.log("Call ended by:", data.from);
         document.getElementById("audio_call_modal").close();
         endCall();
-        stopCallTimer();
         console.log("cleaning resources");
       });
 
