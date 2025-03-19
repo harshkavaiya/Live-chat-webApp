@@ -30,9 +30,24 @@ export const getUserSocketId = (data) => {
   return onlineUser[data];
 };
 
-const emitOnlineUsers = () => {
-  console.log("Online Users", onlineUser);
-  const onlineUsersList = Object.keys(onlineUser);
+const emitOnlineUsers = async () => {
+  const onlineUsersList = [];
+
+  for (const userId of Object.keys(onlineUser)) {
+    try {
+      const user = await Users.findById(userId);
+      if (user) {
+        onlineUsersList.push({
+          id: userId,
+          name: user.fullname,
+          profilePhoto: user.profilePic,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }
+
   io.emit("onlineUsers", onlineUsersList);
 };
 

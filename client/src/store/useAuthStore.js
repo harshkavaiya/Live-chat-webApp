@@ -35,7 +35,7 @@ const useAuthStore = create((set, get) => ({
     if (socket && authUser) {
       socket.on("onlineUsers", (onlineUsersList) => {
         const filteredUsers = onlineUsersList.filter(
-          (userId) => userId !== authUser._id
+          (userId) => userId.id !== authUser._id
         );
         set({ onlineUsers: filteredUsers });
       });
