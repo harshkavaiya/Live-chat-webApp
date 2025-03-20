@@ -12,6 +12,13 @@ const QRScanner = ({ open, setOpen }) => {
   const { authUser } = useAuthStore();
   const { setMessagerUser, messagerUser, setCurrentChatingUser } =
     useMessageStore();
+
+  const CloseDilog = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+    }
+    setOpen(false);
+  };
   const joinGroup = async (inviteLink) => {
     try {
       const res = await axiosInstance.post(`group/join/${inviteLink}`, {
@@ -36,13 +43,17 @@ const QRScanner = ({ open, setOpen }) => {
       toast.error("Internal Server Error");
     } finally {
       setOpen(false);
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop();
+      }
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
       document.getElementById("Qr_scanner").close();
     }
   };
 
   useEffect(() => {
-    // Initialize QR scanner when component mounts
-
     if (!open) return;
 
     if (!videoRef?.current) return;
@@ -51,16 +62,28 @@ const QRScanner = ({ open, setOpen }) => {
       console.log("QR Result", result);
 
       if (result) {
-        joinGroup(result); // Call the joinGroup function with the scanned result (invite link)
-        qrScannerRef.current.stop(); // Stop the scanner after successful scan
+        joinGroup(result);
+        qrScannerRef.current.stop();
       }
     });
 
     qrScannerRef.current.start();
 
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        CloseDilog();
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
     return () => {
-      qrScannerRef.current.stop();
-      qrScannerRef.current.destroy();
+      window.removeEventListener("keydown", handleEscape);
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop();
+        qrScannerRef.current.destroy();
+      }
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
     };
   }, [open]);
 
@@ -83,7 +106,7 @@ const QRScanner = ({ open, setOpen }) => {
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button onClick={CloseDilog}>close</button>
       </form>
     </dialog>
   );
