@@ -6,6 +6,7 @@ import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { MdOutlineMail } from "react-icons/md";
 import axiosInstance from "../../lib/axiosInstance";
 import useAuthStore from "../../store/useAuthStore";
+import { isValidEmail } from "../../function/function";
 
 const Register = ({
   password,
@@ -14,7 +15,9 @@ const Register = ({
   showPassword,
   phone,
   setPhone,
-  setPage,email,setEmail
+  setPage,
+  email,
+  setEmail,
 }) => {
   const [confirmpassword, setConfirmpassword] = useState("");
   const [name, setName] = useState("");
@@ -25,11 +28,12 @@ const Register = ({
     if (authUser) return;
     if (!name) return toast.error("Please Enter Name");
     if (!email) return toast.error("Please Enter Email");
+    if (!isValidEmail(email)) return toast.error("Enter Valid Email");
     if (!phone) return toast.error("Please Enter Phone no");
 
     if (phone.length != 10) return toast.error("Enter Valid Mobile Number");
     if (!password) return toast.error("Please Enter Password");
-    if (password.length > 6)
+    if (password.length < 6)
       return toast.error("Password Length Must be 6 Digit");
     if (password !== confirmpassword) return toast.error("Password not Match");
     let res = await axiosInstance.post("/auth/signup", {

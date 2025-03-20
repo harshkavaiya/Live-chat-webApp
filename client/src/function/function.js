@@ -10,3 +10,5 @@ export const MemeberProfilePic = (data, id) => {
   const member = data.find((m) => m._id === id);
   return member?.profilePic || null;
 };
+
+export const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
