@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MdOutlineMail } from "react-icons/md";
 import axiosInstance from "../../lib/axiosInstance";
 import toast from "react-hot-toast";
+import { isValidEmail } from "../../function/function";
 
 const Forget = ({ setPage, email, setEmail }) => {
   const [verified, setVerified] = useState(false);
@@ -10,6 +11,7 @@ const Forget = ({ setPage, email, setEmail }) => {
 
   const handleForget = async () => {
     setIsLoading(true);
+    if (!isValidEmail(email)) return toast.error("Enter Valid Email");
     let res = await axiosInstance.post(`/auth/forget`, { email });
     setIsLoading(false);
     if (res.data.success) {
@@ -28,7 +30,7 @@ const Forget = ({ setPage, email, setEmail }) => {
     if (res.data.success) {
       toast.success("Verified");
       setOtp("");
-      setEmail(email)
+      setEmail(email);
       setPage("NewPassword");
     } else {
       toast.error(res.data.message);
@@ -95,7 +97,7 @@ const Forget = ({ setPage, email, setEmail }) => {
                 Forget
               </button>
               <p className="text-gray-800 text-sm text-center mt-6">
-                You have an account{" "}?
+                You have an account ?
                 <button
                   onClick={() => setPage("Login")}
                   className="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap"
