@@ -23,7 +23,6 @@ const VideoCall = () => {
   useEffect(() => {
     if (myVideoRef.current) {
       initializeVideoCall(myVideoRef.current, peerVideoRef.current);
-      console.log("Initialized with video refs");
     } else {
       console.error("myVideoRef is null during initialization");
     }
@@ -61,12 +60,12 @@ const VideoCall = () => {
     <dialog id="video_call_modal" className={`modal overflow-hidden`}>
       <div className={`bg-base-300 relative overflow-hidden w-full h-full`}>
         {/* Video Screen */}
-        <div className="w-full h-full sm:h-screen flex sm:gap-1">
-          <div className="w-auto sm:h-10 h-7 bg-base-100 z-[11] shadow-lg rounded-btn p-3 flex items-center justify-center absolute top-4 left-4">
-            <h3 className="font-bold sm:text-base text-xs">{"You"}</h3>
+        <div className="flex h-full w-full sm:gap-1 sm:h-screen">
+          <div className="flex bg-base-100 h-7 justify-center p-3 rounded-btn shadow-lg w-auto absolute items-center left-4 sm:h-10 top-4 z-[11]">
+            <h3 className="text-xs font-bold sm:text-base">{"You"}</h3>
           </div>
           {Ringing && (
-            <div className="flex items-center justify-center absolute z-20 top-4 left-1/2 transform -translate-x-1/2 gap-2 bg-primary bg-opacity-20 shadow-lg rounded-btn w-auto h-10 p-3">
+            <div className="flex bg-opacity-20 bg-primary h-10 justify-center p-3 rounded-btn shadow-lg w-auto -translate-x-1/2 absolute gap-2 items-center left-1/2 top-4 transform z-20">
               {Array.from({ length: 3 }).map((_, i) => (
                 <GoDotFill
                   key={i}
@@ -97,7 +96,7 @@ const VideoCall = () => {
               !isCallInProgress ? "hidden" : "sm:block hidden"
             } `}
           >
-            <h3 className="font-bold sm:text-base text-xs">{Username}</h3>
+            <h3 className="text-xs font-bold sm:text-base">{Username}</h3>
           </div>
           <video
             // Video 2

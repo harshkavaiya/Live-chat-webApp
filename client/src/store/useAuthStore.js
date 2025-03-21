@@ -18,11 +18,11 @@ const useAuthStore = create((set, get) => ({
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      console.log("Loaded user from session storage:", parsedUser);
+      // console.log("Loaded user from session storage:", parsedUser);
       set({ authUser: parsedUser, isLogin: true }); // Set user from session storage
       get().connectSocket(); // Initialize socket
     } else {
-      console.log("No user found in session storage.");
+      // console.log("No user found in session storage.");
       set({ authUser: null, isLogin: false }); // Clear state if no user in session
     }
   },

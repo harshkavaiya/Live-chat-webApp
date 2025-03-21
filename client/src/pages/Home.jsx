@@ -83,7 +83,7 @@ const Home = () => {
     // Handle incoming call offers
     if (socket) {
       const callofferHanlder = (data) => {
-        console.log("home call data->>", data);
+        // console.log("home call data->>", data);
         setcallInfo(data.userdata);
         incomingCallAnswere(data.from, data.callType);
       };

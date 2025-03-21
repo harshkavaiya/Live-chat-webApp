@@ -25,7 +25,7 @@ const useVideoCall = create((set, get) => ({
 
   setUserDetail: (Username, Userphoto) => {
     set({ Userphoto, Username });
-    console.log("user data is --->>", Userphoto, Username);
+    // console.log("user data is --->>", Userphoto, Username);
   },
 
   // Call start time set
@@ -171,7 +171,7 @@ const useVideoCall = create((set, get) => ({
     // console.log(data);
     set({ userInfo: data });
     set({ Username: data.fullname, Userphoto: data.photo });
-    console.log(get().userInfo);
+    // console.log(get().userInfo);
   },
 
   startCall: async (remotePeerId, callType) => {

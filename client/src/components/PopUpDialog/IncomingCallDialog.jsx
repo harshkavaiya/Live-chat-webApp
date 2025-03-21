@@ -16,9 +16,9 @@ const IncomingCallDialog = () => {
   const dialogRef = useRef(null);
 
   useEffect(() => {
-    console.log("user data is --->>", userInfo);
+    // console.log("user data is --->>", userInfo);
     if (incomingCall) {
-      console.log("IncomingCallDialog: Opening dialog for", incomingCall);
+      console.log("IncomingCall coming");
       if (dialogRef.current) {
         dialogRef.current.showModal();
       }
@@ -50,7 +50,7 @@ const IncomingCallDialog = () => {
       {incomingCall && callType === "video" ? (
         <VideoCall Username={userInfo.fullname} />
       ) : (
-        <AudioCall Username={userInfo.fullname} photo={userInfo.photo}/>
+        <AudioCall Username={userInfo.fullname} photo={userInfo.photo} />
       )}
       <dialog id="incomingDialog" ref={dialogRef} className="modal">
         <div className="sm:modal-box w-full select-none h-full bg-base-100 relative flex flex-col items-center justify-center gap-6 sm:max-w-lg">
