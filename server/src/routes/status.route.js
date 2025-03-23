@@ -27,7 +27,7 @@ cron.schedule("*/10 * * * * *", async () => {
       let length = sts.length;
       // Filter out expired status entries
       sts.status = sts.status.filter((element) => {
-        return element.time >= new Date(Date.now() - 10 * 1000);
+        return element.time >= new Date(Date.now() - 24 * 60 * 1000);
       });
 
       if (sts.status.length === 0) {

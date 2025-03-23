@@ -23,7 +23,10 @@ const WhoSeenStatus = ({ viewers, close }) => {
               <div key={index} className="flex items-center py-3">
                 <img
                   className="w-12 h-12 rounded-full mr-4"
-                  src={viewer.profile}
+                  src={
+                    viewer.profile ||
+                    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                  }
                   alt={`${viewer.name}'s profile`} // Add alt text for accessibility
                 />
                 <div>

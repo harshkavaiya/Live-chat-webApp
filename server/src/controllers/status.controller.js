@@ -70,13 +70,14 @@ export const handleStatusSeen = async (req, res) => {
   const { index, userId, userName, time } = req.body;
   const { id } = req.params;
 
+  let findPic = await Users.findById(userId).select("profilePic");
+  console.log(findPic);
   try {
     // Initialize the new seen user object
     const newSeenUser = {
       _id: userId,
       name: userName,
-      profile:
-        "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg",
+      profile: findPic.profilePic,
       time,
     };
 

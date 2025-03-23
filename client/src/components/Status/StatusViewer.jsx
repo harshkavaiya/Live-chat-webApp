@@ -66,7 +66,7 @@ const StatusViewer = ({
       ) : (
         <img
           src={
-            currentRunningStatus[currentStatusIndex]?.url || "/placeholder.svg"
+            currentRunningStatus[currentStatusIndex]?.url ||  "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
           }
           alt="Status"
           className="w-full h-full object-contain"
@@ -79,7 +79,10 @@ const StatusViewer = ({
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
               {friendStatus[currentUserRunningStatus]?.profile ? (
                 <img
-                  src={friendStatus[currentUserRunningStatus]?.profile}
+                  src={
+                    friendStatus[currentUserRunningStatus]?.profile ||
+                    "https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                  }
                   alt="uesr"
                   className="text-gray-600"
                 />

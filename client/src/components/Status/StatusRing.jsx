@@ -57,7 +57,12 @@ const StatusRing = ({ imageSrc, totalStatuses, viewedStatuses, type }) => {
   return (
     <div className="relative" style={{ width: size, height: size }}>
       {/* SVG for status segments */}
-      <svg width={size} height={size} className="absolute rotate-180">
+      <svg
+        width={size}
+        key={size}
+        height={size}
+        className="absolute rotate-180"
+      >
         {segments}
       </svg>
 

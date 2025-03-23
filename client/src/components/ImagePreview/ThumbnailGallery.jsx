@@ -47,21 +47,6 @@ const ThumbnailGallery = () => {
               );
             })}
           </Swiper>
-          {/* {chatUserMedia.map((image, index) => (
-          <div
-            key={index}
-            className={`w-16 h-16 flex-shrink-0 cursor-pointer transition-all ${
-              currentIndex === index ? "border-2 border-blue-500" : "opacity-70"
-            }`}
-            onClick={() => onSelect(index)}
-          >
-            <img
-              src={image}
-              alt={`Thumbnail ${index + 1}`}
-              className="w-full h-full object-cover rounded"
-            />
-          </div>
-        ))} */}
         </div>
       )}
     </div>

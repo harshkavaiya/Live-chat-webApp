@@ -81,8 +81,18 @@ const useStatusStore = create((set, get) => ({
     }
   },
   handleUserStatus: async (data) => {
-    const { name, status, id } = data;
+    const { status, id } = data;
     const { friendStatus } = get();
+    let name = data.name;
+    const { friends } = useAuthStore.getState();
+
+    if (friends) {
+      friends.map((item) => {
+        if (item._id == id) {
+          name = item.savedName;
+        }
+      });
+    }
 
     let isNewStatus = false;
     if (friendStatus.length) {

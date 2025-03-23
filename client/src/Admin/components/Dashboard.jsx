@@ -96,7 +96,10 @@ function ActivityRow({ name, location, activity, date, status }) {
         <div className="flex items-center space-x-3">
           <div className="avatar">
             <div className="mask mask-squircle w-12 h-12">
-              <img src="/placeholder.svg?height=48&width=48" alt="Avatar" />
+              <img
+                src="https://img.freepik.com/free-vector/young-man-with-glasses-illustration_1308-174706.jpg"
+                alt="Avatar"
+              />
             </div>
           </div>
           <div>
