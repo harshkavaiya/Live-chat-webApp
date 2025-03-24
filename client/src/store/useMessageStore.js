@@ -24,7 +24,8 @@ const useMessageStore = create((set, get) => ({
     useMediaStore.getState().fetchChatUserMedia(get().messages);
   },
   sendMessage: async (receiver, data, notification) => {
-    const { messagerUser, notificationSound, messages } = get();
+    const { messagerUser, currentChatingUser, notificationSound, messages } =
+      get();
 
     const { _id } = useAuthStore.getState().authUser;
     let res = await axiosInstance.post(`/message/send/${receiver._id}`, {
@@ -37,7 +38,10 @@ const useMessageStore = create((set, get) => ({
         ) || [],
     });
     notificationSound();
-    set({ messages: [...messages, res.data] });
+
+    if (currentChatingUser._id == receiver._id) {
+      set({ messages: [...messages, res.data] });
+    }
     let isExits = messagerUser.some((user) => user._id == receiver._id);
 
     let updateData = messagerUser;
