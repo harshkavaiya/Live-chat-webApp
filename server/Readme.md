@@ -1,3 +1,0 @@
-# .Env file includes : 👇
-
-pending....
