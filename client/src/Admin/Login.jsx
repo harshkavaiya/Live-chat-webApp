@@ -70,14 +70,6 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-4 mt-6">
-            <div>
-              <button className="text-blue-600 text-sm font-semibold hover:underline">
-                Forgot Password?
-              </button>
-            </div>
-          </div>
-
           <div className="mt-12">
             <button
               type="button"
