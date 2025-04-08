@@ -124,16 +124,7 @@ const SignleGroup = () => {
                   <h3 className="card-title">
                     Members ({currentSee.members.length})
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <label className="input flex items-center">
-                      <FaSearch className="mr-2" />
-                      <input
-                        type="search"
-                        className="grow"
-                        placeholder="Search"
-                      />
-                    </label>
-                  </div>
+                
                 </div>
 
                 <div className="overflow-x-auto">
@@ -142,7 +133,7 @@ const SignleGroup = () => {
                       <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        {/* <th>Actions</th> */}
+                      
                       </tr>
                     </thead>
                     <tbody>

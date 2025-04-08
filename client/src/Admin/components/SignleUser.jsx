@@ -50,9 +50,23 @@ const SignleUser = () => {
                 </div>
               </div>
 
-              <div className="divider"></div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="font-semibold text-left">Name:</div>
+                <div className="text-left">{currentSee?.fullname}</div>
+                <div className="font-semibold text-left">Email:</div>
+                <div className="text-left text-wrap truncate">
+                  {currentSee?.email}
+                </div>
+                <div className="font-semibold text-left">Phone:</div>
+                <div className="text-left">{currentSee?.phone}</div>
 
-              <div className="card-actions justify-end w-full mt-6">
+                <div className="font-semibold text-left">Created:</div>
+                <div className="text-left">
+                  {new Date(currentSee?.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+              <div className="divider"></div>
+              <div className="card-actions justify-end w-full mt-2">
                 <div
                   onClick={() =>
                     document
@@ -92,7 +106,7 @@ const SignleUser = () => {
               <div className="card bg-base-200 shadow-xl">
                 <div className="card-body">
                   <h3 className="card-title">Description</h3>
-                  <p className="mt-2">{currentSee?.desc}</p>
+                  <p className="mt-2">{currentSee?.about}</p>
                 </div>
               </div>
             </div>
@@ -106,16 +120,6 @@ const SignleUser = () => {
                   <h3 className="card-title">
                     Contacts ({currentSee.contacts.length})
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <label className="input flex items-center">
-                      <FaSearch className="mr-2" />
-                      <input
-                        type="search"
-                        className="grow"
-                        placeholder="Search"
-                      />
-                    </label>
-                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -125,7 +129,6 @@ const SignleUser = () => {
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        {/* <th>Actions</th> */}
                       </tr>
                     </thead>
                     <tbody>
